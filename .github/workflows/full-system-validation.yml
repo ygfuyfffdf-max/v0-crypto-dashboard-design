@@ -391,7 +391,7 @@ jobs:
         continue-on-error: true
 
       - name: 🔍 Buscar secretos expuestos
-        uses: trufflesecurity/trufflehog@v3.88.2
+        uses: trufflesecurity/trufflehog@v3.92.5
         with:
           path: ./
           base: ${{ github.event.repository.default_branch }}
