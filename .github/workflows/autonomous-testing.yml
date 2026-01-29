@@ -52,7 +52,7 @@ jobs:
         continue-on-error: true
 
       - name: 📊 Upload TypeScript results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: typescript-results
@@ -87,7 +87,7 @@ jobs:
         continue-on-error: true
 
       - name: 📊 Upload coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: jest-coverage
@@ -125,7 +125,7 @@ jobs:
         continue-on-error: true
 
       - name: 📊 Upload evaluation results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: evaluation-results
@@ -293,7 +293,7 @@ jobs:
         continue-on-error: true
 
       - name: 📊 Upload agent reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: agent-reports
@@ -343,7 +343,7 @@ jobs:
           cat report.md
 
       - name: 📤 Upload consolidated report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: consolidated-report
           path: report.md

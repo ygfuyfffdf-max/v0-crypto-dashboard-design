@@ -126,7 +126,7 @@ jobs:
           fi
 
       - name: 📤 Upload coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: pr-coverage-${{ github.event.pull_request.number || github.event.inputs.pr_number }}
