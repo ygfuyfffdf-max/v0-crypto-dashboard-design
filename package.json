@@ -63,7 +63,7 @@
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.2.2",
     "@jest/globals": "^30.2.0",
-    "@libsql/client": "^0.15.15",
+    "@libsql/client": "^0.17.0",
     "@mediapipe/camera_utils": "^0.3.1675466862",
     "@mediapipe/hands": "^0.4.1675469240",
     "@monogrid/gainmap-js": "^3.4.0",
