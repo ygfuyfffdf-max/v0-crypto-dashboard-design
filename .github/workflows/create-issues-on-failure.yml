@@ -1,0 +1,218 @@
+# 🐛 Create Issues on Test Failures - Sistema CHRONOS
+# Crea automáticamente issues cuando fallan los tests con logs y screenshots
+
+name: Create Issues on Failure
+
+on:
+  workflow_run:
+    workflows: ["CI Master Suite", "CI Pipeline", "E2E Tests"]
+    types:
+      - completed
+
+permissions:
+  issues: write
+  actions: read
+  contents: read
+
+jobs:
+  create-issue:
+    name: 🐛 Create Issue on Failure
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔍 Get Workflow Run Info
+        id: workflow-info
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            
+            // Get jobs for this workflow run
+            const jobs = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: run.id
+            });
+            
+            // Find failed jobs
+            const failedJobs = jobs.data.jobs.filter(job => job.conclusion === 'failure');
+            
+            let failureDetails = '';
+            for (const job of failedJobs) {
+              failureDetails += `### ❌ ${job.name}\n`;
+              failureDetails += `- **Status:** ${job.conclusion}\n`;
+              failureDetails += `- **Started:** ${job.started_at}\n`;
+              failureDetails += `- **Completed:** ${job.completed_at}\n`;
+              
+              // Get failed steps
+              const failedSteps = job.steps.filter(step => step.conclusion === 'failure');
+              if (failedSteps.length > 0) {
+                failureDetails += `- **Failed Steps:**\n`;
+                failedSteps.forEach(step => {
+                  failureDetails += `  - ${step.name}\n`;
+                });
+              }
+              failureDetails += `- **Log URL:** ${job.html_url}\n\n`;
+            }
+            
+            core.setOutput('workflow_name', run.name);
+            core.setOutput('workflow_url', run.html_url);
+            core.setOutput('branch', run.head_branch);
+            core.setOutput('commit_sha', run.head_sha);
+            core.setOutput('failure_details', failureDetails);
+            core.setOutput('failed_job_count', failedJobs.length);
+
+      - name: 📥 Download Test Artifacts
+        if: steps.workflow-info.outputs.failed_job_count > 0
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.payload.workflow_run.id,
+            });
+            
+            let artifactLinks = '';
+            for (const artifact of artifacts.data.artifacts) {
+              if (artifact.name.includes('playwright-report') || 
+                  artifact.name.includes('test-screenshots') ||
+                  artifact.name.includes('test-results')) {
+                artifactLinks += `- [${artifact.name}](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.payload.workflow_run.id}/artifacts/${artifact.id})\n`;
+              }
+            }
+            
+            core.setOutput('artifact_links', artifactLinks || 'No test artifacts available');
+
+      - name: 🔍 Check for Existing Issue
+        id: check-issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'test-failure,automated',
+              per_page: 100
+            });
+            
+            const workflowName = '${{ steps.workflow-info.outputs.workflow_name }}';
+            const branch = '${{ steps.workflow-info.outputs.branch }}';
+            
+            // Check if there's already an open issue for this workflow and branch
+            const existingIssue = issues.data.find(issue => 
+              issue.title.includes(workflowName) && 
+              issue.title.includes(branch)
+            );
+            
+            if (existingIssue) {
+              core.setOutput('issue_exists', 'true');
+              core.setOutput('issue_number', existingIssue.number);
+            } else {
+              core.setOutput('issue_exists', 'false');
+            }
+
+      - name: 🆕 Create New Issue
+        if: steps.check-issue.outputs.issue_exists == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🐛 Test Failure: ${{ steps.workflow-info.outputs.workflow_name }} on ${{ steps.workflow-info.outputs.branch }}`,
+              labels: ['test-failure', 'automated', 'bug'],
+              body: `## 🐛 Automated Test Failure Report
+            
+            **Workflow:** ${{ steps.workflow-info.outputs.workflow_name }}
+            **Branch:** \`${{ steps.workflow-info.outputs.branch }}\`
+            **Commit:** \`${{ steps.workflow-info.outputs.commit_sha }}\`
+            **Workflow Run:** ${{ steps.workflow-info.outputs.workflow_url }}
+            
+            ---
+            
+            ## ❌ Failed Jobs
+            
+            ${{ steps.workflow-info.outputs.failure_details }}
+            
+            ---
+            
+            ## 📎 Test Artifacts
+            
+            ${{ steps.artifact_links.outputs.artifact_links }}
+            
+            ---
+            
+            ## 🔍 Next Steps
+            
+            1. Review the workflow logs linked above
+            2. Check test screenshots and reports in artifacts
+            3. Reproduce the failure locally:
+               \`\`\`bash
+               git checkout ${{ steps.workflow-info.outputs.branch }}
+               git pull origin ${{ steps.workflow-info.outputs.branch }}
+               pnpm install
+               pnpm test:e2e
+               \`\`\`
+            4. Fix the failing tests
+            5. Close this issue when resolved
+            
+            ---
+            
+            **Auto-generated by GitHub Actions** 🤖
+            **Workflow Run:** ${{ github.event.workflow_run.id }}
+            `
+            });
+            
+            core.setOutput('issue_number', issue.data.number);
+            console.log(`Created issue #${issue.data.number}`);
+
+      - name: 💬 Update Existing Issue
+        if: steps.check-issue.outputs.issue_exists == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.check-issue.outputs.issue_number }},
+              body: `## 🔄 Test Still Failing
+            
+            The test failure is still occurring.
+            
+            **Latest Workflow Run:** ${{ steps.workflow-info.outputs.workflow_url }}
+            **Commit:** \`${{ steps.workflow-info.outputs.commit_sha }}\`
+            **Run ID:** ${{ github.event.workflow_run.id }}
+            
+            ### ❌ Failed Jobs
+            
+            ${{ steps.workflow-info.outputs.failure_details }}
+            
+            ### 📎 Latest Artifacts
+            
+            ${{ steps.artifact_links.outputs.artifact_links }}
+            `
+            });
+            
+            console.log(`Updated issue #${{ steps.check-issue.outputs.issue_number }}`);
+
+      - name: 📊 Summary
+        run: |
+          echo "# 🐛 Test Failure Issue Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow:** ${{ steps.workflow-info.outputs.workflow_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** \`${{ steps.workflow-info.outputs.branch }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Failed Jobs:** ${{ steps.workflow-info.outputs.failed_job_count }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.check-issue.outputs.issue_exists }}" == "true" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Action:** Updated existing issue #${{ steps.check-issue.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Action:** Created new issue #${{ steps.create-issue.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
+          fi

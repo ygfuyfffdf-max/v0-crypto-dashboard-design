@@ -1,0 +1,98 @@
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "export": "Exportar",
+    "import": "Importar",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "warning": "Advertencia",
+    "info": "Información",
+    "yes": "Sí",
+    "no": "No",
+    "total": "Total",
+    "actions": "Acciones",
+    "details": "Detalles",
+    "date": "Fecha",
+    "status": "Estado",
+    "amount": "Monto",
+    "description": "Descripción",
+    "select": "Seleccionar"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "ventas": "Ventas",
+    "ordenes": "Órdenes de Compra",
+    "bancos": "Bancos",
+    "clientes": "Clientes",
+    "distribuidores": "Distribuidores",
+    "almacen": "Almacén",
+    "reportes": "Reportes",
+    "ia": "Asistente IA",
+    "profit": "Profit & Utilidades",
+    "settings": "Configuración"
+  },
+  "dashboard": {
+    "title": "Panel de Control",
+    "welcome": "Bienvenido a CHRONOS",
+    "overview": "Resumen General",
+    "capitalTotal": "Capital Total",
+    "ventasMes": "Ventas del Mes",
+    "clientesActivos": "Clientes Activos",
+    "stockDisponible": "Stock Disponible"
+  },
+  "ventas": {
+    "title": "Ventas",
+    "nueva": "Nueva Venta",
+    "lista": "Lista de Ventas",
+    "detalle": "Detalle de Venta",
+    "cliente": "Cliente",
+    "productos": "Productos",
+    "precioUnitario": "Precio Unitario",
+    "cantidad": "Cantidad",
+    "subtotal": "Subtotal",
+    "flete": "Flete",
+    "total": "Total",
+    "metodoPago": "Método de Pago",
+    "estadoPago": "Estado de Pago",
+    "completo": "Completo",
+    "parcial": "Parcial",
+    "pendiente": "Pendiente"
+  },
+  "clientes": {
+    "title": "Clientes",
+    "nuevo": "Nuevo Cliente",
+    "lista": "Lista de Clientes",
+    "nombre": "Nombre",
+    "email": "Email",
+    "telefono": "Teléfono",
+    "direccion": "Dirección",
+    "deuda": "Deuda",
+    "credito": "Crédito"
+  },
+  "bancos": {
+    "title": "Bancos",
+    "capital": "Capital",
+    "transferencia": "Transferencia",
+    "ingreso": "Ingreso",
+    "gasto": "Gasto"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "logout": "Cerrar Sesión",
+    "permissionDenied": "Permiso denegado"
+  },
+  "theme": {
+    "dark": "Oscuro",
+    "light": "Claro",
+    "auto": "Automático"
+  }
+}

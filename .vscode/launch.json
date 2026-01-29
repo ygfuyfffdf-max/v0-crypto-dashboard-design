@@ -1,0 +1,318 @@
+{
+  // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+  // 🌌 CHRONOS INFINITY — SUPREME DEBUG CONFIGURATIONS 2026
+  // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+  //
+  // Arsenal completo de configuraciones de debugging para desarrollo máximo
+  // Compatible con: IY SUPREME Agent, CHRONOS AI, GitHub Copilot
+  //
+  // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+  "version": "0.2.0",
+  "configurations": [
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🌐 NEXT.JS - SERVER SIDE
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "name": "🌐 Next.js: Debug Servidor",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "sourceMaps": true,
+      "env": {
+        "NODE_OPTIONS": "--inspect"
+      },
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "🌐 Next.js: Attach to Server",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "sourceMaps": true,
+      "restart": true,
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "🌐 Next.js: Debug Server Actions",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "NODE_OPTIONS": "--inspect-brk"
+      },
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🖥️ NEXT.JS - CLIENT SIDE (CHROME)
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "name": "🖥️ Next.js: Debug Cliente (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack://_N_E/*": "${webRoot}/*"
+      }
+    },
+    {
+      "name": "🖥️ Next.js: Debug Cliente (Edge)",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🔗 NEXT.JS - FULL STACK
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "name": "🔗 Next.js: Full Stack Debug",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "serverReadyAction": {
+        "action": "debugWithChrome",
+        "pattern": "- Local:.+(https?://.+)",
+        "uriFormat": "%s",
+        "webRoot": "${workspaceFolder}"
+      },
+      "env": {
+        "NODE_OPTIONS": "--inspect"
+      },
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🧪 JEST - UNIT TESTING
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "name": "🧪 Jest: Debug All Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["test", "--", "--runInBand", "--no-coverage"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "🧪 Jest: Debug Current File",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["test", "--", "--runInBand", "--no-coverage", "${relativeFile}"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "🧪 Jest: Debug with Coverage",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["test", "--", "--runInBand", "--coverage"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "🧪 Jest: Watch Mode Debug",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["test", "--", "--watch", "--runInBand"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🎭 PLAYWRIGHT - E2E TESTING
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "name": "🎭 Playwright: Debug E2E",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["playwright", "test", "--debug"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "🎭 Playwright: Debug Current File",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["playwright", "test", "--debug", "${relativeFile}"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "🎭 Playwright: UI Mode",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["playwright", "test", "--ui"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "🎭 Playwright: Headed Mode",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["playwright", "test", "--headed"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 📦 BUILD & ANALYSIS
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "name": "📦 Build: Debug Production",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["build"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "📦 Build: Debug with Analyze",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["build"],
+      "env": {
+        "ANALYZE": "true"
+      },
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🔍 TYPESCRIPT
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "name": "🔍 TypeScript: Check Types",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["type-check"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🤖 CHRONOS AI AGENT
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "name": "🤖 CHRONOS AI: Debug Agent",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["start"],
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "NODE_OPTIONS": "--inspect"
+      },
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/agents/chronos-ai-agent"
+    },
+    {
+      "name": "🤖 CHRONOS AI: Debug Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["test", "--", "--runInBand"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/agents/chronos-ai-agent"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // �️ TURSO + DRIZZLE DATABASE
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "name": "🗄️ Drizzle: Debug Migration",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["tsx", "database/migrate.ts"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "🗄️ Drizzle: Debug Seed",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["tsx", "database/seed-bancos.ts"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 📜 SCRIPTS
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "name": "📜 Debug: Current TS File",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["tsx", "${relativeFile}"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "📜 Debug: Migration Script",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["tsx", "scripts/migrate.ts"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    }
+  ],
+
+  // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+  // ⚡ COMPOUND CONFIGURATIONS - WORKFLOWS COMPLETOS
+  // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+  "compounds": [
+    {
+      "name": "⚡ Full Stack + Chrome",
+      "configurations": ["🌐 Next.js: Debug Servidor", "🖥️ Next.js: Debug Cliente (Chrome)"],
+      "stopAll": true
+    },
+    {
+      "name": "⚡ Server + Jest Watch",
+      "configurations": ["🌐 Next.js: Debug Servidor", "🧪 Jest: Watch Mode Debug"],
+      "stopAll": true
+    },
+    {
+      "name": "⚡ Full Stack + E2E",
+      "configurations": ["🌐 Next.js: Debug Servidor", "🎭 Playwright: UI Mode"],
+      "stopAll": true
+    },
+    {
+      "name": "⚡ Complete Dev Environment",
+      "configurations": [
+        "🌐 Next.js: Debug Servidor",
+        "🖥️ Next.js: Debug Cliente (Chrome)",
+        "🧪 Jest: Watch Mode Debug"
+      ],
+      "stopAll": true
+    }
+  ]
+}

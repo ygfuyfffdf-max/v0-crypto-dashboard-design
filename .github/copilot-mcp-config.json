@@ -1,0 +1,102 @@
+{
+  "chat.agent.enabled": true,
+  "chat.agent.maxRequests": 100,
+  "mcp": {
+    "servers": {
+      "filesystem": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "/workspaces/v0-crypto-dashboard-design"
+        ],
+        "autoApprove": [
+          "read_file",
+          "read_multiple_files",
+          "list_directory",
+          "search_files",
+          "get_file_info",
+          "list_allowed_directories",
+          "write_file",
+          "create_directory",
+          "move_file"
+        ]
+      },
+      "fetch": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-fetch"],
+        "autoApprove": ["fetch"]
+      },
+      "github": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-github"],
+        "autoApprove": [
+          "search_repositories",
+          "get_file_contents",
+          "list_commits",
+          "get_issue",
+          "list_issues",
+          "create_issue",
+          "create_pull_request",
+          "search_code",
+          "get_pull_request"
+        ]
+      },
+      "memory": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-memory"],
+        "autoApprove": [
+          "create_entities",
+          "create_relations",
+          "add_observations",
+          "delete_entities",
+          "delete_relations",
+          "delete_observations",
+          "read_graph",
+          "search_nodes",
+          "open_nodes"
+        ]
+      },
+      "sequential-thinking": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+        "autoApprove": ["sequentialthinking"]
+      },
+      "sqlite": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-sqlite",
+          "--db-path",
+          "/workspaces/v0-crypto-dashboard-design/database/sqlite.db"
+        ],
+        "autoApprove": [
+          "read_query",
+          "write_query",
+          "create_table",
+          "list_tables",
+          "describe_table",
+          "append_insight"
+        ]
+      },
+      "puppeteer": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-puppeteer"],
+        "autoApprove": [
+          "puppeteer_navigate",
+          "puppeteer_screenshot",
+          "puppeteer_click",
+          "puppeteer_fill",
+          "puppeteer_select",
+          "puppeteer_hover",
+          "puppeteer_evaluate"
+        ]
+      },
+      "time": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-time"],
+        "autoApprove": ["get_current_time", "convert_time"]
+      }
+    }
+  }
+}

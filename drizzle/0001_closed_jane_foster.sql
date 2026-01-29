@@ -1,0 +1,1 @@
+ALTER TABLE `movimientos` ADD `categoria` text DEFAULT 'Operaciones';

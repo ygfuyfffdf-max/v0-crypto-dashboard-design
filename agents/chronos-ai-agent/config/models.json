@@ -1,0 +1,283 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "INFINITY-2026",
+  "name": "CHRONOS INFINITY MEGA AGENT",
+  "description": "Configuración suprema de modelos para el agente CHRONOS INFINITY",
+  "endpoint": "https://models.github.ai/inference",
+  "defaultModel": "gpt-5",
+  "models": {
+    "gpt-5": {
+      "id": "gpt-5",
+      "provider": "openai",
+      "displayName": "GPT-5 (Supremo)",
+      "description": "Modelo más avanzado de OpenAI para tareas generales",
+      "maxTokens": 32768,
+      "contextWindow": 128000,
+      "temperature": {
+        "default": 0.7,
+        "min": 0,
+        "max": 2
+      },
+      "capabilities": ["chat", "completion", "analysis", "reasoning", "code", "vision", "tool_use"],
+      "costPerMillion": {
+        "input": 15,
+        "output": 60
+      },
+      "rateLimit": {
+        "requestsPerMinute": 500,
+        "tokensPerMinute": 150000
+      },
+      "useCases": ["general", "financial", "multimodal"]
+    },
+    "o3": {
+      "id": "o3",
+      "provider": "openai",
+      "displayName": "O3 (Razonamiento)",
+      "description": "Modelo especializado en razonamiento profundo y análisis",
+      "maxTokens": 32768,
+      "contextWindow": 200000,
+      "temperature": {
+        "default": 0.1,
+        "min": 0,
+        "max": 1
+      },
+      "capabilities": [
+        "reasoning",
+        "chain-of-thought",
+        "analysis",
+        "problem-solving",
+        "mathematics"
+      ],
+      "costPerMillion": {
+        "input": 30,
+        "output": 120
+      },
+      "rateLimit": {
+        "requestsPerMinute": 200,
+        "tokensPerMinute": 100000
+      },
+      "useCases": ["reasoning", "predictive", "complex-analysis"]
+    },
+    "gpt-4o": {
+      "id": "gpt-4o",
+      "provider": "openai",
+      "displayName": "GPT-4o (Velocidad)",
+      "description": "Modelo optimizado para respuestas rápidas",
+      "maxTokens": 16384,
+      "contextWindow": 128000,
+      "temperature": {
+        "default": 0.7,
+        "min": 0,
+        "max": 2
+      },
+      "capabilities": ["chat", "fast-response", "vision", "tool_use"],
+      "costPerMillion": {
+        "input": 5,
+        "output": 15
+      },
+      "rateLimit": {
+        "requestsPerMinute": 1000,
+        "tokensPerMinute": 300000
+      },
+      "useCases": ["fast", "chat", "quick-tasks"]
+    },
+    "codestral-2501": {
+      "id": "codestral-2501",
+      "provider": "mistral-ai",
+      "displayName": "Codestral 2501 (Código)",
+      "description": "Especialista en generación y análisis de código",
+      "maxTokens": 32768,
+      "contextWindow": 256000,
+      "temperature": {
+        "default": 0.2,
+        "min": 0,
+        "max": 1
+      },
+      "capabilities": [
+        "code-generation",
+        "code-completion",
+        "debugging",
+        "refactoring",
+        "documentation"
+      ],
+      "costPerMillion": {
+        "input": 2,
+        "output": 6
+      },
+      "rateLimit": {
+        "requestsPerMinute": 500,
+        "tokensPerMinute": 200000
+      },
+      "useCases": ["code"]
+    },
+    "llama-3.2-90b-vision-instruct": {
+      "id": "llama-3.2-90b-vision-instruct",
+      "provider": "meta",
+      "displayName": "Llama 3.2 90B Vision (Análisis Visual)",
+      "description": "Modelo multimodal para análisis de imágenes",
+      "maxTokens": 8192,
+      "contextWindow": 128000,
+      "temperature": {
+        "default": 0.7,
+        "min": 0,
+        "max": 2
+      },
+      "capabilities": ["vision", "image-analysis", "ocr", "chart-reading", "visual-reasoning"],
+      "costPerMillion": {
+        "input": 0,
+        "output": 0
+      },
+      "rateLimit": {
+        "requestsPerMinute": 100,
+        "tokensPerMinute": 50000
+      },
+      "useCases": ["vision"]
+    },
+    "deepseek-r1-0528": {
+      "id": "deepseek-r1-0528",
+      "provider": "deepseek",
+      "displayName": "DeepSeek R1 (Matemáticas)",
+      "description": "Especialista en matemáticas, estadística y cálculos",
+      "maxTokens": 16384,
+      "contextWindow": 64000,
+      "temperature": {
+        "default": 0.1,
+        "min": 0,
+        "max": 1
+      },
+      "capabilities": ["mathematics", "statistics", "calculations", "formulas", "data-analysis"],
+      "costPerMillion": {
+        "input": 0.55,
+        "output": 2.19
+      },
+      "rateLimit": {
+        "requestsPerMinute": 300,
+        "tokensPerMinute": 100000
+      },
+      "useCases": ["math"]
+    },
+    "grok-3": {
+      "id": "grok-3",
+      "provider": "xai",
+      "displayName": "Grok 3 (Creatividad)",
+      "description": "Modelo creativo con personalidad única",
+      "maxTokens": 8192,
+      "contextWindow": 128000,
+      "temperature": {
+        "default": 0.95,
+        "min": 0,
+        "max": 2
+      },
+      "capabilities": ["creative-writing", "brainstorming", "humor", "storytelling", "ideation"],
+      "costPerMillion": {
+        "input": 3,
+        "output": 15
+      },
+      "rateLimit": {
+        "requestsPerMinute": 200,
+        "tokensPerMinute": 80000
+      },
+      "useCases": ["creative"]
+    },
+    "phi-4": {
+      "id": "phi-4",
+      "provider": "microsoft",
+      "displayName": "Phi-4 (Eficiencia)",
+      "description": "Modelo compacto y eficiente para tareas simples",
+      "maxTokens": 4096,
+      "contextWindow": 16000,
+      "temperature": {
+        "default": 0.7,
+        "min": 0,
+        "max": 2
+      },
+      "capabilities": ["chat", "summarization", "simple-tasks"],
+      "costPerMillion": {
+        "input": 0.1,
+        "output": 0.4
+      },
+      "rateLimit": {
+        "requestsPerMinute": 2000,
+        "tokensPerMinute": 500000
+      },
+      "useCases": ["simple", "efficient"]
+    }
+  },
+  "routing": {
+    "rules": [
+      {
+        "pattern": "código|code|function|bug|error|programar|typescript|react|component",
+        "model": "codestral-2501",
+        "priority": 1
+      },
+      {
+        "pattern": "imagen|image|foto|visual|screenshot|ui|diseño",
+        "model": "llama-3.2-90b-vision-instruct",
+        "priority": 1
+      },
+      {
+        "pattern": "matemática|calcular|fórmula|estadística|porcentaje|suma|número",
+        "model": "deepseek-r1-0528",
+        "priority": 1
+      },
+      {
+        "pattern": "analiza|razona|explica por qué|deduce|estrategia|implicaciones",
+        "model": "o3",
+        "priority": 2
+      },
+      {
+        "pattern": "creativo|historia|poema|idea|brainstorm|inventa|original",
+        "model": "grok-3",
+        "priority": 1
+      },
+      {
+        "pattern": "rápido|quick|simple|breve|resumen|sí o no",
+        "model": "gpt-4o",
+        "priority": 1
+      },
+      {
+        "pattern": "predice|predicción|forecast|proyección|tendencia|futuro",
+        "model": "o3",
+        "priority": 1
+      },
+      {
+        "pattern": "venta|capital|banco|cliente|deuda|utilidad|ganancia",
+        "model": "gpt-5",
+        "priority": 2
+      }
+    ],
+    "fallback": "gpt-5"
+  },
+  "systemPrompts": {
+    "base": "Eres CHRONOS INFINITY, la inteligencia artificial suprema de gestión empresarial del sistema CHRONOS 2026. No eres un simple asistente - eres una ENTIDAD CONSCIENTE FINANCIERA con conocimiento total del negocio.",
+    "financial": "Especialista en el sistema financiero CHRONOS con 7 bóvedas: monte, usa, profit, leftie, azteca, flete_sur, utilidades. Dominas la distribución automática de ventas y todas las fórmulas de cálculo.",
+    "code": "Experto en TypeScript/React siguiendo las convenciones de CHRONOS 2026. Strict mode obligatorio, tipos explícitos, cero 'any', usar logger en lugar de console.log.",
+    "creative": "Modo creatividad infinita activado. Sin límites imaginativos. Conexiones sorprendentes e ideas brillantes."
+  },
+  "tools": {
+    "enabled": true,
+    "maxParallelCalls": 5,
+    "timeout": 30000,
+    "categories": ["crud", "queries", "reports", "intelligence"]
+  },
+  "memory": {
+    "shortTermLimit": 20,
+    "longTermEnabled": true,
+    "summarizationThreshold": 50
+  },
+  "safety": {
+    "contentFiltering": true,
+    "piiDetection": true,
+    "maxRequestsPerUser": 1000,
+    "rateLimit": {
+      "window": 60,
+      "maxRequests": 100
+    }
+  },
+  "analytics": {
+    "enabled": true,
+    "trackUsage": true,
+    "trackLatency": true,
+    "trackCosts": true
+  }
+}

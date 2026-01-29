@@ -1,0 +1,936 @@
+openapi: 3.1.0
+info:
+  title: CHRONOS INFINITY API
+  version: 2.0.0
+  description: |
+    API empresarial de gestión financiera para el sistema CHRONOS INFINITY 2026.
+
+    ## Características
+    - Gestión de ventas con distribución automática GYA
+    - Control de bancos/bóvedas financieras
+    - Tracking de clientes y distribuidores
+    - Órdenes de compra con trazabilidad
+    - Reportes y analytics en tiempo real
+
+    ## Autenticación
+    La API usa JWT Bearer tokens para autenticación.
+
+    ## Rate Limiting
+    - 100 requests/minuto por IP
+    - 1000 requests/hora por usuario autenticado
+  contact:
+    name: CHRONOS Support
+    email: support@chronos.app
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.chronos.app/v2
+    description: Production
+  - url: https://staging-api.chronos.app/v2
+    description: Staging
+  - url: http://localhost:3000/api
+    description: Development
+
+tags:
+  - name: Ventas
+    description: Gestión de ventas y distribución GYA
+  - name: Bancos
+    description: Bóvedas y movimientos financieros
+  - name: Clientes
+    description: Gestión de clientes
+  - name: Distribuidores
+    description: Gestión de distribuidores
+  - name: Ordenes
+    description: Órdenes de compra
+  - name: Reportes
+    description: Analytics y reportes
+  - name: AI
+    description: Endpoints de inteligencia artificial
+
+paths:
+  /ventas:
+    get:
+      summary: Listar todas las ventas
+      tags: [Ventas]
+      operationId: getVentas
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: estado
+          in: query
+          schema:
+            type: string
+            enum: [pendiente, parcial, completo]
+        - name: desde
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: hasta
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Lista de ventas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Venta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    post:
+      summary: Crear nueva venta
+      description: |
+        Crea una nueva venta con distribución automática GYA.
+
+        ## Fórmulas de Distribución
+        - **Bóveda Monte**: precioCompraUnidad × cantidad × proporciónPagada
+        - **Fletes**: precioFlete × cantidad × proporciónPagada
+        - **Utilidades**: (precioVenta - precioCompra - flete) × cantidad × proporciónPagada
+
+        ⚠️ **Importante**: El precioVentaUnidad YA incluye el flete.
+      tags: [Ventas]
+      operationId: createVenta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearVentaInput'
+            examples:
+              ventaCompleta:
+                summary: Venta con pago completo
+                value:
+                  clienteId: "cliente-uuid-123"
+                  cantidad: 10
+                  precioVentaUnidad: 10000
+                  precioCompraUnidad: 6300
+                  precioFlete: 500
+                  montoPagado: 100000
+              ventaParcial:
+                summary: Venta con pago parcial
+                value:
+                  clienteId: "cliente-uuid-456"
+                  cantidad: 5
+                  precioVentaUnidad: 8000
+                  precioCompraUnidad: 5000
+                  precioFlete: 300
+                  montoPagado: 20000
+      responses:
+        '201':
+          description: Venta creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VentaResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /ventas/{id}:
+    get:
+      summary: Obtener venta por ID
+      tags: [Ventas]
+      operationId: getVentaById
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Detalle de venta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VentaDetalle'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      summary: Actualizar venta
+      tags: [Ventas]
+      operationId: updateVenta
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActualizarVentaInput'
+      responses:
+        '200':
+          description: Venta actualizada
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Eliminar venta
+      tags: [Ventas]
+      operationId: deleteVenta
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Venta eliminada
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /ventas/{id}/abono:
+    post:
+      summary: Registrar abono a venta
+      description: Registra un pago parcial o completo a una venta existente
+      tags: [Ventas]
+      operationId: abonarVenta
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [monto]
+              properties:
+                monto:
+                  type: number
+                  minimum: 0.01
+                  description: Monto del abono
+                metodoPago:
+                  type: string
+                  enum: [efectivo, transferencia, tarjeta]
+                referencia:
+                  type: string
+      responses:
+        '200':
+          description: Abono registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbonoResponse'
+
+  /bancos:
+    get:
+      summary: Listar todos los bancos/bóvedas
+      tags: [Bancos]
+      operationId: getBancos
+      responses:
+        '200':
+          description: Lista de bancos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Banco'
+
+  /bancos/{id}:
+    get:
+      summary: Obtener banco por ID
+      tags: [Bancos]
+      operationId: getBancoById
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Detalle de banco
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BancoDetalle'
+
+  /bancos/{id}/movimientos:
+    get:
+      summary: Listar movimientos de un banco
+      tags: [Bancos]
+      operationId: getMovimientosBanco
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: tipo
+          in: query
+          schema:
+            type: string
+            enum: [ingreso, gasto, transferencia]
+      responses:
+        '200':
+          description: Lista de movimientos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Movimiento'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /clientes:
+    get:
+      summary: Listar clientes
+      tags: [Clientes]
+      operationId: getClientes
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Búsqueda por nombre o contacto
+      responses:
+        '200':
+          description: Lista de clientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cliente'
+
+    post:
+      summary: Crear cliente
+      tags: [Clientes]
+      operationId: createCliente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearClienteInput'
+      responses:
+        '201':
+          description: Cliente creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+
+  /distribuidores:
+    get:
+      summary: Listar distribuidores
+      tags: [Distribuidores]
+      operationId: getDistribuidores
+      responses:
+        '200':
+          description: Lista de distribuidores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Distribuidor'
+
+  /ordenes:
+    get:
+      summary: Listar órdenes de compra
+      tags: [Ordenes]
+      operationId: getOrdenes
+      parameters:
+        - name: estado
+          in: query
+          schema:
+            type: string
+            enum: [pendiente, en_transito, recibida, cancelada]
+      responses:
+        '200':
+          description: Lista de órdenes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrdenCompra'
+
+    post:
+      summary: Crear orden de compra
+      tags: [Ordenes]
+      operationId: createOrden
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearOrdenInput'
+      responses:
+        '201':
+          description: Orden creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrdenCompra'
+
+  /reportes/resumen:
+    get:
+      summary: Obtener resumen financiero
+      tags: [Reportes]
+      operationId: getResumenFinanciero
+      parameters:
+        - name: periodo
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [dia, semana, mes, trimestre, año]
+      responses:
+        '200':
+          description: Resumen financiero
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumenFinanciero'
+
+  /reportes/capital:
+    get:
+      summary: Obtener reporte de capital por banco
+      tags: [Reportes]
+      operationId: getReporteCapital
+      responses:
+        '200':
+          description: Reporte de capital
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CapitalBanco'
+
+  /ai/chat:
+    post:
+      summary: Chat con asistente AI
+      description: Interactúa con el asistente CHRONOS AI para consultas y análisis
+      tags: [AI]
+      operationId: chatWithAI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                  maxLength: 4000
+                context:
+                  type: string
+                  description: Contexto adicional para el AI
+      responses:
+        '200':
+          description: Respuesta del AI
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                  suggestions:
+                    type: array
+                    items:
+                      type: string
+
+  /ai/analyze:
+    post:
+      summary: Análisis AI de datos financieros
+      tags: [AI]
+      operationId: analyzeWithAI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tipo]
+              properties:
+                tipo:
+                  type: string
+                  enum: [ventas, gastos, tendencias, anomalias]
+                periodo:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: Análisis generado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalisisAI'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  responses:
+    Unauthorized:
+      description: No autorizado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ValidationError:
+      description: Error de validación
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+    InternalError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    ValidationError:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+
+    Venta:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        clienteId:
+          type: string
+          format: uuid
+        cantidad:
+          type: integer
+          minimum: 1
+        precioVentaUnidad:
+          type: number
+          minimum: 0
+        precioCompraUnidad:
+          type: number
+          minimum: 0
+        precioFlete:
+          type: number
+          minimum: 0
+        precioTotal:
+          type: number
+        montoPagado:
+          type: number
+        montoRestante:
+          type: number
+        estado:
+          type: string
+          enum: [pendiente, parcial, completo]
+        fecha:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    VentaDetalle:
+      allOf:
+        - $ref: '#/components/schemas/Venta'
+        - type: object
+          properties:
+            cliente:
+              $ref: '#/components/schemas/Cliente'
+            distribucion:
+              $ref: '#/components/schemas/DistribucionGYA'
+            abonos:
+              type: array
+              items:
+                $ref: '#/components/schemas/Abono'
+
+    CrearVentaInput:
+      type: object
+      required:
+        - clienteId
+        - cantidad
+        - precioVentaUnidad
+      properties:
+        clienteId:
+          type: string
+          format: uuid
+        cantidad:
+          type: integer
+          minimum: 1
+        precioVentaUnidad:
+          type: number
+          minimum: 0
+          description: Precio de venta por unidad (YA incluye flete)
+        precioCompraUnidad:
+          type: number
+          minimum: 0
+          description: Costo del distribuidor por unidad
+        precioFlete:
+          type: number
+          minimum: 0
+          default: 500
+          description: Flete por unidad
+        montoPagado:
+          type: number
+          minimum: 0
+          default: 0
+        observaciones:
+          type: string
+          maxLength: 1000
+        ocRelacionada:
+          type: string
+          format: uuid
+          description: ID de orden de compra relacionada
+
+    ActualizarVentaInput:
+      type: object
+      properties:
+        montoPagado:
+          type: number
+          minimum: 0
+        estado:
+          type: string
+          enum: [pendiente, parcial, completo]
+        observaciones:
+          type: string
+
+    VentaResponse:
+      type: object
+      properties:
+        venta:
+          $ref: '#/components/schemas/Venta'
+        distribucion:
+          $ref: '#/components/schemas/DistribucionGYA'
+        message:
+          type: string
+
+    DistribucionGYA:
+      type: object
+      description: Distribución automática de la venta
+      properties:
+        bovedaMonte:
+          type: number
+          description: Monto para bóveda Monte (costo producto)
+        fletes:
+          type: number
+          description: Monto para banco de fletes
+        utilidades:
+          type: number
+          description: Utilidad neta
+        total:
+          type: number
+          description: Total distribuido
+
+    Abono:
+      type: object
+      properties:
+        id:
+          type: string
+        monto:
+          type: number
+        fecha:
+          type: string
+          format: date-time
+        metodoPago:
+          type: string
+
+    AbonoResponse:
+      type: object
+      properties:
+        abono:
+          $ref: '#/components/schemas/Abono'
+        ventaActualizada:
+          $ref: '#/components/schemas/Venta'
+
+    Banco:
+      type: object
+      properties:
+        id:
+          type: string
+          enum: [boveda_monte, boveda_usa, profit, leftie, azteca, flete_sur, utilidades]
+        nombre:
+          type: string
+        capitalActual:
+          type: number
+        historicoIngresos:
+          type: number
+        historicoGastos:
+          type: number
+
+    BancoDetalle:
+      allOf:
+        - $ref: '#/components/schemas/Banco'
+        - type: object
+          properties:
+            ultimosMovimientos:
+              type: array
+              items:
+                $ref: '#/components/schemas/Movimiento'
+
+    Movimiento:
+      type: object
+      properties:
+        id:
+          type: string
+        bancoId:
+          type: string
+        tipo:
+          type: string
+          enum: [ingreso, gasto, transferencia]
+        monto:
+          type: number
+        concepto:
+          type: string
+        fecha:
+          type: string
+          format: date-time
+
+    Cliente:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        contacto:
+          type: string
+        email:
+          type: string
+          format: email
+        telefono:
+          type: string
+        direccion:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    CrearClienteInput:
+      type: object
+      required: [nombre]
+      properties:
+        nombre:
+          type: string
+          minLength: 2
+          maxLength: 100
+        contacto:
+          type: string
+        email:
+          type: string
+          format: email
+        telefono:
+          type: string
+        direccion:
+          type: string
+
+    Distribuidor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        bancoAsociado:
+          type: string
+        totalCompras:
+          type: number
+        saldoPendiente:
+          type: number
+
+    OrdenCompra:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        distribuidorId:
+          type: string
+        cantidad:
+          type: integer
+        costoDistribuidor:
+          type: number
+        costoTransporte:
+          type: number
+        costoTotal:
+          type: number
+        estado:
+          type: string
+          enum: [pendiente, en_transito, recibida, cancelada]
+        fechaOrden:
+          type: string
+          format: date-time
+        fechaRecepcion:
+          type: string
+          format: date-time
+
+    CrearOrdenInput:
+      type: object
+      required:
+        - distribuidorId
+        - cantidad
+        - costoDistribuidor
+      properties:
+        distribuidorId:
+          type: string
+          format: uuid
+        cantidad:
+          type: integer
+          minimum: 1
+        costoDistribuidor:
+          type: number
+          minimum: 0
+        costoTransporte:
+          type: number
+          minimum: 0
+          default: 0
+
+    ResumenFinanciero:
+      type: object
+      properties:
+        periodo:
+          type: string
+        totalVentas:
+          type: number
+        totalGastos:
+          type: number
+        utilidadNeta:
+          type: number
+        ventasCount:
+          type: integer
+        ticketPromedio:
+          type: number
+        comparacionAnterior:
+          type: object
+          properties:
+            porcentaje:
+              type: number
+            tendencia:
+              type: string
+              enum: [up, down, stable]
+
+    CapitalBanco:
+      type: object
+      properties:
+        bancoId:
+          type: string
+        nombre:
+          type: string
+        capitalActual:
+          type: number
+        porcentajeDelTotal:
+          type: number
+
+    AnalisisAI:
+      type: object
+      properties:
+        tipo:
+          type: string
+        resumen:
+          type: string
+        insights:
+          type: array
+          items:
+            type: object
+            properties:
+              titulo:
+                type: string
+              descripcion:
+                type: string
+              impacto:
+                type: string
+                enum: [alto, medio, bajo]
+        recomendaciones:
+          type: array
+          items:
+            type: string
+        graficos:
+          type: array
+          items:
+            type: object
+            properties:
+              tipo:
+                type: string
+              datos:
+                type: object
+
+security:
+  - BearerAuth: []

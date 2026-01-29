@@ -1,0 +1,154 @@
+{
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🚀 CHRONOS INFINITY — DEVCONTAINER ULTRA OPTIMIZADO 2025
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Versión: 4.0.0 | Zero-Conflict AI | MCP Ready
+  // ═══════════════════════════════════════════════════════════════════════════
+  "name": "CHRONOS Elite Development 2025",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 📦 FEATURES - Herramientas Optimizadas 2025
+  // ════════════════════════════════════════════════════════════════════════════
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "installDirectlyFromGitHubRelease": true,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "moby": true,
+      "dockerDashComposeVersion": "v2"
+    },
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true
+    },
+    "ghcr.io/devcontainers-contrib/features/playwright:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers-contrib/features/turso-cli:1": {},
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    }
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // ⚡ LIFECYCLE COMMANDS
+  // ════════════════════════════════════════════════════════════════════════════
+  "onCreateCommand": "corepack enable && corepack prepare pnpm@latest --activate",
+  "postCreateCommand": "sudo apk add --no-cache glslang && pnpm install --frozen-lockfile && pnpm exec playwright install --with-deps chromium",
+  "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🔧 VS CODE CUSTOMIZATIONS 2025 (ZERO-CONFLICT)
+  // ════════════════════════════════════════════════════════════════════════════
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // 🤖 GITHUB COPILOT EXCLUSIVO
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "GitHub.vscode-pull-request-github",
+        "github.vscode-github-actions",
+
+        // 🔧 MCP & AZURE
+        "ms-azuretools.vscode-azure-mcp-server",
+        "ms-azuretools.vscode-azure-github-copilot",
+
+        // 📝 DESARROLLO CORE
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "christian-kohler.npm-intellisense",
+        "christian-kohler.path-intellisense",
+
+        // ⚛️ REACT & NEXT.JS
+        "dsznajder.es7-react-js-snippets",
+        "formulahendry.auto-rename-tag",
+
+        // �� TAILWIND CSS
+        "bradlc.vscode-tailwindcss",
+        "heybourn.headwind",
+
+        // 🧪 TESTING
+        "Orta.vscode-jest",
+        "ms-playwright.playwright",
+        "ryanluker.vscode-coverage-gutters",
+
+        // 🔗 GIT
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+
+        // ⚡ PRODUCTIVIDAD
+        "streetsidesoftware.code-spell-checker",
+        "usernamehw.errorlens",
+        "mikestead.dotenv",
+        "Gruntfuggly.todo-tree",
+
+        // 🎨 TEMA & ICONOS
+        "PKief.material-icon-theme",
+        "PKief.material-product-icons",
+        "GitHub.github-vscode-theme",
+
+        // 🗄️ DATABASE
+        "qwtel.sqlite-viewer",
+
+        // 🐳 CONTAINERS
+        "ms-azuretools.vscode-docker",
+        "ms-vscode-remote.remote-containers"
+      ],
+      "settings": {
+        "workbench.colorTheme": "GitHub Dark Default",
+        "workbench.iconTheme": "material-icon-theme",
+        "workbench.productIconTheme": "material-product-icons",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.minimap.enabled": false,
+        "editor.stickyScroll.enabled": false,
+
+        "github.copilot.enable": { "*": true },
+        "github.copilot.nextEditSuggestions.enabled": true,
+        "github.copilot.editor.iterativeFixing": true,
+        "github.copilot.chat.agent.thinkingTool": true,
+        "github.copilot.chat.agent.runTasks": true,
+        "github.copilot.chat.agent.visionEnabled": true,
+        "github.copilot.chat.agent.codingAgentEnabled": true,
+        "github.copilot.chat.agent.planningEnabled": true,
+        "chat.agent.enabled": true,
+        "chat.agent.maxRequests": 250,
+        "chat.mcp.discovery.enabled": true,
+        "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+        "github.copilot.chat.reviewSelection.enabled": true,
+
+        "telemetry.telemetryLevel": "off"
+      }
+    }
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🌐 PORTS
+  // ════════════════════════════════════════════════════════════════════════════
+  "forwardPorts": [3000, 9229, 5555],
+  "portsAttributes": {
+    "3000": { "label": "Next.js Dev Server", "onAutoForward": "notify" },
+    "9229": { "label": "Node Debugger", "onAutoForward": "silent" },
+    "5555": { "label": "Drizzle Studio", "onAutoForward": "notify" }
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🔐 ENVIRONMENT
+  // ════════════════════════════════════════════════════════════════════════════
+  "containerEnv": {
+    "NODE_ENV": "development",
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "TURBO_TELEMETRY_DISABLED": "1"
+  },
+  "mounts": [
+    "source=${localWorkspaceFolder}/.env.local,target=${containerWorkspaceFolder}/.env.local,type=bind,consistency=cached"
+  ],
+  "remoteUser": "node",
+  "runArgs": ["--init", "--privileged"]
+}

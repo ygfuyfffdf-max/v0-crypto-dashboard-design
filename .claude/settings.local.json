@@ -1,0 +1,45 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "WebFetch",
+      "WebSearch",
+      "Glob",
+      "Grep",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Skill(cookie-policy-fr-malik-taiar)",
+      "Skill(docx-processing-en-anthropic)",
+      "Skill(nda-review-en-jamie-tso)",
+      "Skill(pdf-processing-en-anthropic)",
+      "Skill(pptx-processing-en-anthropic)",
+      "Skill(privacy-policy-fr-malik-taiar)",
+      "Skill(skill-creator-en-anthropic)",
+      "Skill(whistleblower-policy-fr-malik-taiar)",
+      "Skill(xlsx-processing-en-anthropic)"
+    ]
+  },
+  "extraKnownMarketplaces": {
+    "lawvable": {
+      "source": {
+        "source": "github",
+        "repo": "lawvable/awesome-legal-skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "cookie-policy-fr-malik-taiar@lawvable": true,
+    "docx-processing-en-anthropic@lawvable": true,
+    "nda-review-en-jamie-tso@lawvable": true,
+    "pdf-processing-en-anthropic@lawvable": true,
+    "pptx-processing-en-anthropic@lawvable": true,
+    "privacy-policy-fr-malik-taiar@lawvable": true,
+    "skill-creator-en-anthropic@lawvable": true,
+    "whistleblower-policy-fr-malik-taiar@lawvable": true,
+    "xlsx-processing-en-anthropic@lawvable": true
+  },
+  "alwaysThinkingEnabled": true
+}

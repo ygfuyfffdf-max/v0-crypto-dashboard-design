@@ -1,0 +1,94 @@
+{
+  "github_apps": {
+    "copilot": {
+      "enabled": true,
+      "features": ["chat", "code-completion", "pr-review", "cli"]
+    },
+    "actions": {
+      "enabled": true,
+      "workflows": ["ci-cd", "testing", "deployment", "ai-agent"]
+    },
+    "dependabot": {
+      "enabled": true,
+      "features": ["security-updates", "version-updates"]
+    },
+    "code_scanning": {
+      "enabled": true,
+      "tools": ["codeql", "eslint"]
+    },
+    "secret_scanning": {
+      "enabled": true,
+      "push_protection": true
+    }
+  },
+
+  "cli_extensions": {
+    "installed": [
+      {
+        "name": "gh-copilot",
+        "repo": "github/gh-copilot",
+        "version": "v1.2.0"
+      },
+      {
+        "name": "gh-models",
+        "repo": "github/gh-models",
+        "version": "v0.0.25"
+      },
+      {
+        "name": "gh-dash",
+        "repo": "dlvhdr/gh-dash",
+        "version": "v4.20.0"
+      }
+    ]
+  },
+
+  "integrations": {
+    "vercel": {
+      "enabled": true,
+      "auto_deploy": true,
+      "preview_deployments": true
+    },
+    "turso": {
+      "enabled": true,
+      "services": ["libsql", "edge-database", "embedded-replicas"]
+    },
+    "drizzle": {
+      "enabled": true,
+      "services": ["orm", "migrations", "studio"]
+    }
+  },
+
+  "models_available": [
+    "openai/gpt-5",
+    "openai/gpt-5-mini",
+    "openai/gpt-5-nano",
+    "openai/o3",
+    "openai/o3-mini",
+    "openai/o4-mini",
+    "openai/gpt-4o",
+    "openai/gpt-4o-mini",
+    "openai/gpt-4.1",
+    "openai/gpt-4.1-mini",
+    "openai/o1",
+    "openai/o1-mini",
+    "mistral-ai/codestral-2501",
+    "mistral-ai/mistral-medium-2505",
+    "mistral-ai/mistral-small-2503",
+    "deepseek/deepseek-r1",
+    "deepseek/deepseek-r1-0528",
+    "deepseek/deepseek-v3-0324",
+    "meta/llama-4-maverick-17b-128e-instruct-fp8",
+    "meta/llama-4-scout-17b-16e-instruct",
+    "meta/llama-3.3-70b-instruct",
+    "meta/llama-3.2-90b-vision-instruct",
+    "meta/meta-llama-3.1-405b-instruct",
+    "microsoft/phi-4-reasoning",
+    "microsoft/phi-4-multimodal-instruct",
+    "microsoft/phi-4",
+    "microsoft/mai-ds-r1",
+    "xai/grok-3",
+    "xai/grok-3-mini",
+    "cohere/cohere-command-a",
+    "ai21-labs/ai21-jamba-1.5-large"
+  ]
+}

@@ -1,0 +1,446 @@
+{
+  // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+  // 🌌 CHRONOS INFINITY — SUPREME TASKS 2026
+  // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+  //
+  // Arsenal completo de tareas automatizadas para desarrollo máximo
+  // Compatible con: IY SUPREME Agent, CHRONOS AI, GitHub Copilot
+  //
+  // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+  "version": "2.0.0",
+  "tasks": [
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🚀 DESARROLLO
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "label": "🚀 Dev: Iniciar Servidor",
+      "type": "shell",
+      "command": "pnpm dev",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": true
+      },
+      "problemMatcher": "$tsc-watch",
+      "isBackground": true,
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "🚀 Dev: Turbo Mode",
+      "type": "shell",
+      "command": "pnpm dev --turbo",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": "$tsc-watch",
+      "isBackground": true
+    },
+    {
+      "label": "🔄 Dev: Hot Reload",
+      "type": "shell",
+      "command": "pnpm dev --experimental-https",
+      "group": "build",
+      "isBackground": true
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 📦 BUILD
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "label": "📦 Build: Producción",
+      "type": "shell",
+      "command": "pnpm build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "📦 Build: Analyze Bundle",
+      "type": "shell",
+      "command": "ANALYZE=true pnpm build",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "📦 Build: Preview",
+      "type": "shell",
+      "command": "pnpm build && pnpm start",
+      "group": "build",
+      "isBackground": true
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🔍 LINTING & FORMATTING
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "label": "🔍 Lint: ESLint",
+      "type": "shell",
+      "command": "pnpm lint",
+      "group": "test",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": ["$eslint-compact"]
+    },
+    {
+      "label": "🔧 Lint: Fix All",
+      "type": "shell",
+      "command": "pnpm lint:fix",
+      "group": "test",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🎨 Format: Prettier",
+      "type": "shell",
+      "command": "pnpm format",
+      "group": "build",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🎨 Format: Check Only",
+      "type": "shell",
+      "command": "pnpm prettier --check .",
+      "group": "build"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 📝 TYPESCRIPT
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "label": "📝 TypeScript: Check",
+      "type": "shell",
+      "command": "pnpm type-check",
+      "group": "build",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "📝 TypeScript: Watch",
+      "type": "shell",
+      "command": "pnpm tsc --watch --noEmit",
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": "$tsc-watch"
+    },
+    {
+      "label": "📝 TypeScript: Generate Types",
+      "type": "shell",
+      "command": "pnpm tsc --declaration --emitDeclarationOnly",
+      "group": "build"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🧪 TESTING - JEST
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "label": "🧪 Test: Jest",
+      "type": "shell",
+      "command": "pnpm test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "🧪 Test: Watch",
+      "type": "shell",
+      "command": "pnpm test:watch",
+      "group": "test",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "🧪 Test: Coverage",
+      "type": "shell",
+      "command": "pnpm test:coverage",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "🧪 Test: Current File",
+      "type": "shell",
+      "command": "pnpm jest ${relativeFile}",
+      "group": "test",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "🧪 Test: Update Snapshots",
+      "type": "shell",
+      "command": "pnpm test -- -u",
+      "group": "test"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🎭 E2E TESTING - PLAYWRIGHT
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "label": "🎭 E2E: Playwright",
+      "type": "shell",
+      "command": "pnpm test:e2e",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "🎭 E2E: Playwright UI",
+      "type": "shell",
+      "command": "pnpm test:e2e:ui",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "🎭 E2E: Headed Mode",
+      "type": "shell",
+      "command": "pnpm playwright test --headed",
+      "group": "test"
+    },
+    {
+      "label": "🎭 E2E: Debug",
+      "type": "shell",
+      "command": "pnpm playwright test --debug",
+      "group": "test"
+    },
+    {
+      "label": "🎭 E2E: Show Report",
+      "type": "shell",
+      "command": "pnpm playwright show-report",
+      "group": "test"
+    },
+    {
+      "label": "🎭 E2E: Codegen",
+      "type": "shell",
+      "command": "pnpm playwright codegen http://localhost:3000",
+      "group": "test",
+      "isBackground": true
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🗄️ TURSO + DRIZZLE DATABASE
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "label": "🗄️ DB: Generate",
+      "type": "shell",
+      "command": "pnpm db:generate",
+      "group": "build"
+    },
+    {
+      "label": "🗄️ DB: Push",
+      "type": "shell",
+      "command": "pnpm db:push",
+      "group": "build"
+    },
+    {
+      "label": "🗄️ DB: Studio",
+      "type": "shell",
+      "command": "pnpm db:studio",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "🗄️ DB: Migrate",
+      "type": "shell",
+      "command": "pnpm db:migrate",
+      "group": "build"
+    },
+    {
+      "label": "🗄️ DB: Seed",
+      "type": "shell",
+      "command": "pnpm db:seed",
+      "group": "build"
+    },
+    {
+      "label": "🗄️ Turso: Shell",
+      "type": "shell",
+      "command": "turso db shell chronos-db",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "🗄️ Turso: Inspect",
+      "type": "shell",
+      "command": "turso db inspect chronos-db",
+      "group": "build"
+    },
+    {
+      "label": "🗄️ Drizzle: Check",
+      "type": "shell",
+      "command": "pnpm drizzle-kit check",
+      "group": "build"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🧹 CLEANUP & MAINTENANCE
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "label": "🧹 Cleanup: Proyecto",
+      "type": "shell",
+      "command": "pnpm cleanup",
+      "group": "build"
+    },
+    {
+      "label": "🧹 Cleanup: Cache",
+      "type": "shell",
+      "command": "rm -rf .next node_modules/.cache",
+      "group": "build"
+    },
+    {
+      "label": "🧹 Cleanup: Full Reset",
+      "type": "shell",
+      "command": "rm -rf node_modules .next coverage && pnpm install",
+      "group": "build"
+    },
+    {
+      "label": "📊 Analyze: Bundle",
+      "type": "shell",
+      "command": "pnpm analyze",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // ⚡ COMPOUND TASKS - WORKFLOWS COMPLETOS
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "label": "⚡ Full Check: Lint + Type + Test",
+      "type": "shell",
+      "command": "pnpm lint && pnpm type-check && pnpm test",
+      "group": "test",
+      "problemMatcher": ["$eslint-compact", "$tsc"]
+    },
+    {
+      "label": "⚡ Pre-Commit: Format + Lint + Type",
+      "type": "shell",
+      "command": "pnpm format && pnpm lint:fix && pnpm type-check",
+      "group": "test"
+    },
+    {
+      "label": "⚡ Pre-Push: Full Validation",
+      "type": "shell",
+      "command": "pnpm lint && pnpm type-check && pnpm test && pnpm build",
+      "group": "test"
+    },
+    {
+      "label": "⚡ CI Simulation: Complete Pipeline",
+      "type": "shell",
+      "command": "pnpm install && pnpm lint && pnpm type-check && pnpm test:coverage && pnpm build",
+      "group": "build"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🤖 CHRONOS AI AGENT
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "label": "🤖 CHRONOS AI: Start Agent",
+      "type": "shell",
+      "command": "cd agents/chronos-ai-agent && pnpm start",
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "🤖 CHRONOS AI: Build",
+      "type": "shell",
+      "command": "cd agents/chronos-ai-agent && pnpm build",
+      "group": "build"
+    },
+    {
+      "label": "🤖 CHRONOS AI: Test",
+      "type": "shell",
+      "command": "cd agents/chronos-ai-agent && pnpm test",
+      "group": "test"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 📦 DEPENDENCIES
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "label": "📦 Deps: Update All",
+      "type": "shell",
+      "command": "pnpm update",
+      "group": "build"
+    },
+    {
+      "label": "📦 Deps: Check Outdated",
+      "type": "shell",
+      "command": "pnpm outdated",
+      "group": "build"
+    },
+    {
+      "label": "📦 Deps: Audit Security",
+      "type": "shell",
+      "command": "pnpm audit",
+      "group": "build"
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    // 🚀 DEPLOYMENT
+    // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+    {
+      "label": "🚀 Deploy: Vercel Preview",
+      "type": "shell",
+      "command": "vercel",
+      "group": "build"
+    },
+    {
+      "label": "🚀 Deploy: Vercel Production",
+      "type": "shell",
+      "command": "vercel --prod",
+      "group": "build"
+    }
+  ]
+}

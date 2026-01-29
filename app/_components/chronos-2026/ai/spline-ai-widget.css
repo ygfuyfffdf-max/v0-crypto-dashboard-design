@@ -1,0 +1,402 @@
+/**
+ * 🎨✨ SPLINE AI WIDGET PREMIUM STYLES
+ * ═══════════════════════════════════════════════════════════════════
+ * Animaciones y estilos CSS ultra-premium para el widget de IA
+ * ═══════════════════════════════════════════════════════════════════
+ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   SCROLL EFFECTS
+   ═══════════════════════════════════════════════════════════════════ */
+
+.spline-ai-chat-scroll {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.spline-ai-chat-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.spline-ai-chat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.spline-ai-chat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.spline-ai-chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ORB PARALLAX EFFECTS
+   ═══════════════════════════════════════════════════════════════════ */
+
+.orb-parallax {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.orb-parallax:hover {
+  transform: scale(1.05) rotateY(5deg) rotateX(5deg);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GLASSMORPHISM ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes glass-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.glass-shimmer {
+  animation: glass-shimmer 3s linear infinite;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes glass-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(139, 92, 246, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 40px rgba(139, 92, 246, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+}
+
+.glass-pulse {
+  animation: glass-pulse 2s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MESSAGE ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes message-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.message-fade-in {
+  animation: message-fade-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes message-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.6));
+  }
+}
+
+.message-glow-hover:hover {
+  animation: message-glow 1.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   VOICE CALL EFFECTS
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes voice-pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+}
+
+.voice-pulse-ring {
+  animation: voice-pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes voice-listening {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(16, 185, 129, 0.8);
+  }
+}
+
+.voice-listening {
+  animation: voice-listening 1.5s ease-in-out infinite;
+}
+
+@keyframes voice-waveform {
+  0%,
+  100% {
+    height: 20%;
+  }
+  50% {
+    height: 80%;
+  }
+}
+
+.voice-waveform-bar {
+  animation: voice-waveform 0.8s ease-in-out infinite;
+}
+
+.voice-waveform-bar:nth-child(1) {
+  animation-delay: 0s;
+}
+.voice-waveform-bar:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.voice-waveform-bar:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.voice-waveform-bar:nth-child(4) {
+  animation-delay: 0.3s;
+}
+.voice-waveform-bar:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RGB GLOW EFFECTS
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes rgb-rotate {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+.rgb-glow {
+  animation: rgb-rotate 8s linear infinite;
+}
+
+@keyframes rgb-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+.rgb-pulse {
+  animation: rgb-pulse 3s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HOVER EFFECTS
+   ═══════════════════════════════════════════════════════════════════ */
+
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+.hover-scale {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-glow {
+  transition: filter 0.3s ease;
+}
+
+.hover-glow:hover {
+  filter: drop-shadow(0 0 20px currentColor);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PARTICLE EFFECTS
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes particle-float {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(10px, -30px);
+    opacity: 0.6;
+  }
+}
+
+.particle-float {
+  animation: particle-float 3s ease-in-out infinite;
+}
+
+@keyframes particle-sparkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.particle-sparkle {
+  animation: particle-sparkle 2s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CYBER GRID EFFECTS
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes grid-scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.grid-scan {
+  animation: grid-scan 4s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   LOADING STATES
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes orb-loading {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+.orb-loading {
+  animation: orb-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes dots-loading {
+  0%,
+  20% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.dots-loading span:nth-child(1) {
+  animation: dots-loading 1.4s infinite;
+  animation-delay: 0s;
+}
+
+.dots-loading span:nth-child(2) {
+  animation: dots-loading 1.4s infinite;
+  animation-delay: 0.2s;
+}
+
+.dots-loading span:nth-child(3) {
+  animation: dots-loading 1.4s infinite;
+  animation-delay: 0.4s;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE ADJUSTMENTS
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  .orb-parallax:hover {
+    transform: scale(1.02);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ACCESSIBILITY
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FOCUS STATES
+   ═══════════════════════════════════════════════════════════════════ */
+
+.focus-ring:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(139, 92, 246, 0.5),
+    0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid rgba(139, 92, 246, 0.8);
+  outline-offset: 2px;
+}
