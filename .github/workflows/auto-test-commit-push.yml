@@ -113,7 +113,7 @@ jobs:
           fi
 
       - name: 📤 Subir cobertura
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: coverage-report
@@ -257,7 +257,7 @@ jobs:
           NODE_ENV: production
 
       - name: 📦 Guardar build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: production-build
           path: .next/
@@ -312,7 +312,7 @@ jobs:
           SKIP_ENV_VALIDATION: true
 
       - name: 📸 Guardar reporte Playwright
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report
