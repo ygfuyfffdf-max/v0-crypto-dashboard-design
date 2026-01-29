@@ -57,7 +57,7 @@
     "@ai-sdk/google": "^2.0.44",
     "@ai-sdk/openai": "^2.0.73",
     "@ai-sdk/react": "^3.0.41",
-    "@ai-sdk/xai": "^2.0.41",
+    "@ai-sdk/xai": "^3.0.43",
     "@dimforge/rapier3d-compat": "^0.19.3",
     "@emotion/is-prop-valid": "latest",
     "@gsap/react": "^2.1.2",
