@@ -279,3 +279,4 @@ google-cloud-sdk/
 .env.production
 
 certificates
+.vercel
