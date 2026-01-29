@@ -35,7 +35,7 @@ jobs:
     timeout-minutes: 30
     if: ${{ github.event.inputs.browser == 'chromium' || github.event.inputs.browser == 'all' || github.event.inputs.browser == '' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v2
         with:
@@ -76,7 +76,7 @@ jobs:
     timeout-minutes: 30
     if: ${{ github.event.inputs.browser == 'firefox' || github.event.inputs.browser == 'all' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v2
         with:
@@ -117,7 +117,7 @@ jobs:
     timeout-minutes: 30
     if: ${{ github.event.inputs.browser == 'webkit' || github.event.inputs.browser == 'all' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v2
         with:

@@ -38,7 +38,7 @@ jobs:
       components_3d: ${{ steps.components.outputs.list }}
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 📊 Contar assets Spline
         id: count
@@ -75,7 +75,7 @@ jobs:
     needs: inventory-3d-assets
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🔍 Analizar integración 3D en paneles
         run: |
@@ -129,7 +129,7 @@ jobs:
     needs: [inventory-3d-assets, check-integration]
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v2
@@ -193,7 +193,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 📝 Identificar paneles sin integración 3D
         id: identify

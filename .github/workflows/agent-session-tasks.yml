@@ -39,7 +39,7 @@ jobs:
       priority: ${{ steps.determine.outputs.priority }}
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🔍 Determinar tipo de tarea
         id: determine
@@ -84,7 +84,7 @@ jobs:
     if: needs.agent-analysis.outputs.task_type == 'verify-all' || needs.agent-analysis.outputs.task_type == 'full-audit'
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v2
@@ -144,7 +144,7 @@ jobs:
     if: needs.agent-analysis.outputs.task_type == 'integrate-3d' || needs.agent-analysis.outputs.task_type == 'full-audit'
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🔍 Analizar integración actual
         run: |
@@ -193,7 +193,7 @@ jobs:
     if: needs.agent-analysis.outputs.task_type == 'fix-components' || needs.agent-analysis.outputs.task_type == 'full-audit'
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v2
@@ -249,7 +249,7 @@ jobs:
     if: needs.agent-analysis.outputs.task_type == 'test-business-logic' || needs.agent-analysis.outputs.task_type == 'full-audit'
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v2
