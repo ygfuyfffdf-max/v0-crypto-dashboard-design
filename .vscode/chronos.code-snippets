@@ -1,0 +1,1378 @@
+{
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🚀 CHRONOS - SNIPPETS TYPESCRIPT/REACT PERSONALIZADOS
+  // Fragmentos de código para acelerar el desarrollo
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // ⚛️ REACT COMPONENTS
+  // ════════════════════════════════════════════════════════════════════════════
+  "React Functional Component": {
+    "prefix": "rfc",
+    "body": [
+      "\"use client\"",
+      "",
+      "import { type FC } from \"react\"",
+      "",
+      "interface ${1:ComponentName}Props {",
+      "  $2",
+      "}",
+      "",
+      "export const ${1:ComponentName}: FC<${1:ComponentName}Props> = ({ $3 }) => {",
+      "  return (",
+      "    <div className=\"$4\">",
+      "      $0",
+      "    </div>",
+      "  )",
+      "}",
+      "",
+    ],
+    "description": "React Functional Component with TypeScript",
+  },
+
+  "React Server Component": {
+    "prefix": "rsc",
+    "body": [
+      "import { type FC } from \"react\"",
+      "",
+      "interface ${1:ComponentName}Props {",
+      "  $2",
+      "}",
+      "",
+      "const ${1:ComponentName}: FC<${1:ComponentName}Props> = async ({ $3 }) => {",
+      "  $4",
+      "  return (",
+      "    <div className=\"$5\">",
+      "      $0",
+      "    </div>",
+      "  )",
+      "}",
+      "",
+      "export default ${1:ComponentName}",
+      "",
+    ],
+    "description": "React Server Component (Next.js App Router)",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🪝 HOOKS
+  // ════════════════════════════════════════════════════════════════════════════
+  "Custom Hook": {
+    "prefix": "hook",
+    "body": [
+      "\"use client\"",
+      "",
+      "import { useState, useEffect, useCallback } from \"react\"",
+      "",
+      "interface Use${1:HookName}Options {",
+      "  $2",
+      "}",
+      "",
+      "interface Use${1:HookName}Return {",
+      "  $3",
+      "}",
+      "",
+      "export function use${1:HookName}(options?: Use${1:HookName}Options): Use${1:HookName}Return {",
+      "  const [state, setState] = useState<$4>()",
+      "",
+      "  useEffect(() => {",
+      "    $5",
+      "    return () => {",
+      "      // Cleanup",
+      "    }",
+      "  }, [])",
+      "",
+      "  return {",
+      "    $0",
+      "  }",
+      "}",
+      "",
+    ],
+    "description": "Custom React Hook with TypeScript",
+  },
+
+  "useState with Type": {
+    "prefix": "ust",
+    "body": [
+      "const [${1:state}, set${1/(.*)/${1:/capitalize}/}] = useState<${2:type}>(${3:initialValue})",
+    ],
+    "description": "useState with TypeScript type",
+  },
+
+  "useEffect with Cleanup": {
+    "prefix": "uec",
+    "body": [
+      "useEffect(() => {",
+      "  ${1:// Effect logic}",
+      "",
+      "  return () => {",
+      "    ${2:// Cleanup}",
+      "  }",
+      "}, [${3:dependencies}])",
+    ],
+    "description": "useEffect with cleanup function",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🔥 FIREBASE/FIRESTORE
+  // ════════════════════════════════════════════════════════════════════════════
+  "Firestore CRUD Hook": {
+    "prefix": "crud",
+    "body": [
+      "const { data, loading, error, add, update, remove } = useFirestoreCRUD<${1:Type}>('${2:collection}')",
+    ],
+    "description": "useFirestoreCRUD hook usage",
+  },
+
+  "Firestore Query": {
+    "prefix": "fsq",
+    "body": [
+      "const q = query(",
+      "  collection(db, '${1:collection}'),",
+      "  where('${2:field}', '${3:==}', ${4:value}),",
+      "  orderBy('${5:field}', '${6:desc}'),",
+      "  limit(${7:10})",
+      ")",
+    ],
+    "description": "Firestore query with filters",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 📋 ZOD SCHEMAS
+  // ════════════════════════════════════════════════════════════════════════════
+  "Zod Schema": {
+    "prefix": "zod",
+    "body": [
+      "import { z } from \"zod\"",
+      "",
+      "export const ${1:SchemaName}Schema = z.object({",
+      "  ${2:field}: z.${3:string}(),",
+      "  $0",
+      "})",
+      "",
+      "export type ${1:SchemaName} = z.infer<typeof ${1:SchemaName}Schema>",
+      "",
+    ],
+    "description": "Zod validation schema",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🏪 ZUSTAND STORE
+  // ════════════════════════════════════════════════════════════════════════════
+  "Zustand Store": {
+    "prefix": "zstore",
+    "body": [
+      "import { create } from \"zustand\"",
+      "import { immer } from \"zustand/middleware/immer\"",
+      "",
+      "interface ${1:StoreName}State {",
+      "  ${2:property}: ${3:type}",
+      "  set${2/(.*)/${1:/capitalize}/}: (value: ${3:type}) => void",
+      "}",
+      "",
+      "export const use${1:StoreName}Store = create<${1:StoreName}State>()(immer((set) => ({",
+      "  ${2:property}: ${4:initialValue},",
+      "  set${2/(.*)/${1:/capitalize}/}: (value) => set((state) => {",
+      "    state.${2:property} = value",
+      "  }),",
+      "})))",
+      "",
+    ],
+    "description": "Zustand store with immer",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 📝 LOGGING (OBLIGATORIO)
+  // ════════════════════════════════════════════════════════════════════════════
+  "Logger Import": {
+    "prefix": "logi",
+    "body": ["import { logger } from \"@/app/lib/utils/logger\""],
+    "description": "Import logger utility",
+  },
+
+  "Logger Info": {
+    "prefix": "loginfo",
+    "body": ["logger.info('${1:message}', { context: '${2:Component}', data: ${3:{}} })"],
+    "description": "Logger info message",
+  },
+
+  "Logger Error": {
+    "prefix": "logerr",
+    "body": ["logger.error('${1:message}', ${2:error}, { context: '${3:Component}' })"],
+    "description": "Logger error message",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🎨 TAILWIND/SHADCN
+  // ════════════════════════════════════════════════════════════════════════════
+  "cn className": {
+    "prefix": "cn",
+    "body": [
+      "className={cn(",
+      "  \"${1:base-classes}\",",
+      "  ${2:condition} && \"${3:conditional-classes}\",",
+      "  ${0}",
+      ")}",
+    ],
+    "description": "Tailwind cn() utility for conditional classes",
+  },
+
+  "Card Component": {
+    "prefix": "card",
+    "body": [
+      "<Card className=\"${1:p-6}\">",
+      "  <CardHeader>",
+      "    <CardTitle>${2:Title}</CardTitle>",
+      "    <CardDescription>${3:Description}</CardDescription>",
+      "  </CardHeader>",
+      "  <CardContent>",
+      "    $0",
+      "  </CardContent>",
+      "</Card>",
+    ],
+    "description": "shadcn/ui Card component",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🎭 3D/SPLINE
+  // ════════════════════════════════════════════════════════════════════════════
+  "Spline Component": {
+    "prefix": "spline",
+    "body": [
+      "import Spline from \"@splinetool/react-spline\"",
+      "",
+      "<Spline",
+      "  scene=\"${1:scene-url}\"",
+      "  onLoad={(spline) => {",
+      "    ${2:// Handle spline load}",
+      "  }}",
+      "/>",
+    ],
+    "description": "Spline 3D component",
+  },
+
+  "Canvas Animation": {
+    "prefix": "canvas",
+    "body": [
+      "const canvasRef = useRef<HTMLCanvasElement>(null)",
+      "",
+      "useEffect(() => {",
+      "  const canvas = canvasRef.current",
+      "  if (!canvas) return",
+      "",
+      "  const ctx = canvas.getContext('2d')",
+      "  if (!ctx) return",
+      "",
+      "  let animationId: number",
+      "",
+      "  const animate = () => {",
+      "    ${1:// Animation logic}",
+      "    animationId = requestAnimationFrame(animate)",
+      "  }",
+      "",
+      "  animate()",
+      "",
+      "  return () => cancelAnimationFrame(animationId)",
+      "}, [])",
+      "",
+      "<canvas ref={canvasRef} className=\"${2:w-full h-full}\" />",
+    ],
+    "description": "Canvas with 60fps animation loop",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🧪 TESTING
+  // ════════════════════════════════════════════════════════════════════════════
+  "Jest Test": {
+    "prefix": "test",
+    "body": [
+      "import { render, screen } from '@testing-library/react'",
+      "import { ${1:Component} } from './${1:Component}'",
+      "",
+      "describe('${1:Component}', () => {",
+      "  it('${2:should render correctly}', () => {",
+      "    render(<${1:Component} ${3:props} />)",
+      "    ",
+      "    expect(screen.getByText('${4:text}')).toBeInTheDocument()",
+      "    $0",
+      "  })",
+      "})",
+      "",
+    ],
+    "description": "Jest test with React Testing Library",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🌐 API ROUTES
+  // ════════════════════════════════════════════════════════════════════════════
+  "API Route Handler": {
+    "prefix": "api",
+    "body": [
+      "import { NextRequest, NextResponse } from \"next/server\"",
+      "",
+      "export async function ${1|GET,POST,PUT,DELETE,PATCH|}(request: NextRequest) {",
+      "  try {",
+      "    ${2:// Handler logic}",
+      "",
+      "    return NextResponse.json({ success: true, data: $3 })",
+      "  } catch (error) {",
+      "    return NextResponse.json(",
+      "      { success: false, error: 'Internal Server Error' },",
+      "      { status: 500 }",
+      "    )",
+      "  }",
+      "}",
+      "",
+    ],
+    "description": "Next.js API Route Handler",
+  },
+
+  "Server Action": {
+    "prefix": "action",
+    "body": [
+      "\"use server\"",
+      "",
+      "import { revalidatePath } from \"next/cache\"",
+      "",
+      "export async function ${1:actionName}(formData: FormData) {",
+      "  try {",
+      "    ${2:// Action logic}",
+      "",
+      "    revalidatePath('${3:/}')",
+      "    return { success: true }",
+      "  } catch (error) {",
+      "    return { success: false, error: (error as Error).message }",
+      "  }",
+      "}",
+      "",
+    ],
+    "description": "Next.js Server Action",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🎨 DISEÑO WEB CREATIVO - UI/UX PREMIUM
+  // ════════════════════════════════════════════════════════════════════════════
+
+  "Glass Card Component": {
+    "prefix": "glass",
+    "body": [
+      "<div className=\"relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 shadow-xl\">",
+      "  <div className=\"absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent\" />",
+      "  <div className=\"relative z-10\">",
+      "    $0",
+      "  </div>",
+      "</div>",
+    ],
+    "description": "Glassmorphism card with blur effect",
+  },
+
+  "Gradient Text": {
+    "prefix": "gradtext",
+    "body": [
+      "<span className=\"bg-gradient-to-r from-${1:violet-500} via-${2:fuchsia-500} to-${3:pink-500} bg-clip-text text-transparent\">",
+      "  ${4:Gradient Text}",
+      "</span>",
+    ],
+    "description": "Gradient text with clip",
+  },
+
+  "Animated Button": {
+    "prefix": "btnani",
+    "body": [
+      "<button className=\"group relative overflow-hidden rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-8 py-3 text-white font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-violet-500/25\">",
+      "  <span className=\"relative z-10\">${1:Button Text}</span>",
+      "  <div className=\"absolute inset-0 bg-gradient-to-r from-violet-400 to-indigo-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100\" />",
+      "</button>",
+    ],
+    "description": "Animated gradient button with hover effects",
+  },
+
+  "Hero Section": {
+    "prefix": "hero",
+    "body": [
+      "<section className=\"relative min-h-screen flex items-center justify-center overflow-hidden\">",
+      "  {/* Background Effects */}",
+      "  <div className=\"absolute inset-0 bg-gradient-to-b from-black via-gray-900 to-black\" />",
+      "  <div className=\"absolute inset-0\">",
+      "    <div className=\"absolute top-1/4 left-1/4 w-96 h-96 bg-violet-500/30 rounded-full blur-3xl animate-pulse\" />",
+      "    <div className=\"absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/30 rounded-full blur-3xl animate-pulse delay-1000\" />",
+      "  </div>",
+      "  ",
+      "  {/* Content */}",
+      "  <div className=\"relative z-10 text-center px-4 max-w-4xl mx-auto\">",
+      "    <h1 className=\"text-5xl md:text-7xl font-bold mb-6\">",
+      "      <span className=\"bg-gradient-to-r from-white via-violet-200 to-violet-400 bg-clip-text text-transparent\">",
+      "        ${1:Hero Title}",
+      "      </span>",
+      "    </h1>",
+      "    <p className=\"text-xl text-gray-400 mb-8\">",
+      "      ${2:Hero description text goes here}",
+      "    </p>",
+      "    $0",
+      "  </div>",
+      "</section>",
+    ],
+    "description": "Premium hero section with animated background",
+  },
+
+  "Bento Grid Item": {
+    "prefix": "bento",
+    "body": [
+      "<div className=\"group relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-900 to-gray-950 border border-white/5 p-6 transition-all duration-500 hover:border-white/20 hover:shadow-2xl hover:shadow-violet-500/10 ${1|col-span-1,col-span-2,row-span-2|}\">",
+      "  <div className=\"absolute inset-0 bg-gradient-to-br from-violet-500/10 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100\" />",
+      "  <div className=\"relative z-10\">",
+      "    <div className=\"mb-4 inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-400\">",
+      "      ${2:Icon}",
+      "    </div>",
+      "    <h3 className=\"text-xl font-semibold text-white mb-2\">${3:Title}</h3>",
+      "    <p className=\"text-gray-400\">${4:Description}</p>",
+      "    $0",
+      "  </div>",
+      "</div>",
+    ],
+    "description": "Bento grid item with hover effects",
+  },
+
+  "Animated Card Stack": {
+    "prefix": "cardstack",
+    "body": [
+      "<div className=\"relative\">",
+      "  {/* Stacked cards background */}",
+      "  <div className=\"absolute -inset-2 rounded-3xl bg-gradient-to-r from-violet-600 to-indigo-600 opacity-20 blur-xl\" />",
+      "  <div className=\"absolute -inset-1 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 opacity-40\" />",
+      "  ",
+      "  {/* Main card */}",
+      "  <div className=\"relative rounded-2xl bg-gray-900 p-8 border border-white/10\">",
+      "    $0",
+      "  </div>",
+      "</div>",
+    ],
+    "description": "Card with stacked glow effect",
+  },
+
+  "Floating Label Input": {
+    "prefix": "inputfloat",
+    "body": [
+      "<div className=\"relative\">",
+      "  <input",
+      "    type=\"${1:text}\"",
+      "    id=\"${2:input}\"",
+      "    placeholder=\" \"",
+      "    className=\"peer w-full rounded-xl border border-white/10 bg-white/5 px-4 pt-6 pb-2 text-white placeholder-transparent backdrop-blur-sm transition-all focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20\"",
+      "  />",
+      "  <label",
+      "    htmlFor=\"${2:input}\"",
+      "    className=\"absolute left-4 top-4 text-gray-400 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-1 peer-focus:text-xs peer-focus:text-violet-400\"",
+      "  >",
+      "    ${3:Label}",
+      "  </label>",
+      "</div>",
+    ],
+    "description": "Floating label input field",
+  },
+
+  "Shimmer Loading": {
+    "prefix": "shimmer",
+    "body": [
+      "<div className=\"animate-pulse\">",
+      "  <div className=\"h-${1:4} w-${2:full} rounded-lg bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 bg-[length:200%_100%] animate-shimmer\" />",
+      "</div>",
+    ],
+    "description": "Shimmer loading skeleton",
+  },
+
+  "Glow Effect Container": {
+    "prefix": "glow",
+    "body": [
+      "<div className=\"relative group\">",
+      "  <div className=\"absolute -inset-0.5 bg-gradient-to-r from-${1:violet-600} to-${2:indigo-600} rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500\" />",
+      "  <div className=\"relative bg-gray-900 rounded-2xl p-6\">",
+      "    $0",
+      "  </div>",
+      "</div>",
+    ],
+    "description": "Container with glow effect on hover",
+  },
+
+  "Animated Counter": {
+    "prefix": "counter",
+    "body": [
+      "\"use client\"",
+      "",
+      "import { useEffect, useState, useRef } from \"react\"",
+      "",
+      "interface AnimatedCounterProps {",
+      "  end: number",
+      "  duration?: number",
+      "  prefix?: string",
+      "  suffix?: string",
+      "}",
+      "",
+      "export function AnimatedCounter({ end, duration = 2000, prefix = \"\", suffix = \"\" }: AnimatedCounterProps) {",
+      "  const [count, setCount] = useState(0)",
+      "  const countRef = useRef<HTMLSpanElement>(null)",
+      "",
+      "  useEffect(() => {",
+      "    const startTime = Date.now()",
+      "    const timer = setInterval(() => {",
+      "      const elapsed = Date.now() - startTime",
+      "      const progress = Math.min(elapsed / duration, 1)",
+      "      const easeOut = 1 - Math.pow(1 - progress, 3)",
+      "      setCount(Math.floor(end * easeOut))",
+      "      ",
+      "      if (progress >= 1) clearInterval(timer)",
+      "    }, 16)",
+      "    ",
+      "    return () => clearInterval(timer)",
+      "  }, [end, duration])",
+      "",
+      "  return (",
+      "    <span ref={countRef} className=\"tabular-nums\">",
+      "      {prefix}{count.toLocaleString()}{suffix}",
+      "    </span>",
+      "  )",
+      "}",
+    ],
+    "description": "Animated number counter component",
+  },
+
+  "Parallax Section": {
+    "prefix": "parallax",
+    "body": [
+      "\"use client\"",
+      "",
+      "import { useEffect, useRef } from \"react\"",
+      "",
+      "export function ParallaxSection({ children }: { children: React.ReactNode }) {",
+      "  const ref = useRef<HTMLDivElement>(null)",
+      "",
+      "  useEffect(() => {",
+      "    const handleScroll = () => {",
+      "      if (!ref.current) return",
+      "      const scrolled = window.scrollY",
+      "      const rate = scrolled * 0.5",
+      "      ref.current.style.transform = \\`translateY(\\${rate}px)\\`",
+      "    }",
+      "    ",
+      "    window.addEventListener('scroll', handleScroll)",
+      "    return () => window.removeEventListener('scroll', handleScroll)",
+      "  }, [])",
+      "",
+      "  return (",
+      "    <div ref={ref} className=\"will-change-transform\">",
+      "      {children}",
+      "    </div>",
+      "  )",
+      "}",
+    ],
+    "description": "Parallax scroll effect component",
+  },
+
+  "Morphing Background": {
+    "prefix": "morphbg",
+    "body": [
+      "<div className=\"absolute inset-0 overflow-hidden\">",
+      "  <div className=\"absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob\" />",
+      "  <div className=\"absolute -bottom-40 -left-40 w-80 h-80 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000\" />",
+      "  <div className=\"absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000\" />",
+      "</div>",
+    ],
+    "description": "Morphing animated background blobs",
+  },
+
+  "Grid Pattern Background": {
+    "prefix": "gridbg",
+    "body": [
+      "<div className=\"absolute inset-0\">",
+      "  <div className=\"absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]\" />",
+      "</div>",
+    ],
+    "description": "Grid pattern background with fade",
+  },
+
+  "Stats Card": {
+    "prefix": "stats",
+    "body": [
+      "<div className=\"grid grid-cols-2 md:grid-cols-4 gap-4\">",
+      "  {[",
+      "    { label: '${1:Users}', value: '${2:10K+}', color: 'violet' },",
+      "    { label: '${3:Revenue}', value: '${4:\\$2M}', color: 'indigo' },",
+      "    { label: '${5:Growth}', value: '${6:150%}', color: 'fuchsia' },",
+      "    { label: '${7:Rating}', value: '${8:4.9}', color: 'pink' },",
+      "  ].map((stat) => (",
+      "    <div key={stat.label} className=\"group relative overflow-hidden rounded-2xl bg-gray-900/50 border border-white/5 p-6 text-center transition-all hover:border-white/20\">",
+      "      <div className={\\`text-3xl font-bold text-\\${stat.color}-400 mb-1\\`}>",
+      "        {stat.value}",
+      "      </div>",
+      "      <div className=\"text-sm text-gray-400\">{stat.label}</div>",
+      "    </div>",
+      "  ))}",
+      "</div>",
+    ],
+    "description": "Stats cards grid component",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🎮 3D / REACT THREE FIBER / DREI
+  // ════════════════════════════════════════════════════════════════════════════
+  "R3F Canvas Scene": {
+    "prefix": "r3fcanvas",
+    "body": [
+      "\"use client\"",
+      "",
+      "import { Canvas } from '@react-three/fiber'",
+      "import { OrbitControls, Environment } from '@react-three/drei'",
+      "",
+      "export function ${1:Scene3D}() {",
+      "  return (",
+      "    <Canvas",
+      "      camera={{ position: [${2:0}, ${3:5}, ${4:10}], fov: ${5:50} }}",
+      "      gl={{ antialias: true }}",
+      "      dpr={[1, 2]}",
+      "    >",
+      "      <ambientLight intensity={0.5} />",
+      "      <directionalLight position={[10, 10, 5]} castShadow />",
+      "      ",
+      "      <OrbitControls />",
+      "      <Environment preset=\"${6:city}\" />",
+      "      ",
+      "      ${0:/* Scene content */}",
+      "    </Canvas>",
+      "  )",
+      "}",
+    ],
+    "description": "React Three Fiber Canvas setup with defaults",
+  },
+
+  "Drei Sparkles Particles": {
+    "prefix": "sparkles",
+    "body": [
+      "<Sparkles",
+      "  count={${1:200}}",
+      "  scale={${2:10}}",
+      "  size={${3:4}}",
+      "  speed={${4:0.4}}",
+      "  color=\"${5:#a855f7}\"",
+      "  opacity={${6:0.8}}",
+      "/>",
+    ],
+    "description": "Drei Sparkles particles component",
+  },
+
+  "Postprocessing Effects": {
+    "prefix": "postfx",
+    "body": [
+      "import { EffectComposer, Bloom, ChromaticAberration } from '@react-three/postprocessing'",
+      "import { BlendFunction } from 'postprocessing'",
+      "",
+      "<EffectComposer>",
+      "  <Bloom",
+      "    intensity={${1:1.5}}",
+      "    luminanceThreshold={${2:0.9}}",
+      "    luminanceSmoothing={${3:0.025}}",
+      "  />",
+      "  <ChromaticAberration",
+      "    offset={[${4:0.002}, ${5:0.002}]}",
+      "    blendFunction={BlendFunction.NORMAL}",
+      "  />",
+      "</EffectComposer>",
+    ],
+    "description": "Three.js postprocessing with Bloom and Chromatic Aberration",
+  },
+
+  "Mesh Transmission Material": {
+    "prefix": "transmit",
+    "body": [
+      "<mesh>",
+      "  <${1:sphereGeometry} args={[${2:1}, ${3:64}, ${4:64}]} />",
+      "  <MeshTransmissionMaterial",
+      "    backside",
+      "    thickness={${5:0.5}}",
+      "    chromaticAberration={${6:0.5}}",
+      "    transmission={${7:1}}",
+      "    roughness={${8:0.1}}",
+      "    ior={${9:1.5}}",
+      "  />",
+      "</mesh>",
+    ],
+    "description": "Drei MeshTransmissionMaterial for glass effects",
+  },
+
+  "GPU Instancing": {
+    "prefix": "instances",
+    "body": [
+      "import { Instances, Instance } from '@react-three/drei'",
+      "",
+      "const COUNT = ${1:1000}",
+      "",
+      "<Instances limit={COUNT} range={COUNT}>",
+      "  <${2:boxGeometry} />",
+      "  <meshStandardMaterial color=\"${3:violet}\" />",
+      "  {Array.from({ length: COUNT }, (_, i) => (",
+      "    <Instance",
+      "      key={i}",
+      "      position={[",
+      "        Math.random() * ${4:10} - ${4:10} / 2,",
+      "        Math.random() * ${4:10} - ${4:10} / 2,",
+      "        Math.random() * ${4:10} - ${4:10} / 2",
+      "      ]}",
+      "      rotation={[Math.random() * Math.PI, Math.random() * Math.PI, 0]}",
+      "      scale={Math.random() * 0.5 + 0.5}",
+      "    />",
+      "  ))}",
+      "</Instances>",
+    ],
+    "description": "Drei GPU Instancing for 1000+ objects",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // ⚙️ REACT THREE RAPIER — FÍSICA 3D
+  // ════════════════════════════════════════════════════════════════════════════
+  "Physics Scene Setup": {
+    "prefix": "physics3d",
+    "body": [
+      "import { Physics, RigidBody, CuboidCollider } from '@react-three/rapier'",
+      "",
+      "<Physics gravity={[0, ${1:-9.81}, 0]}>",
+      "  {/* Cuerpos dinámicos */}",
+      "  <RigidBody",
+      "    colliders=\"${2:ball}\"",
+      "    restitution={${3:0.7}}",
+      "    friction={${4:0.5}}",
+      "    onCollisionEnter={(payload) => {",
+      "      console.log('Colisión:', payload.manifold.solverContactPoint(0))",
+      "    }}",
+      "  >",
+      "    <mesh castShadow>",
+      "      <sphereGeometry args={[${5:0.5}]} />",
+      "      <meshStandardMaterial color=\"${6:violet}\" />",
+      "    </mesh>",
+      "  </RigidBody>",
+      "  ",
+      "  {/* Piso estático */}",
+      "  <RigidBody type=\"fixed\">",
+      "    <CuboidCollider args={[${7:10}, 0.5, ${7:10}]} />",
+      "    <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]}>",
+      "      <planeGeometry args={[${7:10} * 2, ${7:10} * 2]} />",
+      "      <meshStandardMaterial color=\"#1a1a2e\" />",
+      "    </mesh>",
+      "  </RigidBody>",
+      "</Physics>",
+    ],
+    "description": "React Three Rapier physics scene setup",
+  },
+
+  "Spring Joint": {
+    "prefix": "springjoint",
+    "body": [
+      "import { useSpringJoint } from '@react-three/rapier'",
+      "",
+      "const bodyA = useRef<RapierRigidBody>(null)",
+      "const bodyB = useRef<RapierRigidBody>(null)",
+      "",
+      "const springJoint = useSpringJoint(bodyA, bodyB, [",
+      "  [${1:0}, ${2:0}, ${3:0}],  // Posición en bodyA",
+      "  [${4:0}, ${5:0}, ${6:0}],  // Posición en bodyB",
+      "  ${7:0},                    // Rest length",
+      "  ${8:1000},                 // Stiffness",
+      "  ${9:100}                   // Damping",
+      "])",
+    ],
+    "description": "React Three Rapier Spring Joint",
+  },
+
+  "Instanced Rigid Bodies": {
+    "prefix": "instancedphysics",
+    "body": [
+      "import { InstancedRigidBodies, RapierRigidBody, InstancedRigidBodyProps } from '@react-three/rapier'",
+      "",
+      "const COUNT = ${1:500}",
+      "",
+      "const rigidBodies = useRef<RapierRigidBody[]>(null)",
+      "",
+      "const instances = useMemo(() => {",
+      "  const items: InstancedRigidBodyProps[] = []",
+      "  for (let i = 0; i < COUNT; i++) {",
+      "    items.push({",
+      "      key: \\`instance_\\${i}\\`,",
+      "      position: [Math.random() * ${2:10}, Math.random() * ${2:10} + ${2:10}, Math.random() * ${2:10}],",
+      "      rotation: [Math.random(), Math.random(), Math.random()]",
+      "    })",
+      "  }",
+      "  return items",
+      "}, [])",
+      "",
+      "<InstancedRigidBodies",
+      "  ref={rigidBodies}",
+      "  instances={instances}",
+      "  colliders=\"${3:ball}\"",
+      ">",
+      "  <instancedMesh args={[undefined, undefined, COUNT]} count={COUNT}>",
+      "    <sphereGeometry args={[${4:0.2}]} />",
+      "    <meshStandardMaterial color=\"${5:violet}\" />",
+      "  </instancedMesh>",
+      "</InstancedRigidBodies>",
+    ],
+    "description": "Instanced Rigid Bodies for physics on 500+ objects",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🎬 FRAMER MOTION — ANIMACIONES AVANZADAS
+  // ════════════════════════════════════════════════════════════════════════════
+  "Spring Scroll Animation": {
+    "prefix": "scrollspring",
+    "body": [
+      "import { motion, useScroll, useSpring, useTransform } from 'framer-motion'",
+      "",
+      "const { scrollYProgress } = useScroll()",
+      "",
+      "const scaleX = useSpring(scrollYProgress, {",
+      "  stiffness: ${1:100},",
+      "  damping: ${2:30},",
+      "  restDelta: ${3:0.001}",
+      "})",
+      "",
+      "const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [${4:0}, ${5:1}, ${6:0}])",
+      "",
+      "return (",
+      "  <motion.div style={{ scaleX, opacity }}>",
+      "    ${0}",
+      "  </motion.div>",
+      ")",
+    ],
+    "description": "Scroll-linked animation with spring physics",
+  },
+
+  "Motion Spring Transition": {
+    "prefix": "motionspring",
+    "body": [
+      "<motion.${1:div}",
+      "  initial={{ ${2:opacity: 0, y: 50} }}",
+      "  animate={{ ${3:opacity: 1, y: 0} }}",
+      "  transition={{",
+      "    type: \"spring\",",
+      "    stiffness: ${4:400},",
+      "    damping: ${5:30},",
+      "    mass: ${6:1}",
+      "  }}",
+      ">",
+      "  ${0}",
+      "</motion.${1:div}>",
+    ],
+    "description": "Motion component with spring transition",
+  },
+
+  "Scroll Triggered Animation": {
+    "prefix": "scrolltrigger",
+    "body": [
+      "<motion.${1:div}",
+      "  initial={{ opacity: 0, y: ${2:100} }}",
+      "  whileInView={{ opacity: 1, y: 0 }}",
+      "  viewport={{ once: ${3:true}, amount: ${4:0.3} }}",
+      "  transition={{",
+      "    duration: ${5:0.8},",
+      "    ease: [0.22, 1, 0.36, 1]",
+      "  }}",
+      ">",
+      "  ${0}",
+      "</motion.${1:div}>",
+    ],
+    "description": "Scroll-triggered entrance animation",
+  },
+
+  "Gesture 3D Mesh": {
+    "prefix": "gesture3d",
+    "body": [
+      "import { motion } from 'framer-motion-3d'",
+      "",
+      "<motion.mesh",
+      "  whileHover={{ scale: ${1:1.1} }}",
+      "  whileTap={{ scale: ${2:0.9}, rotateY: Math.PI }}",
+      "  transition={{ type: 'spring', stiffness: ${3:400}, damping: ${4:17} }}",
+      "  onHoverStart={() => ${5:console.log('hover')}}",
+      "  onTap={() => ${6:console.log('tap')}}",
+      ">",
+      "  <${7:boxGeometry} />",
+      "  <meshStandardMaterial color=\"${8:violet}\" />",
+      "</motion.mesh>",
+    ],
+    "description": "Framer Motion 3D gesture animations on mesh",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🌀 GSAP — SCROLL TRIGGER AVANZADO
+  // ════════════════════════════════════════════════════════════════════════════
+  "GSAP ScrollTrigger Timeline": {
+    "prefix": "gsapst",
+    "body": [
+      "import { gsap } from 'gsap'",
+      "import { ScrollTrigger } from 'gsap/ScrollTrigger'",
+      "",
+      "gsap.registerPlugin(ScrollTrigger)",
+      "",
+      "useLayoutEffect(() => {",
+      "  const ctx = gsap.context(() => {",
+      "    const tl = gsap.timeline({",
+      "      scrollTrigger: {",
+      "        trigger: '${1:.section}',",
+      "        start: '${2:top top}',",
+      "        end: '${3:+=300%}',",
+      "        scrub: ${4:1},",
+      "        pin: ${5:true},",
+      "        snap: {",
+      "          snapTo: 'labels',",
+      "          duration: 0.3,",
+      "          ease: 'power2.inOut'",
+      "        }",
+      "      }",
+      "    })",
+      "    ",
+      "    tl.addLabel('start')",
+      "      .to('${6:.box1}', { x: 500, rotation: 360 })",
+      "      .addLabel('middle')",
+      "      .to('${7:.box2}', { y: -200, scale: 2 })",
+      "      .addLabel('end')",
+      "  }, containerRef)",
+      "  ",
+      "  return () => ctx.revert()",
+      "}, [])",
+    ],
+    "description": "GSAP ScrollTrigger timeline with pin and snap",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🌊 LENIS — SMOOTH SCROLL
+  // ════════════════════════════════════════════════════════════════════════════
+  "Lenis Smooth Scroll Setup": {
+    "prefix": "lenis",
+    "body": [
+      "import Lenis from 'lenis'",
+      "",
+      "useEffect(() => {",
+      "  const lenis = new Lenis({",
+      "    duration: ${1:1.2},",
+      "    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),",
+      "    orientation: '${2:vertical}',",
+      "    smoothWheel: true,",
+      "    wheelMultiplier: ${3:1},",
+      "    touchMultiplier: ${4:2}",
+      "  })",
+      "  ",
+      "  function raf(time: number) {",
+      "    lenis.raf(time)",
+      "    requestAnimationFrame(raf)",
+      "  }",
+      "  requestAnimationFrame(raf)",
+      "  ",
+      "  return () => lenis.destroy()",
+      "}, [])",
+    ],
+    "description": "Lenis smooth scroll initialization",
+  },
+
+  "Lenis + GSAP Sync": {
+    "prefix": "lenisgsap",
+    "body": [
+      "import Lenis from 'lenis'",
+      "import { gsap } from 'gsap'",
+      "import { ScrollTrigger } from 'gsap/ScrollTrigger'",
+      "",
+      "useEffect(() => {",
+      "  const lenis = new Lenis()",
+      "  ",
+      "  lenis.on('scroll', ScrollTrigger.update)",
+      "  ",
+      "  gsap.ticker.add((time) => {",
+      "    lenis.raf(time * 1000)",
+      "  })",
+      "  gsap.ticker.lagSmoothing(0)",
+      "  ",
+      "  return () => lenis.destroy()",
+      "}, [])",
+    ],
+    "description": "Lenis smooth scroll synchronized with GSAP ScrollTrigger",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🖼️ SPLINE 3D
+  // ════════════════════════════════════════════════════════════════════════════
+  "Spline Scene": {
+    "prefix": "spline",
+    "body": [
+      "import Spline from '@splinetool/react-spline'",
+      "import { Application } from '@splinetool/runtime'",
+      "",
+      "export function ${1:SplineScene}() {",
+      "  const onLoad = (spline: Application) => {",
+      "    const obj = spline.findObjectByName('${2:ObjectName}')",
+      "    if (obj) {",
+      "      obj.position.set(${3:0}, ${4:0}, ${5:0})",
+      "    }",
+      "  }",
+      "  ",
+      "  return (",
+      "    <Spline",
+      "      scene=\"${6:/spline-assets/scene.splinecode}\"",
+      "      onLoad={onLoad}",
+      "    />",
+      "  )",
+      "}",
+    ],
+    "description": "Spline 3D scene with object manipulation",
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+  // 🌌 IY SUPREME — SNIPPETS ULTRA-PRODUCTIVOS 2026
+  // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🗄️ DRIZZLE ORM — TURSO DATABASE
+  // ════════════════════════════════════════════════════════════════════════════
+  "Drizzle Query Select": {
+    "prefix": "drsel",
+    "body": [
+      "const ${1:result} = await db.query.${2:tableName}.findMany({",
+      "  with: { ${3:relation}: true },",
+      "  where: eq(${2:tableName}.${4:field}, ${5:value}),",
+      "  orderBy: desc(${2:tableName}.${6:createdAt}),",
+      "  limit: ${7:10}",
+      "})",
+    ],
+    "description": "Drizzle ORM findMany query with relations",
+  },
+
+  "Drizzle Insert": {
+    "prefix": "drins",
+    "body": ["await db.insert(${1:tableName}).values({", "  ${2:field}: ${3:value},", "  $0", "})"],
+    "description": "Drizzle ORM insert statement",
+  },
+
+  "Drizzle Update": {
+    "prefix": "drupd",
+    "body": [
+      "await db.update(${1:tableName})",
+      "  .set({ ${2:field}: ${3:value} })",
+      "  .where(eq(${1:tableName}.id, ${4:id}))",
+    ],
+    "description": "Drizzle ORM update statement",
+  },
+
+  "Drizzle Delete": {
+    "prefix": "drdel",
+    "body": ["await db.delete(${1:tableName}).where(eq(${1:tableName}.id, ${2:id}))"],
+    "description": "Drizzle ORM delete statement",
+  },
+
+  "Drizzle Table Schema": {
+    "prefix": "drtable",
+    "body": [
+      "export const ${1:tableName} = sqliteTable('${1:tableName}', {",
+      "  id: text('id').primaryKey().\\$defaultFn(() => nanoid()),",
+      "  ${2:field}: text('${2:field}').notNull(),",
+      "  createdAt: text('created_at').default(sql\\`CURRENT_TIMESTAMP\\`),",
+      "  updatedAt: text('updated_at').default(sql\\`CURRENT_TIMESTAMP\\`),",
+      "})",
+    ],
+    "description": "Drizzle SQLite table schema",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // ⚡ SERVER ACTIONS (Next.js 15+)
+  // ════════════════════════════════════════════════════════════════════════════
+  "Server Action": {
+    "prefix": "saction",
+    "body": [
+      "'use server'",
+      "",
+      "import { db } from '@/database'",
+      "import { ${1:tableName} } from '@/database/schema'",
+      "import { revalidatePath } from 'next/cache'",
+      "",
+      "export async function ${2:actionName}(formData: FormData) {",
+      "  try {",
+      "    const ${3:field} = formData.get('${3:field}') as string",
+      "    ",
+      "    await db.insert(${1:tableName}).values({",
+      "      ${3:field},",
+      "    })",
+      "    ",
+      "    revalidatePath('${4:/}')",
+      "    return { success: true }",
+      "  } catch (error) {",
+      "    logger.error('Error en ${2:actionName}', error as Error, { context: '${2:actionName}' })",
+      "    return { success: false, error: 'Error al procesar' }",
+      "  }",
+      "}",
+    ],
+    "description": "Next.js Server Action with Drizzle",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🎨 TAILWIND CSS PREMIUM
+  // ════════════════════════════════════════════════════════════════════════════
+  "Glass Card Premium": {
+    "prefix": "glasscard",
+    "body": [
+      "<div className=\"group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl transition-all duration-500 hover:border-white/20 hover:shadow-xl hover:shadow-violet-500/10\">",
+      "  <div className=\"absolute inset-0 bg-gradient-to-br from-violet-500/10 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100\" />",
+      "  <div className=\"relative z-10\">",
+      "    $0",
+      "  </div>",
+      "</div>",
+    ],
+    "description": "Premium glassmorphism card",
+  },
+
+  "Aurora Background": {
+    "prefix": "aurora",
+    "body": [
+      "<div className=\"relative min-h-screen overflow-hidden bg-gray-950\">",
+      "  {/* Aurora Effect */}",
+      "  <div className=\"absolute inset-0\">",
+      "    <div className=\"animate-blob absolute top-0 left-1/4 h-96 w-96 rounded-full bg-violet-500/30 blur-3xl\" />",
+      "    <div className=\"animate-blob animation-delay-2000 absolute right-1/4 bottom-0 h-96 w-96 rounded-full bg-indigo-500/30 blur-3xl\" />",
+      "    <div className=\"animate-blob animation-delay-4000 absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-fuchsia-500/20 blur-3xl\" />",
+      "  </div>",
+      "  {/* Content */}",
+      "  <div className=\"relative z-10\">",
+      "    $0",
+      "  </div>",
+      "</div>",
+    ],
+    "description": "Aurora background with animated blobs",
+  },
+
+  "Gradient Button Premium": {
+    "prefix": "btngrad",
+    "body": [
+      "<button className=\"relative overflow-hidden rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-3 font-medium text-white transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-violet-500/25\">",
+      "  <span className=\"relative z-10\">${1:Button Text}</span>",
+      "</button>",
+    ],
+    "description": "Premium gradient button with hover effects",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🧪 TESTING — JEST + PLAYWRIGHT
+  // ════════════════════════════════════════════════════════════════════════════
+  "Jest Test Suite": {
+    "prefix": "jtest",
+    "body": [
+      "import { describe, it, expect, beforeEach } from '@jest/globals'",
+      "",
+      "describe('${1:ComponentName}', () => {",
+      "  beforeEach(() => {",
+      "    ${2:// Setup}",
+      "  })",
+      "",
+      "  it('${3:should do something}', () => {",
+      "    ${4:// Arrange}",
+      "    const expected = ${5:true}",
+      "    ",
+      "    ${6:// Act}",
+      "    const result = ${7:true}",
+      "    ",
+      "    ${8:// Assert}",
+      "    expect(result).toBe(expected)",
+      "  })",
+      "})",
+    ],
+    "description": "Jest test suite with describe/it pattern",
+  },
+
+  "Playwright E2E Test": {
+    "prefix": "pwtest",
+    "body": [
+      "import { test, expect } from '@playwright/test'",
+      "",
+      "test.describe('${1:Feature}', () => {",
+      "  test('${2:should work correctly}', async ({ page }) => {",
+      "    await page.goto('${3:/}')",
+      "    ",
+      "    // ${4:Action}",
+      "    await page.click('${5:button}')",
+      "    ",
+      "    // ${6:Assertion}",
+      "    await expect(page.locator('${7:.result}')).toBeVisible()",
+      "  })",
+      "})",
+    ],
+    "description": "Playwright E2E test",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🔄 REACT QUERY / TANSTACK QUERY
+  // ════════════════════════════════════════════════════════════════════════════
+  "useQuery Hook": {
+    "prefix": "uquery",
+    "body": [
+      "const { data, isLoading, error } = useQuery({",
+      "  queryKey: ['${1:key}', ${2:params}],",
+      "  queryFn: async () => {",
+      "    const res = await fetch('${3:/api/endpoint}')",
+      "    if (!res.ok) throw new Error('Error fetching data')",
+      "    return res.json() as Promise<${4:DataType}>",
+      "  },",
+      "  staleTime: ${5:5 * 60 * 1000},",
+      "})",
+    ],
+    "description": "TanStack Query useQuery hook",
+  },
+
+  "useMutation Hook": {
+    "prefix": "umutation",
+    "body": [
+      "const ${1:mutationName} = useMutation({",
+      "  mutationFn: async (data: ${2:DataType}) => {",
+      "    const res = await fetch('${3:/api/endpoint}', {",
+      "      method: '${4:POST}',",
+      "      headers: { 'Content-Type': 'application/json' },",
+      "      body: JSON.stringify(data),",
+      "    })",
+      "    if (!res.ok) throw new Error('Error')",
+      "    return res.json()",
+      "  },",
+      "  onSuccess: () => {",
+      "    queryClient.invalidateQueries({ queryKey: ['${5:key}'] })",
+      "    toast.success('${6:Operación exitosa}')",
+      "  },",
+      "  onError: (error) => {",
+      "    toast.error(error.message)",
+      "  },",
+      "})",
+    ],
+    "description": "TanStack Query useMutation hook",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🎭 FRAMER MOTION PREMIUM
+  // ════════════════════════════════════════════════════════════════════════════
+  "Motion List Stagger": {
+    "prefix": "mlist",
+    "body": [
+      "<motion.ul",
+      "  initial=\"hidden\"",
+      "  animate=\"visible\"",
+      "  variants={{",
+      "    hidden: { opacity: 0 },",
+      "    visible: {",
+      "      opacity: 1,",
+      "      transition: { staggerChildren: 0.1 }",
+      "    }",
+      "  }}",
+      ">",
+      "  {${1:items}.map((item) => (",
+      "    <motion.li",
+      "      key={item.id}",
+      "      variants={{",
+      "        hidden: { opacity: 0, y: 20 },",
+      "        visible: { opacity: 1, y: 0 }",
+      "      }}",
+      "    >",
+      "      {item.${2:name}}",
+      "    </motion.li>",
+      "  ))}",
+      "</motion.ul>",
+    ],
+    "description": "Framer Motion staggered list animation",
+  },
+
+  "Motion Page Transition": {
+    "prefix": "mpage",
+    "body": [
+      "<motion.div",
+      "  initial={{ opacity: 0, y: 20 }}",
+      "  animate={{ opacity: 1, y: 0 }}",
+      "  exit={{ opacity: 0, y: -20 }}",
+      "  transition={{ duration: 0.3, ease: 'easeInOut' }}",
+      ">",
+      "  $0",
+      "</motion.div>",
+    ],
+    "description": "Framer Motion page transition wrapper",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 📊 CANVAS VISUALIZATION 60FPS
+  // ════════════════════════════════════════════════════════════════════════════
+  "Canvas Animation 60fps": {
+    "prefix": "canvas60",
+    "body": [
+      "const canvasRef = useRef<HTMLCanvasElement>(null)",
+      "const animationRef = useRef<number>(0)",
+      "",
+      "useEffect(() => {",
+      "  const canvas = canvasRef.current",
+      "  if (!canvas) return",
+      "  const ctx = canvas.getContext('2d')",
+      "  if (!ctx) return",
+      "",
+      "  // High DPI setup",
+      "  const dpr = window.devicePixelRatio || 1",
+      "  const rect = canvas.getBoundingClientRect()",
+      "  canvas.width = rect.width * dpr",
+      "  canvas.height = rect.height * dpr",
+      "  ctx.scale(dpr, dpr)",
+      "",
+      "  const animate = (time: number) => {",
+      "    ctx.clearRect(0, 0, rect.width, rect.height)",
+      "    ",
+      "    // ${1:Animation logic}",
+      "    $0",
+      "    ",
+      "    animationRef.current = requestAnimationFrame(animate)",
+      "  }",
+      "  ",
+      "  animationRef.current = requestAnimationFrame(animate)",
+      "  ",
+      "  return () => cancelAnimationFrame(animationRef.current)",
+      "}, [])",
+      "",
+      "return <canvas ref={canvasRef} className=\"h-full w-full\" />",
+    ],
+    "description": "Canvas animation with 60fps and High DPI support",
+  },
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // 🛡️ ERROR HANDLING PREMIUM
+  // ════════════════════════════════════════════════════════════════════════════
+  "Try-Catch with Logger": {
+    "prefix": "trycatch",
+    "body": [
+      "try {",
+      "  $0",
+      "} catch (error) {",
+      "  logger.error('${1:Error message}', error as Error, {",
+      "    context: '${2:ComponentName}',",
+      "    data: { ${3:/* additional context */} }",
+      "  })",
+      "  ${4:throw error}",
+      "}",
+    ],
+    "description": "Try-catch with logger",
+  },
+
+  "API Route Handler": {
+    "prefix": "apiroute",
+    "body": [
+      "import { NextRequest, NextResponse } from 'next/server'",
+      "import { db } from '@/database'",
+      "import { logger } from '@/app/lib/utils/logger'",
+      "",
+      "export async function ${1:GET}(request: NextRequest) {",
+      "  try {",
+      "    const ${2:data} = await db.query.${3:tableName}.findMany()",
+      "    ",
+      "    return NextResponse.json({ success: true, data: ${2:data} })",
+      "  } catch (error) {",
+      "    logger.error('API Error: ${4:endpoint}', error as Error, { context: '${4:endpoint}' })",
+      "    return NextResponse.json(",
+      "      { success: false, error: 'Internal server error' },",
+      "      { status: 500 }",
+      "    )",
+      "  }",
+      "}",
+    ],
+    "description": "Next.js API route handler with error handling",
+  },
+}

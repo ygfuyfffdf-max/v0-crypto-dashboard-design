@@ -1,0 +1,1484 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS INFINITY 2026 - QUANTUM DESIGN SYSTEM
+   Paleta Eterna: #000000, #8B00FF, #FFD700, #FF1493, #FFFFFF
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ═══ PALETA SAGRADA CHRONOS 2026 ═══ */
+  --chronos-void: #000000;
+  --chronos-violet: #8B00FF;
+  --chronos-gold: #FFD700;
+  --chronos-plasma: #FF1493;
+  --chronos-light: #FFFFFF;
+  
+  /* Variaciones de Violeta */
+  --violet-glow: rgba(139, 0, 255, 0.6);
+  --violet-soft: rgba(139, 0, 255, 0.3);
+  --violet-mist: rgba(139, 0, 255, 0.15);
+  --violet-whisper: rgba(139, 0, 255, 0.08);
+  
+  /* Variaciones de Oro */
+  --gold-glow: rgba(255, 215, 0, 0.6);
+  --gold-soft: rgba(255, 215, 0, 0.3);
+  --gold-mist: rgba(255, 215, 0, 0.15);
+  --gold-whisper: rgba(255, 215, 0, 0.08);
+  
+  /* Variaciones de Plasma Rosa */
+  --plasma-glow: rgba(255, 20, 147, 0.6);
+  --plasma-soft: rgba(255, 20, 147, 0.3);
+  --plasma-mist: rgba(255, 20, 147, 0.15);
+  
+  /* Superficies Glass Gen 4 */
+  --glass-void: rgba(0, 0, 0, 0.85);
+  --glass-deep: rgba(0, 0, 0, 0.7);
+  --glass-mid: rgba(0, 0, 0, 0.5);
+  --glass-light: rgba(0, 0, 0, 0.3);
+  
+  /* Bordes Luminiscentes */
+  --border-violet: rgba(139, 0, 255, 0.25);
+  --border-gold: rgba(255, 215, 0, 0.25);
+  --border-glow: rgba(255, 255, 255, 0.08);
+  
+  /* Sombras Volumétricas */
+  --shadow-void: 0 8px 32px rgba(0, 0, 0, 0.8);
+  --shadow-violet: 0 0 60px rgba(139, 0, 255, 0.4);
+  --shadow-gold: 0 0 60px rgba(255, 215, 0, 0.4);
+  --shadow-plasma: 0 0 40px rgba(255, 20, 147, 0.4);
+  
+  /* Sistema Base */
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --card: 0 0% 3%;
+  --card-foreground: 0 0% 100%;
+  --popover: 0 0% 3%;
+  --popover-foreground: 0 0% 100%;
+  --primary: 274 100% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 8%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 60%;
+  --accent: 51 100% 50%;
+  --accent-foreground: 0 0% 0%;
+  --destructive: 330 100% 54%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 12%;
+  --input: 0 0% 12%;
+  --ring: 274 100% 50%;
+  --radius: 1rem;
+  
+  /* Spring Physics Variables */
+  --spring-stiffness: 350;
+  --spring-damping: 30;
+  --spring-duration: 0.6s;
+}
+
+@theme inline {
+  --font-sans: "SF Pro Display", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", "Fira Code", monospace;
+  --font-display: "Clash Display", "SF Pro Display", sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --radius-3xl: 2.5rem;
+}
+
+/* Chart colors - Chronos Palette */
+:root {
+  --chart-1: oklch(0.6 0.3 280);  /* Violet */
+  --chart-2: oklch(0.85 0.2 85);  /* Gold */
+  --chart-3: oklch(0.7 0.25 330); /* Plasma */
+  --chart-4: oklch(0.95 0 0);     /* White */
+  --chart-5: oklch(0.5 0.35 280); /* Deep Violet */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  body {
+    @apply bg-black text-white antialiased;
+    font-feature-settings: "ss01", "ss02", "cv01", "cv02", "liga", "kern";
+    background: var(--chronos-void);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  
+  ::selection {
+    background: var(--violet-soft);
+    color: var(--chronos-light);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLASSMORPHISM GENERATION 4 - LIQUID METAL FROSTED CHRONOS 2026
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer utilities {
+  /* Glass Quantum - Primary Surface */
+  .glass-quantum {
+    background: var(--glass-void);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid var(--border-violet);
+    box-shadow: 
+      var(--shadow-void),
+      0 0 80px rgba(139, 0, 255, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Glass Frosted - Secondary Surface */
+  .glass-frosted {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.75) 0%,
+      rgba(10, 0, 20, 0.65) 50%,
+      rgba(0, 0, 0, 0.75) 100%
+    );
+    backdrop-filter: blur(50px) saturate(200%) brightness(1.1);
+    -webkit-backdrop-filter: blur(50px) saturate(200%) brightness(1.1);
+    border: 1px solid var(--border-violet);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.6),
+      0 24px 80px rgba(139, 0, 255, 0.2),
+      inset 0 2px 4px rgba(255, 255, 255, 0.03),
+      inset 0 0 40px rgba(139, 0, 255, 0.05);
+  }
+  
+  /* Glass Liquid Metal - Premium Surface */
+  .glass-liquid-metal {
+    background: linear-gradient(
+      145deg,
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(20, 0, 40, 0.7) 30%,
+      rgba(0, 0, 0, 0.85) 70%,
+      rgba(10, 0, 25, 0.9) 100%
+    );
+    backdrop-filter: blur(60px) saturate(220%);
+    -webkit-backdrop-filter: blur(60px) saturate(220%);
+    border: 1px solid rgba(139, 0, 255, 0.2);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.7),
+      0 16px 64px rgba(139, 0, 255, 0.25),
+      0 32px 128px rgba(255, 215, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      inset 0 0 60px rgba(139, 0, 255, 0.08);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .glass-liquid-metal:hover {
+    border-color: rgba(139, 0, 255, 0.4);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.8),
+      0 24px 80px rgba(139, 0, 255, 0.35),
+      0 48px 160px rgba(255, 215, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      inset 0 0 80px rgba(139, 0, 255, 0.12);
+    transform: translateY(-2px);
+  }
+
+  /* Legacy glass-panel compatibility */
+  .glass-panel {
+    @apply glass-quantum;
+  }
+
+  .glass-card {
+    @apply glass-frosted rounded-2xl;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .glass-card:hover {
+    border-color: rgba(139, 0, 255, 0.3);
+    transform: translateY(-2px) scale(1.01);
+  }
+
+  /* Text Gradients - Chronos Palette */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background: linear-gradient(135deg, #FFFFFF 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.6) 100%);
+  }
+  
+  .text-gradient-violet {
+    background: linear-gradient(135deg, var(--chronos-violet) 0%, #B366FF 50%, var(--chronos-violet) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .text-gradient-gold {
+    background: linear-gradient(135deg, var(--chronos-gold) 0%, #FFF4B3 50%, var(--chronos-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .text-gradient-plasma {
+    background: linear-gradient(135deg, var(--chronos-plasma) 0%, #FF6BB3 50%, var(--chronos-plasma) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Text Glow Effects */
+  .text-glow {
+    text-shadow: 0 0 20px rgba(139, 0, 255, 0.5), 0 0 40px rgba(139, 0, 255, 0.3);
+  }
+  
+  .text-glow-violet {
+    text-shadow: 0 0 20px rgba(139, 0, 255, 0.5), 0 0 40px rgba(139, 0, 255, 0.3), 0 0 80px rgba(139, 0, 255, 0.2);
+  }
+  
+  .text-glow-gold {
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3), 0 0 80px rgba(255, 215, 0, 0.2);
+  }
+
+  /* Scrollbar Quantum */
+  .scrollbar-quantum::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .scrollbar-quantum::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+  }
+  
+  .scrollbar-quantum::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(139, 0, 255, 0.6) 0%, rgba(139, 0, 255, 0.3) 100%);
+    border-radius: 4px;
+  }
+  
+  .scrollbar-quantum::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(139, 0, 255, 0.8) 0%, rgba(139, 0, 255, 0.5) 100%);
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Animations */
+  .animate-float {
+    animation: floatQuantum 6s ease-in-out infinite;
+  }
+  
+  .animate-pulse-violet {
+    animation: pulseViolet 2s ease-in-out infinite;
+  }
+  
+  .animate-pulse-gold {
+    animation: pulseGold 2s ease-in-out infinite;
+  }
+  
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent 0%, rgba(139, 0, 255, 0.2) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmerQuantum 2s linear infinite;
+  }
+  
+  .animate-orbital {
+    animation: orbital 20s linear infinite;
+  }
+  
+  .animate-breathe {
+    animation: breathe 4s ease-in-out infinite;
+  }
+
+  /* Glow Effects */
+  .glow-violet {
+    box-shadow: 0 0 20px rgba(139, 0, 255, 0.4), 0 0 40px rgba(139, 0, 255, 0.2), 0 0 80px rgba(139, 0, 255, 0.1);
+  }
+  
+  .glow-gold {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), 0 0 40px rgba(255, 215, 0, 0.2), 0 0 80px rgba(255, 215, 0, 0.1);
+  }
+  
+  .glow-plasma {
+    box-shadow: 0 0 20px rgba(255, 20, 147, 0.4), 0 0 40px rgba(255, 20, 147, 0.2), 0 0 80px rgba(255, 20, 147, 0.1);
+  }
+
+  /* GPU Optimization */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS 2026 KEYFRAME ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes floatQuantum {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-10px) rotate(1deg); }
+  50% { transform: translateY(-5px) rotate(0deg); }
+  75% { transform: translateY(-15px) rotate(-1deg); }
+}
+
+@keyframes pulseViolet {
+  0%, 100% { box-shadow: 0 0 20px rgba(139, 0, 255, 0.4); }
+  50% { box-shadow: 0 0 40px rgba(139, 0, 255, 0.7), 0 0 80px rgba(139, 0, 255, 0.4); }
+}
+
+@keyframes pulseGold {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+  50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.7), 0 0 80px rgba(255, 215, 0, 0.4); }
+}
+
+@keyframes shimmerQuantum {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes orbital {
+  from { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+@keyframes orbPulse {
+  0%, 100% {
+    box-shadow: 0 0 60px rgba(139, 0, 255, 0.5), 0 0 120px rgba(139, 0, 255, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 80px rgba(139, 0, 255, 0.7), 0 0 160px rgba(139, 0, 255, 0.4), 0 0 200px rgba(255, 215, 0, 0.2);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes hapticVibrate {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+@keyframes particleExplosion {
+  0% { transform: scale(0) translate(0, 0); opacity: 1; }
+  100% { transform: scale(1) translate(var(--tx, 0), var(--ty, 0)); opacity: 0; }
+}
+
+@keyframes spring-in {
+  0% { opacity: 0; transform: translateY(30px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes subtle-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+/* Quantum Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(139, 0, 255, 0.5) 0%, rgba(139, 0, 255, 0.2) 100%);
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(139, 0, 255, 0.7) 0%, rgba(139, 0, 255, 0.4) 100%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS 2026 TYPOGRAPHY SYSTEM
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.text-display-xl {
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  background: linear-gradient(135deg, #FFFFFF 0%, rgba(139, 0, 255, 0.8) 50%, var(--chronos-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-display-lg {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.text-title {
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.text-body {
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.5;
+}
+
+.text-caption {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.4;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Apple-style animations with spring physics */
+@keyframes spring-in {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes subtle-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-spring-in {
+  animation: spring-in 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-subtle-float {
+  animation: subtle-float 4s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS 2026 PREMIUM GLASSMORPHISM COMPONENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Apple Glass - Legacy compatibility with Chronos upgrade */
+.apple-glass {
+  background: var(--glass-void);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid var(--border-violet);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05), 
+    0 20px 60px -20px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(139, 0, 255, 0.1);
+}
+
+.apple-glass-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.apple-glass-hover:hover {
+  border-color: rgba(139, 0, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.08), 
+    0 32px 80px -24px rgba(139, 0, 255, 0.4),
+    0 0 60px rgba(139, 0, 255, 0.2);
+}
+
+/* Apple Glass Strong - Maximum effect */
+.apple-glass-strong {
+  @apply glass-liquid-metal;
+}
+
+/* Quantum Cards with 3D tilt effect */
+.apple-card {
+  background: linear-gradient(
+    145deg,
+    rgba(0, 0, 0, 0.85) 0%,
+    rgba(15, 0, 30, 0.7) 50%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid var(--border-violet);
+  border-radius: 24px;
+  padding: 24px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.apple-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg, 
+    transparent, 
+    rgba(139, 0, 255, 0.4), 
+    rgba(255, 215, 0, 0.3),
+    rgba(139, 0, 255, 0.4),
+    transparent
+  );
+  opacity: 0.6;
+}
+
+.apple-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(139, 0, 255, 0.15) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.apple-card:hover {
+  border-color: rgba(139, 0, 255, 0.4);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 
+    0 32px 80px -24px rgba(139, 0, 255, 0.4),
+    0 0 80px rgba(139, 0, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.apple-card:hover::after {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS 2026 QUANTUM BUTTONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.apple-button {
+  padding: 12px 28px;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.apple-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.3) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.apple-button:hover::before {
+  opacity: 1;
+}
+
+.apple-button-primary {
+  background: linear-gradient(135deg, var(--chronos-violet) 0%, #6B00CC 50%, var(--chronos-violet) 100%);
+  color: white;
+  border: 1px solid rgba(139, 0, 255, 0.5);
+  box-shadow: 
+    0 4px 16px rgba(139, 0, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.apple-button-primary:hover {
+  box-shadow: 
+    0 8px 28px rgba(139, 0, 255, 0.6),
+    0 0 40px rgba(139, 0, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.apple-button-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(139, 0, 255, 0.4);
+}
+
+.apple-button-secondary {
+  background: rgba(139, 0, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(139, 0, 255, 0.3);
+}
+
+.apple-button-secondary:hover {
+  background: rgba(139, 0, 255, 0.2);
+  border-color: rgba(139, 0, 255, 0.5);
+}
+
+/* Gold Button Variant */
+.btn-gold {
+  background: linear-gradient(135deg, var(--chronos-gold) 0%, #FFB300 50%, var(--chronos-gold) 100%);
+  color: #000;
+  border: 1px solid rgba(255, 215, 0, 0.6);
+  box-shadow: 
+    0 4px 16px rgba(255, 215, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn-gold:hover {
+  box-shadow: 
+    0 8px 28px rgba(255, 215, 0, 0.6),
+    0 0 40px rgba(255, 215, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Plasma Button Variant */
+.btn-plasma {
+  background: linear-gradient(135deg, var(--chronos-plasma) 0%, #CC0066 50%, var(--chronos-plasma) 100%);
+  color: white;
+  border: 1px solid rgba(255, 20, 147, 0.5);
+  box-shadow: 
+    0 4px 16px rgba(255, 20, 147, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-plasma:hover {
+  box-shadow: 
+    0 8px 28px rgba(255, 20, 147, 0.6),
+    0 0 40px rgba(255, 20, 147, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Premium Button - Quantum Violet */
+.btn-premium {
+  background: linear-gradient(135deg, var(--chronos-violet) 0%, #A020F0 50%, var(--chronos-violet) 100%);
+  color: white;
+  font-weight: 600;
+  border: 1px solid rgba(139, 0, 255, 0.5);
+  box-shadow: 
+    0 4px 16px rgba(139, 0, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS 2026 BENTO GRID SYSTEM - ASYMMETRIC LAYOUT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.bento-container {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+  padding: 24px;
+  max-width: 1920px;
+  margin: 0 auto;
+}
+
+.bento-sm {
+  grid-column: span 3;
+}
+.bento-md {
+  grid-column: span 4;
+}
+.bento-lg {
+  grid-column: span 6;
+}
+.bento-xl {
+  grid-column: span 8;
+}
+.bento-full {
+  grid-column: span 12;
+}
+
+/* Asymmetric Bento Cells */
+.bento-cell-1 { grid-column: span 1; }
+.bento-cell-2 { grid-column: span 2; }
+.bento-cell-3 { grid-column: span 3; }
+.bento-cell-4 { grid-column: span 4; }
+.bento-cell-5 { grid-column: span 5; }
+.bento-cell-6 { grid-column: span 6; }
+.bento-cell-7 { grid-column: span 7; }
+.bento-cell-8 { grid-column: span 8; }
+.bento-cell-9 { grid-column: span 9; }
+.bento-cell-10 { grid-column: span 10; }
+.bento-cell-11 { grid-column: span 11; }
+.bento-cell-12 { grid-column: span 12; }
+
+/* Row Spans */
+.bento-row-1 { grid-row: span 1; }
+.bento-row-2 { grid-row: span 2; }
+.bento-row-3 { grid-row: span 3; }
+
+@media (max-width: 1280px) {
+  .bento-sm {
+    grid-column: span 4;
+  }
+  .bento-md {
+    grid-column: span 6;
+  }
+  .bento-lg {
+    grid-column: span 8;
+  }
+  .bento-xl {
+    grid-column: span 12;
+  }
+  .bento-cell-3, .bento-cell-4 {
+    grid-column: span 6;
+  }
+  .bento-cell-8 {
+    grid-column: span 12;
+  }
+}
+
+@media (max-width: 768px) {
+  .bento-sm,
+  .bento-md,
+  .bento-lg,
+  .bento-xl,
+  .bento-cell-3,
+  .bento-cell-4,
+  .bento-cell-5,
+  .bento-cell-6 {
+    grid-column: span 12;
+  }
+  
+  .bento-container {
+    gap: 16px;
+    padding: 16px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS 2026 QUANTUM TABLE STYLES - FROSTED LIQUID METAL
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.table-row-hover {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-bottom: 1px solid rgba(139, 0, 255, 0.1);
+}
+
+.table-row-hover:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(139, 0, 255, 0.15) 0%,
+    rgba(255, 215, 0, 0.05) 50%,
+    rgba(139, 0, 255, 0.15) 100%
+  );
+  transform: translateX(4px);
+  box-shadow: inset 4px 0 0 var(--chronos-violet);
+}
+
+/* Quantum Table - Frosted Card Style */
+.table-quantum {
+  @apply glass-frosted rounded-2xl overflow-hidden;
+}
+
+.table-quantum thead {
+  background: linear-gradient(
+    180deg,
+    rgba(139, 0, 255, 0.2) 0%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+}
+
+.table-quantum th {
+  padding: 16px 24px;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--border-violet);
+}
+
+.table-quantum tbody tr {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-bottom: 1px solid rgba(139, 0, 255, 0.1);
+}
+
+.table-quantum tbody tr:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(139, 0, 255, 0.12) 0%,
+    rgba(255, 215, 0, 0.05) 50%,
+    rgba(139, 0, 255, 0.12) 100%
+  );
+  transform: translateX(4px);
+  box-shadow: inset 4px 0 0 var(--chronos-violet);
+}
+
+.table-quantum td {
+  padding: 16px 24px;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Scroll effects with parallax */
+.scroll-parallax {
+  will-change: transform;
+  transition: transform 0.1s ease-out;
+}
+
+/* Focus states for accessibility - Chronos 2026 */
+*:focus-visible {
+  outline: 2px solid var(--chronos-violet);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS 2026 AMBIENT EFFECTS & BACKGROUNDS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Ambient Orbs */
+.ambient-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambient-orb-violet {
+  background: var(--chronos-violet);
+}
+
+.ambient-orb-gold {
+  background: var(--chronos-gold);
+}
+
+.ambient-orb-plasma {
+  background: var(--chronos-plasma);
+}
+
+/* Premium gradient overlays - Chronos Palette */
+.gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg, 
+    rgba(139, 0, 255, 0.1) 0%, 
+    transparent 40%, 
+    transparent 60%,
+    rgba(255, 215, 0, 0.08) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+
+.gradient-overlay-active {
+  opacity: 1;
+}
+
+/* Micro-interactions - Spring Physics */
+.micro-bounce {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.micro-bounce:active {
+  transform: scale(0.98);
+}
+
+.haptic-feedback:active {
+  animation: hapticVibrate 0.1s ease-in-out;
+}
+
+/* Magnetic hover effect */
+.magnetic-hover {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Ripple container */
+.ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-container::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.ripple-container:active::after {
+  width: 300%;
+  height: 300%;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS 2026 DATA VISUALIZATION
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Chart tooltip - Quantum Glass */
+.chart-tooltip {
+  background: var(--glass-void);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid var(--border-violet);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(139, 0, 255, 0.2);
+}
+
+/* Loading states - Quantum Shimmer */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(139, 0, 255, 0.05) 25%,
+    rgba(139, 0, 255, 0.15) 50%,
+    rgba(139, 0, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmerQuantum 1.5s infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS 2026 BADGE SYSTEM
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.badge-success {
+  background: rgba(255, 215, 0, 0.15);
+  color: var(--chronos-gold);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.badge-warning {
+  background: rgba(255, 150, 0, 0.15);
+  color: #FF9600;
+  border: 1px solid rgba(255, 150, 0, 0.3);
+}
+
+.badge-danger {
+  background: rgba(255, 20, 147, 0.15);
+  color: var(--chronos-plasma);
+  border: 1px solid rgba(255, 20, 147, 0.3);
+}
+
+.badge-info {
+  background: rgba(139, 0, 255, 0.15);
+  color: var(--chronos-violet);
+  border: 1px solid rgba(139, 0, 255, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS 2026 CRYSTAL CARDS - PREMIUM COMPONENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.crystal-card {
+  background: linear-gradient(
+    145deg,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(15, 0, 35, 0.6) 50%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  backdrop-filter: blur(50px) saturate(200%);
+  -webkit-backdrop-filter: blur(50px) saturate(200%);
+  border: 1px solid rgba(139, 0, 255, 0.2);
+  border-radius: 28px;
+  padding: 28px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.crystal-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg, 
+    transparent, 
+    rgba(139, 0, 255, 0.5), 
+    rgba(255, 215, 0, 0.3),
+    rgba(139, 0, 255, 0.5),
+    transparent
+  );
+}
+
+.crystal-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(139, 0, 255, 0.12) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.crystal-card:hover {
+  border-color: rgba(139, 0, 255, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 
+    0 24px 48px -12px rgba(0, 0, 0, 0.5), 
+    0 0 60px rgba(139, 0, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.crystal-card:hover::after {
+  opacity: 1;
+}
+
+/* Glass Transmission - High clarity surface */
+.glass-transmission {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(139, 0, 255, 0.15);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.06), 
+    0 20px 60px -20px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(139, 0, 255, 0.1);
+}
+
+/* Ambient glow for premium elements */
+.ambient-glow {
+  position: relative;
+}
+
+.ambient-glow::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg, 
+    rgba(139, 0, 255, 0.4), 
+    transparent 30%,
+    transparent 70%,
+    rgba(255, 215, 0, 0.3)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+
+.ambient-glow:hover::after {
+  opacity: 1;
+}
+
+.btn-premium:hover {
+  box-shadow: 
+    0 8px 32px rgba(139, 0, 255, 0.6),
+    0 0 60px rgba(139, 0, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-premium:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS 2026 ORB CONTAINERS - 3D EFFECTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.orb-container {
+  position: relative;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(139, 0, 255, 0.4) 0%,
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(255, 215, 0, 0.15) 100%
+  );
+  box-shadow:
+    0 0 60px rgba(139, 0, 255, 0.5),
+    0 0 120px rgba(139, 0, 255, 0.3),
+    inset 0 0 60px rgba(139, 0, 255, 0.3),
+    inset 0 0 30px rgba(255, 215, 0, 0.2);
+}
+
+.orb-pulse {
+  animation: orbPulse 3s ease-in-out infinite;
+}
+
+.orb-gold {
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 215, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(139, 0, 255, 0.15) 100%
+  );
+  box-shadow:
+    0 0 60px rgba(255, 215, 0, 0.5),
+    0 0 120px rgba(255, 215, 0, 0.3),
+    inset 0 0 60px rgba(255, 215, 0, 0.3);
+}
+
+.orb-plasma {
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 20, 147, 0.4) 0%,
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(139, 0, 255, 0.15) 100%
+  );
+  box-shadow:
+    0 0 60px rgba(255, 20, 147, 0.5),
+    0 0 120px rgba(255, 20, 147, 0.3),
+    inset 0 0 60px rgba(255, 20, 147, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS 2026 INPUT FIELDS - QUANTUM STYLE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.input-quantum {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(139, 0, 255, 0.2);
+  color: white;
+  font-size: 0.9375rem;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.input-quantum::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.input-quantum:focus {
+  outline: none;
+  border-color: var(--chronos-violet);
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(139, 0, 255, 0.3),
+    0 0 40px rgba(139, 0, 255, 0.15);
+}
+
+.input-quantum:focus::placeholder {
+  color: rgba(139, 0, 255, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS 2026 PERSPECTIVE & 3D TRANSFORMS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* 3D Tilt Card Effect */
+.tilt-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tilt-3d:hover {
+  transform: perspective(1000px) rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg));
+}
+
+.btn-premium:hover {
+  box-shadow: 0 8px 28px rgba(59, 130, 246, 0.6);
+  transform: translateY(-2px);
+}
+
+.btn-premium:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5);
+}
+
+/* Custom scrollbar for better UX */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* GPU acceleration class */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Enhanced focus states for better accessibility */
+.focus-premium:focus-visible {
+  outline: 2px solid rgba(59, 130, 246, 0.8);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* Smooth transitions for all interactive elements */
+button,
+a,
+input,
+select,
+textarea {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Premium input styling */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: rgba(59, 130, 246, 0.8);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+/* Loading spinner animation */
+@keyframes spin-smooth {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  animation: spin-smooth 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Fade in animation for dynamic content */
+@keyframes fade-in-smooth {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-content {
+  animation: fade-in-smooth 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Enhanced smooth scroll with better easing */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Added advanced scroll animations */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes reveal-down {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes reveal-left {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes reveal-right {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.reveal-up {
+  animation: reveal-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.reveal-down {
+  animation: reveal-down 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.reveal-left {
+  animation: reveal-left 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.reveal-right {
+  animation: reveal-right 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Stagger delay classes for cascading animations */
+.delay-100 {
+  animation-delay: 100ms;
+}
+.delay-200 {
+  animation-delay: 200ms;
+}
+.delay-300 {
+  animation-delay: 300ms;
+}
+.delay-400 {
+  animation-delay: 400ms;
+}
+.delay-500 {
+  animation-delay: 500ms;
+}
+
+/* Smooth scroll snap for sections */
+.scroll-snap-container {
+  scroll-snap-type: y proximity;
+  scroll-padding-top: 100px;
+}
+
+.scroll-snap-item {
+  scroll-snap-align: start;
+}
+
+/* Enhanced momentum scrolling for iOS */
+body {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Parallax container */
+.parallax-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.parallax-layer {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}

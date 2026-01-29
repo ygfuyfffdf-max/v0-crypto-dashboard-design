@@ -1,0 +1,77 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# 🚫 CHRONOS - COPILOT IGNORE FILE
+# Optimiza el contexto de Copilot excluyendo archivos innecesarios
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Dependencias
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+coverage/
+
+# Cache
+.cache/
+*.log
+*.tmp
+
+# Lock files (grandes, no útiles para contexto)
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# IDE y sistema
+.vscode/extensions/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Testing artifacts
+test-results/
+playwright-report/
+.nyc_output/
+
+# Archivos binarios y media
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.svg
+*.woff
+*.woff2
+*.ttf
+*.eot
+
+# Spline (archivos 3D grandes)
+*.spline
+*.splinecode
+
+# Datos y backups
+*.sql
+*.db
+*.sqlite
+backups/
+
+# Configuración sensible
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Documentación legacy (mantener solo activos)
+docs/ANALYSIS_REPORT.md
+docs/AUDITORIA_*.md
+
+# Python (Scrapy)
+project/__pycache__/
+*.pyc
+*.pyo
+.scrapy/

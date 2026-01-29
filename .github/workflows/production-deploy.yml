@@ -1,0 +1,188 @@
+name: 🚀 Production Deployment Pipeline
+
+on:
+  push:
+    branches: [main, feature/3d-integration-panels]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: "20"
+  PNPM_VERSION: "10"
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JOB 1: Pre-Deploy Verification
+  # ═══════════════════════════════════════════════════════════════════════════
+  pre-deploy-checks:
+    name: 🔍 Pre-Deploy Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Setup pnpm ${{ env.PNPM_VERSION }}
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+
+      - name: 🗂️ Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: 🔄 Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+
+      - name: 📚 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔐 Verify environment variables
+        run: |
+          echo "✓ Verificando variables de entorno..."
+          if [ -z "${{ secrets.TURSO_DATABASE_URL }}" ]; then
+            echo "❌ TURSO_DATABASE_URL no está configurado"
+            exit 1
+          fi
+          if [ -z "${{ secrets.TURSO_AUTH_TOKEN }}" ]; then
+            echo "❌ TURSO_AUTH_TOKEN no está configurado"
+            exit 1
+          fi
+          echo "✅ Variables de entorno OK"
+
+      - name: 🔍 Run ESLint
+        run: pnpm lint
+        continue-on-error: false
+
+      - name: 📘 Run TypeScript type check
+        run: pnpm type-check
+        continue-on-error: false
+
+      - name: 🧪 Run unit tests
+        run: pnpm test --passWithNoTests
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL || 'file:./test.db' }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN || '' }}
+        continue-on-error: false
+
+      - name: 🏗️ Build application
+        run: pnpm build
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          NEXT_PUBLIC_APP_URL: https://v0-crypto-dashboard-design-alpha.vercel.app
+        continue-on-error: false
+
+      - name: ✅ All pre-deploy checks passed
+        run: echo "🎉 ¡Todas las verificaciones pasaron! Listo para deploy."
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JOB 2: Deploy to Vercel
+  # ═══════════════════════════════════════════════════════════════════════════
+  deploy-vercel:
+    name: 🚀 Deploy to Vercel
+    needs: pre-deploy-checks
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🚀 Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        id: vercel-deploy
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: "--prod"
+          working-directory: ./
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+
+      - name: 📊 Deployment URL
+        run: |
+          echo "✅ Deploy exitoso!"
+          echo "🔗 URL: ${{ steps.vercel-deploy.outputs.preview-url }}"
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JOB 3: Post-Deploy Verification
+  # ═══════════════════════════════════════════════════════════════════════════
+  post-deploy-checks:
+    name: 🔍 Post-Deploy Verification
+    needs: deploy-vercel
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 🏥 Health Check
+        run: |
+          echo "🏥 Verificando /api/health..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://v0-crypto-dashboard-design-alpha.vercel.app/api/health)
+          if [ "$RESPONSE" -eq 200 ]; then
+            echo "✅ Health check OK (200)"
+          else
+            echo "❌ Health check FAIL ($RESPONSE)"
+            exit 1
+          fi
+
+      - name: 🧪 API Endpoint Checks
+        run: |
+          echo "🧪 Verificando endpoints críticos..."
+
+          # Verificar /api/bancos
+          BANCOS=$(curl -s https://v0-crypto-dashboard-design-alpha.vercel.app/api/bancos)
+          if echo "$BANCOS" | grep -q "success"; then
+            echo "✅ /api/bancos OK"
+          else
+            echo "❌ /api/bancos FAIL"
+            exit 1
+          fi
+
+          # Verificar /api/clientes
+          CLIENTES=$(curl -s https://v0-crypto-dashboard-design-alpha.vercel.app/api/clientes)
+          if echo "$CLIENTES" | grep -q "success"; then
+            echo "✅ /api/clientes OK"
+          else
+            echo "❌ /api/clientes FAIL"
+            exit 1
+          fi
+
+      - name: ✅ Production verification complete
+        run: echo "🎉 ¡Sistema operacional en producción!"
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JOB 4: Notify on Failure
+  # ═══════════════════════════════════════════════════════════════════════════
+  notify-failure:
+    name: 📢 Notify on Failure
+    needs: [pre-deploy-checks, deploy-vercel, post-deploy-checks]
+    if: failure()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📢 Send notification
+        run: |
+          echo "❌ Pipeline falló. Revisar logs en:"
+          echo "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
