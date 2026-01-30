@@ -15,9 +15,17 @@ import {
   Smartphone,
   Sun,
   User,
+  Volume2,
 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// 🌌 SUPREME COMPONENTS — CHRONOS INFINITY 2026 OMEGA
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+import { ThemeSelector } from '@/app/_components/chronos-2026/widgets/ThemeSelectorWidget'
+import { SoundSettings } from '@/app/_components/chronos-2026/widgets/SoundSettingsWidget'
+import { useFeedback } from '@/app/hooks/useSupremeSystems'
 
 const sections = [
   {
@@ -33,16 +41,22 @@ const sections = [
     description: 'Control de intro KOCMOC',
   },
   {
-    id: 'notificaciones',
-    title: 'Notificaciones',
-    icon: Bell,
-    description: 'Preferencias de alertas',
-  },
-  {
     id: 'apariencia',
     title: 'Apariencia',
     icon: Palette,
     description: 'Tema y diseño visual',
+  },
+  {
+    id: 'audio',
+    title: 'Audio',
+    icon: Volume2,
+    description: 'Sonidos y feedback',
+  },
+  {
+    id: 'notificaciones',
+    title: 'Notificaciones',
+    icon: Bell,
+    description: 'Preferencias de alertas',
   },
   {
     id: 'seguridad',
@@ -67,11 +81,18 @@ export function ConfiguracionClient() {
     ventas: true,
     pagos: true,
   })
+  const feedback = useFeedback()
 
   const handleSave = () => {
+    feedback.success()
     toast.success('Configuración guardada', {
       description: 'Tus preferencias han sido actualizadas',
     })
+  }
+
+  const handleSectionChange = (sectionId: string) => {
+    feedback.tabSwitch()
+    setActiveSection(sectionId)
   }
 
   return (
@@ -86,7 +107,7 @@ export function ConfiguracionClient() {
           {sections.map((section) => (
             <button
               key={section.id}
-              onClick={() => setActiveSection(section.id)}
+              onClick={() => handleSectionChange(section.id)}
               className={cn(
                 'flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition-all',
                 activeSection === section.id
@@ -184,26 +205,13 @@ export function ConfiguracionClient() {
 
         {activeSection === 'apariencia' && (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold">Apariencia</h2>
-            <div className="grid grid-cols-3 gap-4">
-              {(['dark', 'light', 'system'] as const).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setTheme(t)}
-                  className={cn(
-                    'rounded-xl border p-4 text-center transition-all',
-                    theme === t
-                      ? 'border-purple-500 bg-purple-500/10'
-                      : 'border-white/5 hover:border-white/10',
-                  )}
-                >
-                  {t === 'dark' && <Moon className="mx-auto mb-2 h-8 w-8" />}
-                  {t === 'light' && <Sun className="mx-auto mb-2 h-8 w-8" />}
-                  {t === 'system' && <Smartphone className="mx-auto mb-2 h-8 w-8" />}
-                  <p className="font-medium capitalize">{t}</p>
-                </button>
-              ))}
-            </div>
+            <ThemeSelector layout="grid" />
+          </div>
+        )}
+
+        {activeSection === 'audio' && (
+          <div className="space-y-6">
+            <SoundSettings />
           </div>
         )}
 

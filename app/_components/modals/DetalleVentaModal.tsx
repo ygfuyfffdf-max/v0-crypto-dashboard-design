@@ -2,8 +2,8 @@
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════
- * CHRONOS INFINITY 2026 — DETALLE VENTA MODAL
- * Modal para ver detalles completos de una venta
+ * CHRONOS INFINITY 2026 — DETALLE VENTA MODAL iOS PREMIUM
+ * Modal para ver detalles completos de una venta con diseño iOS
  * Incluye distribución GYA, historial y timeline
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -32,8 +32,7 @@ import {
   User,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { Modal } from '../ui/Modal'
-import { QuantumGlassCard } from '../ui/QuantumElevatedUI'
+import { iOSModal, iOSGlassCard, iOSSkeleton, iOSProgress } from '../ui/ios'
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES

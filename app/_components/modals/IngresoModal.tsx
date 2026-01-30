@@ -1,8 +1,8 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CHRONOS INFINITY 2026 — MODAL INGRESO
-// Registro de ingresos a cualquier banco
+// CHRONOS INFINITY 2026 — MODAL INGRESO iOS PREMIUM
+// Registro de ingresos con diseño iOS glassmorphism avanzado
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { registrarIngreso as registrarIngresoAction } from '@/app/_actions/bancos'
@@ -19,7 +19,7 @@ import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { Button, Modal, ModalFooter } from '../ui/Modal'
+import { iOSModal, iOSButton, iOSGlassCard, iOSInput, iOSPill } from '../ui/ios'
 // ═══════════════════════════════════════════════════════════════════════════
 // SCHEMA
 // ═══════════════════════════════════════════════════════════════════════════
@@ -164,12 +164,12 @@ export function IngresoModal({ isOpen, onClose, bancoPreseleccionado }: IngresoM
   })
 
   return (
-    <Modal
+    <iOSModal
       isOpen={isOpen}
       onClose={onClose}
       title="Registrar Ingreso"
       subtitle="Agrega fondos a un banco"
-      size="md"
+      size="lg"
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Banco */}
@@ -306,20 +306,21 @@ export function IngresoModal({ isOpen, onClose, bancoPreseleccionado }: IngresoM
           )}
         </AnimatePresence>
 
-        <ModalFooter>
-          <Button type="button" variant="ghost" onClick={onClose}>
+        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
+          <iOSButton variant="secondary" onClick={onClose}>
             Cancelar
-          </Button>
-          <Button
+          </iOSButton>
+          <iOSButton
             type="submit"
-            isLoading={isPending}
+            variant="primary"
+            loading={isPending}
             disabled={!watchedValues.bancoId || (watchedValues.monto || 0) <= 0}
             icon={<Plus className="h-4 w-4" />}
           >
             Registrar Ingreso
-          </Button>
-        </ModalFooter>
+          </iOSButton>
+        </div>
       </form>
-    </Modal>
+    </iOSModal>
   )
 }

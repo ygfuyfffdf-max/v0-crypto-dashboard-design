@@ -1,8 +1,8 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CHRONOS INFINITY 2026 — MODAL ABONO CLIENTE
-// Cobrar deuda de cliente con distribución automática
+// CHRONOS INFINITY 2026 — MODAL ABONO CLIENTE iOS PREMIUM
+// Cobrar deuda de cliente con diseño iOS glassmorphism
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { formatCurrency } from '@/app/_lib/utils/formatters'
@@ -14,7 +14,7 @@ import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { Button, Modal, ModalFooter } from '../ui/Modal'
+import { iOSModal, iOSButton, iOSGlassCard, iOSInput, iOSSelect, iOSProgress } from '../ui/ios'
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SCHEMA

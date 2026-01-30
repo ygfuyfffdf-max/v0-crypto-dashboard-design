@@ -6,11 +6,12 @@
  * Sistema completo de efectos hover premium:
  * - Botones magnéticos con atracción al cursor
  * - Glow effects dinámicos
- * - Tilt 3D con perspectiva
+ * - Tilt 3D con perspectiva (CONTROLABLE via MotionSettings)
  * - Morphing shapes
  * - Particle explosions on hover
  *
  * TECNOLOGÍAS: motion/react + React Spring + custom physics
+ * INTEGRACIÓN: Respeta MotionSettingsProvider para control global de 3D
  * ═══════════════════════════════════════════════════════════════════════════════════════════════════
  */
 
@@ -25,8 +26,9 @@ import { useEffect, useRef, useState } from 'react'
 
 /**
  * Hook para botón magnético (atracción al cursor)
+ * @param enabled - Permite deshabilitar el efecto (default: true)
  */
-export function useMagneticHover(strength: number = 0.3, returnSpeed: number = 100) {
+export function useMagneticHover(strength: number = 0.3, returnSpeed: number = 100, enabled: boolean = true) {
   const ref = useRef<HTMLElement>(null)
 
   const x = useMotionValue(0)
@@ -37,6 +39,13 @@ export function useMagneticHover(strength: number = 0.3, returnSpeed: number = 1
   const springY = useSpring(y, springConfig)
 
   useEffect(() => {
+    // Si está deshabilitado, no hacer nada
+    if (!enabled) {
+      x.set(0)
+      y.set(0)
+      return
+    }
+
     const element = ref.current
     if (!element) return
 
@@ -71,15 +80,17 @@ export function useMagneticHover(strength: number = 0.3, returnSpeed: number = 1
       element.removeEventListener('mousemove', handleMouseMove)
       element.removeEventListener('mouseleave', handleMouseLeave)
     }
-  }, [x, y, strength])
+  }, [x, y, strength, enabled])
 
   return { ref, x: springX, y: springY }
 }
 
 /**
  * Hook para tilt 3D con mouse
+ * @param enabled - Permite deshabilitar el efecto 3D completamente (default: false - DESHABILITADO)
+ * NOTA: Por defecto deshabilitado para evitar efectos tediosos con el cursor
  */
-export function useTilt3D(intensity: number = 15) {
+export function useTilt3D(intensity: number = 15, enabled: boolean = false) {
   const ref = useRef<HTMLElement>(null)
 
   const rotateX = useMotionValue(0)
@@ -90,6 +101,13 @@ export function useTilt3D(intensity: number = 15) {
   const springRotateY = useSpring(rotateY, springConfig)
 
   useEffect(() => {
+    // IMPORTANTE: Por defecto deshabilitado para evitar tracking tedioso
+    if (!enabled) {
+      rotateX.set(0)
+      rotateY.set(0)
+      return
+    }
+
     const element = ref.current
     if (!element) return
 
@@ -117,7 +135,7 @@ export function useTilt3D(intensity: number = 15) {
       element.removeEventListener('mousemove', handleMouseMove)
       element.removeEventListener('mouseleave', handleMouseLeave)
     }
-  }, [rotateX, rotateY, intensity])
+  }, [rotateX, rotateY, intensity, enabled])
 
   return { ref, rotateX: springRotateX, rotateY: springRotateY }
 }

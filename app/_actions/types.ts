@@ -1,9 +1,149 @@
 // ═══════════════════════════════════════════════════════════════
-// CHRONOS - TIPOS DE SERVER ACTIONS
-// Archivo separado para evitar errores de 'use server' con tipos
+// CHRONOS INFINITY 2026 - TIPOS DE SERVER ACTIONS
+// Sistema de tipos centralizado para máxima consistencia y type-safety
+// Optimizado: Enero 2026
 // ═══════════════════════════════════════════════════════════════
 
 import { z } from 'zod'
+
+// ═══════════════════════════════════════════════════════════════
+// ACTION RESULT - TIPO UNIFICADO PARA TODAS LAS RESPUESTAS
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Tipo genérico para respuestas de Server Actions
+ * Garantiza consistencia en toda la aplicación
+ *
+ * @template T - Tipo de datos retornados en caso de éxito
+ *
+ * @example
+ * // Éxito con datos
+ * return { success: true, data: cliente }
+ *
+ * @example
+ * // Error
+ * return { success: false, error: 'Cliente no encontrado', code: 'NOT_FOUND' }
+ */
+export type ActionResult<T = void> =
+  | ActionSuccess<T>
+  | ActionError
+
+export interface ActionSuccess<T = void> {
+  success: true
+  data: T
+  /** Mensaje opcional de éxito */
+  message?: string
+  /** Metadata adicional opcional */
+  meta?: ActionMeta
+}
+
+export interface ActionError {
+  success: false
+  error: string
+  /** Código de error para handling específico */
+  code?: ErrorCode
+  /** Detalles adicionales del error */
+  details?: Record<string, unknown>
+  /** Metadata adicional opcional */
+  meta?: ActionMeta
+}
+
+export interface ActionMeta {
+  /** Timestamp de la operación */
+  timestamp?: number
+  /** Duración de la operación en ms */
+  duration?: number
+  /** ID de trazabilidad */
+  traceId?: string
+  /** Información de caché */
+  cached?: boolean
+  /** Versión de la API */
+  version?: string
+}
+
+/**
+ * Códigos de error estándar para handling consistente
+ */
+export type ErrorCode =
+  | 'VALIDATION_ERROR'      // Error de validación de datos
+  | 'NOT_FOUND'             // Recurso no encontrado
+  | 'DUPLICATE'             // Recurso duplicado
+  | 'UNAUTHORIZED'          // Sin autorización
+  | 'FORBIDDEN'             // Acceso prohibido
+  | 'INSUFFICIENT_FUNDS'    // Fondos insuficientes
+  | 'INSUFFICIENT_STOCK'    // Stock insuficiente
+  | 'TRANSACTION_FAILED'    // Fallo en transacción
+  | 'CONFLICT'              // Conflicto de estado
+  | 'RATE_LIMITED'          // Rate limit excedido
+  | 'INTERNAL_ERROR'        // Error interno
+  | 'NETWORK_ERROR'         // Error de red
+  | 'TIMEOUT'               // Timeout de operación
+  | 'UNKNOWN'               // Error desconocido
+
+/**
+ * Tipo para respuestas paginadas
+ */
+export interface PaginatedResult<T> {
+  items: T[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+  hasMore: boolean
+}
+
+export type ActionPaginatedResult<T> = ActionResult<PaginatedResult<T>>
+
+/**
+ * Helpers para crear respuestas consistentes
+ */
+export const ActionHelpers = {
+  success: <T>(data: T, message?: string, meta?: ActionMeta): ActionSuccess<T> => ({
+    success: true,
+    data,
+    message,
+    meta: { ...meta, timestamp: Date.now() }
+  }),
+
+  error: (error: string, code?: ErrorCode, details?: Record<string, unknown>): ActionError => ({
+    success: false,
+    error,
+    code: code ?? 'UNKNOWN',
+    details,
+    meta: { timestamp: Date.now() }
+  }),
+
+  notFound: (resource: string): ActionError => ({
+    success: false,
+    error: `${resource} no encontrado`,
+    code: 'NOT_FOUND',
+    meta: { timestamp: Date.now() }
+  }),
+
+  validationError: (message: string, details?: Record<string, unknown>): ActionError => ({
+    success: false,
+    error: message,
+    code: 'VALIDATION_ERROR',
+    details,
+    meta: { timestamp: Date.now() }
+  }),
+
+  insufficientFunds: (banco: string, required: number, available: number): ActionError => ({
+    success: false,
+    error: `Fondos insuficientes en ${banco}`,
+    code: 'INSUFFICIENT_FUNDS',
+    details: { required, available, deficit: required - available },
+    meta: { timestamp: Date.now() }
+  }),
+
+  insufficientStock: (producto: string, required: number, available: number): ActionError => ({
+    success: false,
+    error: `Stock insuficiente de ${producto}`,
+    code: 'INSUFFICIENT_STOCK',
+    details: { required, available, deficit: required - available },
+    meta: { timestamp: Date.now() }
+  })
+}
 
 // ═══════════════════════════════════════════════════════════════
 // VENTAS

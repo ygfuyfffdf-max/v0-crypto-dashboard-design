@@ -1,0 +1,17 @@
+{
+  "name": "chronos-websocket-server",
+  "version": "3.0.0",
+  "description": "WebSocket server for CHRONOS INFINITY 2026",
+  "main": "websocket-server.ts",
+  "scripts": {
+    "start": "tsx watch websocket-server.ts",
+    "build": "tsx websocket-server.ts"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.13",
+    "tsx": "^4.21.0"
+  }
+}

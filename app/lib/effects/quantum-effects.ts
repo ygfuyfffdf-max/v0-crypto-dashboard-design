@@ -102,6 +102,7 @@ export function useMagneticEffect<T extends HTMLElement = HTMLDivElement>(
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // 🎴 3D TILT EFFECT — PERSPECTIVA 3D
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// NOTA: Por defecto DESHABILITADO para evitar tracking tedioso con el cursor
 
 interface TiltConfig {
   maxTilt?: number
@@ -114,6 +115,8 @@ interface TiltConfig {
     damping: number
     mass: number
   }
+  /** @default false - Deshabilitado por defecto para evitar efectos tediosos */
+  enabled?: boolean
 }
 
 export function useTiltEffect<T extends HTMLElement = HTMLDivElement>(config: TiltConfig = {}) {
@@ -124,6 +127,7 @@ export function useTiltEffect<T extends HTMLElement = HTMLDivElement>(config: Ti
     speed = 400,
     glareOpacity = 0.15,
     springConfig = { stiffness: 400, damping: 28, mass: 0.5 },
+    enabled = false, // ← DESHABILITADO por defecto
   } = config
 
   const ref = useRef<T>(null)
@@ -140,7 +144,8 @@ export function useTiltEffect<T extends HTMLElement = HTMLDivElement>(config: Ti
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<T>) => {
-      if (!ref.current) return
+      // Si está deshabilitado, no hacer tracking
+      if (!enabled || !ref.current) return
 
       const rect = ref.current.getBoundingClientRect()
       const centerX = rect.width / 2
@@ -158,12 +163,13 @@ export function useTiltEffect<T extends HTMLElement = HTMLDivElement>(config: Ti
       glareX.set((mouseX / rect.width) * 100)
       glareY.set((mouseY / rect.height) * 100)
     },
-    [maxTilt, rotateX, rotateY, glareX, glareY],
+    [maxTilt, rotateX, rotateY, glareX, glareY, enabled],
   )
 
   const handleMouseEnter = useCallback(() => {
+    if (!enabled) return
     scaleValue.set(scale)
-  }, [scale, scaleValue])
+  }, [scale, scaleValue, enabled])
 
   const handleMouseLeave = useCallback(() => {
     rotateX.set(0)
@@ -181,21 +187,22 @@ export function useTiltEffect<T extends HTMLElement = HTMLDivElement>(config: Ti
 
   return {
     ref,
-    style: {
+    style: enabled ? {
       perspective,
       rotateX: springRotateX,
       rotateY: springRotateY,
       scale: springScale,
       transformStyle: 'preserve-3d' as const,
-    },
-    glareStyle: {
+    } : {},
+    glareStyle: enabled ? {
       background: glareGradient,
-    },
-    handlers: {
+    } : {},
+    handlers: enabled ? {
       onMouseMove: handleMouseMove,
       onMouseEnter: handleMouseEnter,
       onMouseLeave: handleMouseLeave,
-    },
+    } : {},
+    enabled,
   }
 }
 

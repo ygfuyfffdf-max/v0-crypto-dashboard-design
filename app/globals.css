@@ -863,6 +863,162 @@ body::before {
     display: none;
   }
 
+  /* ═══════════════════ iOS PREMIUM SCROLL SYSTEM 2026 ═══════════════════ */
+
+  /* Scrollbar hidden pero visible al hacer scroll */
+  .scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Scrollbar iOS style - auto-hide */
+  .scrollbar-ios {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  }
+
+  .scrollbar-ios::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .scrollbar-ios:hover::-webkit-scrollbar {
+    opacity: 1;
+  }
+
+  .scrollbar-ios::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-ios::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 100px;
+    transition: background 0.2s ease;
+  }
+
+  .scrollbar-ios::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  /* Scrollbar visible state */
+  .scrollbar-visible::-webkit-scrollbar {
+    opacity: 1 !important;
+  }
+
+  /* iOS Overscroll behavior */
+  .overscroll-bounce {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* iOS Scroll snap */
+  .snap-mandatory-x {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .snap-mandatory-y {
+    scroll-snap-type: y mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .snap-proximity-x {
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .snap-proximity-y {
+    scroll-snap-type: y proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* iOS Momentum scroll */
+  .momentum-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+  }
+
+  /* iOS No tap highlight */
+  .no-tap-highlight {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+
+  /* iOS Safe area padding utilities */
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left, 0px);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  .safe-all {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  /* iOS Touch-friendly targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .touch-target-sm {
+    min-height: 36px;
+    min-width: 36px;
+  }
+
+  /* iOS Active state feedback */
+  .active-scale:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+
+  .active-opacity:active {
+    opacity: 0.7;
+    transition: opacity 0.1s ease;
+  }
+
+  /* iOS Glass backdrop blur levels */
+  .blur-ios-sm {
+    backdrop-filter: blur(8px) saturate(180%);
+    -webkit-backdrop-filter: blur(8px) saturate(180%);
+  }
+
+  .blur-ios-md {
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+  }
+
+  .blur-ios-lg {
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+  }
+
+  .blur-ios-xl {
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+  }
+
   /* ═══════════════════ ADVANCED HOVER EFFECTS ═══════════════════ */
 
   /* 3D Tilt on Hover */

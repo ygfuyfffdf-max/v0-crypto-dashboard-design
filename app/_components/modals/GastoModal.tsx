@@ -1,8 +1,8 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CHRONOS INFINITY 2026 — MODAL GASTO
-// Registro de gastos desde cualquier banco
+// CHRONOS INFINITY 2026 — MODAL GASTO iOS PREMIUM
+// Registro de gastos con diseño iOS glassmorphism avanzado
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { BANCOS_ORDENADOS } from '@/app/_lib/constants/bancos'
@@ -18,7 +18,7 @@ import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { Button, Modal, ModalFooter } from '../ui/Modal'
+import { iOSModal, iOSButton, iOSGlassCard, iOSInput, iOSPill } from '../ui/ios'
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SCHEMA
@@ -179,12 +179,13 @@ export function GastoModal({ isOpen, onClose, bancoPreseleccionado }: GastoModal
   })
 
   return (
-    <Modal
+    <iOSModal
       isOpen={isOpen}
       onClose={onClose}
       title="Registrar Gasto"
       subtitle="Retira fondos de un banco"
-      size="md"
+      size="lg"
+      variant="danger"
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Banco */}
@@ -313,21 +314,21 @@ export function GastoModal({ isOpen, onClose, bancoPreseleccionado }: GastoModal
           )}
         </AnimatePresence>
 
-        <ModalFooter>
-          <Button type="button" variant="ghost" onClick={onClose}>
+        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
+          <iOSButton variant="secondary" onClick={onClose}>
             Cancelar
-          </Button>
-          <Button
+          </iOSButton>
+          <iOSButton
             type="submit"
             variant="danger"
-            isLoading={isPending}
+            loading={isPending}
             disabled={!hasEnoughCapital || !watchedValues.bancoId}
             icon={<Minus className="h-4 w-4" />}
           >
             Registrar Gasto
-          </Button>
-        </ModalFooter>
+          </iOSButton>
+        </div>
       </form>
-    </Modal>
+    </iOSModal>
   )
 }

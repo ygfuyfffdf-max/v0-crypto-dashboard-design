@@ -90,3 +90,71 @@ export {
   selectVentasPendientes,
   selectMovimientosBanco,
 } from './FlowDistributorStore'
+
+// ═══════════════════════════════════════════════════════════════════════════════════════
+// ULTRA CACHE SYSTEM — Sistema de caché multinivel
+// ═══════════════════════════════════════════════════════════════════════════════════════
+
+export {
+  ultraCache,
+  createCachedFetcher,
+  cached,
+  withCache,
+  type CacheOptions,
+  type CacheStats,
+} from './UltraCacheSystem'
+
+// ═══════════════════════════════════════════════════════════════════════════════════════
+// OPTIMIZED SELECTORS — Selectores memoizados para Zustand
+// ═══════════════════════════════════════════════════════════════════════════════════════
+
+export {
+  // Utility selectors
+  createMemoizedSelector,
+  combineSelectors,
+  createShallowSelector,
+  createTransformedSelector,
+  createKPIsSelector,
+  createPerformanceSelector,
+  shallow,
+  deepEqual,
+  arrayShallow,
+  type PerformanceMetrics as SelectorPerformanceMetrics,
+} from './OptimizedSelectors'
+
+// ═══════════════════════════════════════════════════════════════════════════════════════
+// PERFORMANCE MONITOR — Monitoreo de rendimiento en tiempo real
+// ═══════════════════════════════════════════════════════════════════════════════════════
+
+export {
+  performanceMonitor,
+  usePerformanceMetrics,
+  usePerformanceEvents,
+  useRenderTime,
+  useMeasuredEffect,
+  useMeasuredCallback,
+  type PerformanceMetrics as PerfMetrics,
+  type PerformanceEvent,
+  type PerformanceThresholds,
+} from './PerformanceMonitor'
+
+// ═══════════════════════════════════════════════════════════════════════════════════════
+// FLOW ENGINE — Motor de flujos operacionales con transacciones
+// ═══════════════════════════════════════════════════════════════════════════════════════
+
+export {
+  FlowBuilder,
+  createFlow,
+  createStep,
+  ventaFlowTemplate,
+  ordenCompraFlowTemplate,
+  transferenciaFlowTemplate,
+  type FlowStep,
+  type FlowResult,
+  type StepResult,
+  type FlowConfig,
+  type StepStatus,
+  type VentaInput,
+  type OrdenCompraInput,
+  type TransferenciaInput,
+} from './FlowEngine'

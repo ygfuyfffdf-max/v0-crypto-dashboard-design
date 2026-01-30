@@ -1,8 +1,8 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════════
-// CHRONOS INFINITY 2026 — FORMULARIO TRANSFERENCIA
-// Transferencia animada entre bancos con línea 3D
+// CHRONOS INFINITY 2026 — FORMULARIO TRANSFERENCIA iOS PREMIUM
+// Transferencia animada entre bancos con diseño iOS limpio
 // ═══════════════════════════════════════════════════════════════
 
 import { useState, useTransition } from 'react'
@@ -16,6 +16,7 @@ import { cn } from '@/app/_lib/utils'
 import { formatCurrency } from '@/app/_lib/utils/formatters'
 import { BANCOS_CONFIG } from '@/app/_lib/constants/bancos'
 import type { Banco } from '@/database/schema'
+import { iOSGlassCard, iOSButton, iOSInput, iOSSelect, iOSNumberInput, iOSProgress } from '../ui/ios'
 
 const TransferenciaSchema = z
   .object({

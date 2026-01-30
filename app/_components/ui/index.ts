@@ -66,3 +66,124 @@ export {
     staggerItem, Typewriter,
     Wave,
 } from '../animations/MicroAnimations'
+
+// ═══════════════════════════════════════════════════════════════════════════════════
+// 🍎 iOS PREMIUM UI SYSTEM (NEW - 2026)
+// Sistema de componentes inspirado en iOS 18+ sin efectos 3D problemáticos
+// ═══════════════════════════════════════════════════════════════════════════════════
+export * from './ios'
+
+// 🆕 CLEAN SYSTEM DIRECT EXPORTS (Sin 3D problemático)
+export {
+  // Clean Cards
+  CleanGlassCard,
+  iOSCleanMetricCard,
+  iOSCleanListCard,
+  iOSCleanExpandableCard,
+  iOSCleanActionCard,
+  // Clean Modals
+  CleanModal,
+  CleanAlert,
+  CleanConfirmationSheet,
+  // Clean Navigation
+  CleanTabBar,
+  CleanHeader,
+  CleanBreadcrumbs,
+  CleanFAB,
+  CleanQuickActions,
+  defaultTabItems,
+  // Enhanced Scroll
+  EnhancedScrollContainer,
+  FormScrollContainer,
+  HorizontalScrollContainer,
+  // Motion Settings
+  MotionSettingsProvider,
+  useMotionSettings,
+  useShouldAnimate,
+  use3DEffects,
+} from './ios'
+
+// Individual iOS exports for convenience
+export {
+  // Core
+  iOSGlassCard,
+  iOSNavBar,
+  iOSSearchBar,
+  iOSButton,
+  iOSToggle,
+  iOSPill,
+  iOSProgress,
+  iOSSkeleton,
+  iOSListItem,
+  iOSListGroup,
+  iOSSegmentedControl,
+  iOSActionSheet,
+  // Modals
+  iOSModal,
+  iOSAlert,
+  iOSConfirmationSheet,
+  // Forms
+  iOSInput,
+  iOSTextArea,
+  iOSSelect,
+  iOSCheckbox,
+  iOSRadioGroup,
+  iOSNumberInput,
+  iOSFormContainer,
+  iOSFormSection,
+  // Navigation
+  iOSTabBar,
+  iOSFAB,
+  iOSBreadcrumbs,
+  iOSPageIndicator,
+  iOSNavigationStack,
+  iOSNavigationPage,
+  iOSQuickActions,
+  iOSSwipeBack,
+  // Scroll
+  iOSScrollView,
+  iOSPullToRefresh,
+  iOSHorizontalScroll,
+  iOSCarouselItem,
+  iOSCollapsibleHeader,
+  iOSInfiniteScroll,
+  iOSSectionList,
+  // Cards
+  iOSMetricCard,
+  iOSListCard,
+  iOSExpandableCard,
+  iOSFeatureCard,
+  iOSTransactionCard,
+  iOSStatsCard,
+  // Config & Hooks
+  iOSSystemConfig,
+  useiOSTheme,
+  useNavigationStack,
+  useFormContext,
+  createSpringConfig,
+  createGlassClasses,
+  isMobileDevice,
+  prefersReducedMotion,
+  // Mobile Layout
+  MobileLayoutProvider,
+  MobileScreen,
+  MobileHeader,
+  MobileSection,
+  MobileCardContainer,
+  MobileEmptyState,
+  MobileLoadingState,
+  useMobileLayout,
+  // Motion Settings
+  MotionSettingsModal,
+  MotionSettingsCompact,
+  // Toast System
+  ToastProvider,
+  useToast,
+  // Dashboard Quick Actions
+  iOSDashboardQuickActions,
+  QuickActionGroup,
+  FloatingQuickBar,
+  // Financial Summary
+  iOSFinancialSummary,
+  iOSFinancialSummaryCompact,
+} from './ios'

@@ -2,8 +2,8 @@
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════
- * CHRONOS INFINITY 2026 — NUEVO CLIENTE MODAL
- * Modal premium para crear nuevo cliente con validación Zod
+ * CHRONOS INFINITY 2026 — NUEVO CLIENTE MODAL iOS PREMIUM
+ * Modal premium para crear nuevo cliente con validación Zod y diseño iOS
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -16,8 +16,7 @@ import { motion } from 'motion/react'
 import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { Modal, ModalFooter } from '../ui/Modal'
-import { QuantumButton, QuantumGlassCard, QuantumInput } from '../ui/QuantumElevatedUI'
+import { iOSModal, iOSButton, iOSGlassCard, iOSInput, iOSNumberInput } from '../ui/ios'
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PROPS

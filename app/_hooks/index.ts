@@ -49,6 +49,14 @@ export {
   useDistribucionGYA,
 } from './useMetricasRapidas'
 
+// 🆕 HOOKS DE AUDITORÍA Y NOTIFICACIONES SUPREME (v3.0)
+export {
+  useAudit,
+  useNotifications,
+  useExport,
+  useAuditedOperation
+} from './useAuditNotifications'
+
 // Realtime Hooks (NEW)
 export {
   useRealtime as useRealtimeBase,
@@ -84,3 +92,87 @@ export { useBioFeedback } from './useBioFeedback'
 
 // Wake Word Detection ("Hey Chronos")
 export { useWakeWord } from './useWakeWord'
+
+// ═══════════════════════════════════════════════════════════════
+// ADVANCED SCROLL SYSTEM (iOS-Style)
+// ═══════════════════════════════════════════════════════════════
+export {
+  useAdvancedScroll,
+  useSimpleScroll,
+  useFormScroll,
+  useInfiniteListScroll,
+  usePullToRefreshScroll,
+  type AdvancedScrollConfig,
+  type ScrollState,
+  type UseAdvancedScrollReturn,
+} from './useAdvancedScroll'
+
+// ═══════════════════════════════════════════════════════════════
+// MOTION PREFERENCES (Accessibility & Performance)
+// ═══════════════════════════════════════════════════════════════
+export {
+  useMotionPreferences,
+  useMotionPreferencesStandalone,
+  useReducedMotion,
+  useIsMobile,
+  MotionPreferencesProvider,
+  getAnimationConfig,
+  type MotionPreferences,
+  type MotionPreferencesActions,
+  type UseMotionPreferencesReturn,
+} from './useMotionPreferences'
+
+// ═══════════════════════════════════════════════════════════════════════════
+// iOS TOAST HOOK (Sonner compatibility)
+// ═══════════════════════════════════════════════════════════════════════════
+export { useIOSToast, iosToast } from './useIOSToast'
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🆕 ADVANCED UX HOOKS (v3.0 - Ultra Premium)
+// ═══════════════════════════════════════════════════════════════════════════
+export {
+  // Debounce/Throttle
+  useDebounce,
+  useDebouncedCallback,
+  useThrottle,
+  
+  // Optimistic Updates
+  useOptimistic,
+  
+  // Intersection Observer
+  useIntersectionObserver,
+  
+  // Media Queries
+  useMediaQuery,
+  useIsMobile as useIsMobileAdvanced,
+  useIsTablet,
+  useIsDesktop,
+  useIsLargeDesktop,
+  usePrefersReducedMotion,
+  usePrefersDarkMode,
+  
+  // Storage
+  useLocalStorage,
+  
+  // Keyboard
+  useKeyboardShortcut,
+  
+  // Clipboard
+  useClipboard,
+  
+  // Online Status
+  useOnlineStatus,
+  
+  // Scroll Position
+  useScrollPosition,
+  
+  // Window Size
+  useWindowSize,
+  
+  // Utilities
+  usePrevious,
+  useToggle,
+  useInterval,
+  useTimeout,
+  useAsync,
+} from './useAdvancedUX'

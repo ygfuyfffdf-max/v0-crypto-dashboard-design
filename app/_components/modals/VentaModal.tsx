@@ -1,9 +1,8 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CHRONOS INFINITY 2026 — MODAL VENTA QUANTUM ELEVATED
-// Wizard 4 pasos con distribución GYA automática usando Zustand
-// UI elevada con QuantumButton, QuantumInput, QuantumGlassCard
+// CHRONOS INFINITY 2026 — MODAL VENTA iOS PREMIUM
+// Wizard 4 pasos con distribución GYA automática - Diseño iOS glassmorphism
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { cn } from '@/app/_lib/utils'
@@ -30,9 +29,8 @@ import { useEffect, useMemo, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { Modal, ModalFooter } from '../ui/Modal'
+import { iOSModal, iOSButton, iOSGlassCard, iOSInput, iOSSelect, iOSProgress, iOSPill } from '../ui/ios'
 import {
-    QuantumButton,
     QuantumGlassCard,
     QuantumInput,
     QuantumSelect,

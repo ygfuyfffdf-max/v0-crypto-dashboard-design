@@ -1,8 +1,8 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CHRONOS INFINITY 2026 — MODAL TRANSFERENCIA
-// Transferencia entre bancos con visualización animada
+// CHRONOS INFINITY 2026 — MODAL TRANSFERENCIA iOS PREMIUM
+// Transferencia entre bancos con diseño iOS glassmorphism avanzado
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { transferirEntreBancos } from '@/app/_actions/bancos'
@@ -19,7 +19,7 @@ import { useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { Button, Modal, ModalFooter } from '../ui/Modal'
+import { iOSModal, iOSButton, iOSGlassCard, iOSInput } from '../ui/ios'
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SCHEMA
@@ -179,12 +179,12 @@ export function TransferenciaModal({ isOpen, onClose }: TransferenciaModalProps)
   })
 
   return (
-    <Modal
+    <iOSModal
       isOpen={isOpen}
       onClose={onClose}
       title="Transferencia entre Bancos"
       subtitle="Mueve fondos entre tus cuentas"
-      size="md"
+      size="lg"
     >
       <AnimatePresence mode="wait">
         {showSuccess ? (
@@ -378,24 +378,25 @@ export function TransferenciaModal({ isOpen, onClose }: TransferenciaModalProps)
               )}
             </AnimatePresence>
 
-            <ModalFooter>
-              <Button type="button" variant="ghost" onClick={onClose}>
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/[0.08]">
+              <iOSButton variant="secondary" onClick={onClose}>
                 Cancelar
-              </Button>
-              <Button
+              </iOSButton>
+              <iOSButton
                 type="submit"
-                isLoading={isPending}
+                variant="primary"
+                loading={isPending}
                 disabled={
                   !hasEnoughCapital || !watchedValues.bancoOrigenId || !watchedValues.bancoDestinoId
                 }
                 icon={<ArrowRightLeft className="h-4 w-4" />}
               >
                 Transferir
-              </Button>
-            </ModalFooter>
+              </iOSButton>
+            </div>
           </motion.form>
         )}
       </AnimatePresence>
-    </Modal>
+    </iOSModal>
   )
 }

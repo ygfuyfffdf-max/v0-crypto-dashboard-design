@@ -16,6 +16,7 @@ import {
   ChevronDown,
   ClipboardList,
   CreditCard,
+  Film,
   HelpCircle,
   LayoutDashboard,
   LogOut,
@@ -23,12 +24,14 @@ import {
   Package,
   Search,
   Settings,
+  Shield,
   ShoppingCart,
   Truck,
   User,
   Users,
   Wallet,
   X,
+  BarChart3,
 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import React, { useEffect, useRef, useState } from "react"
@@ -48,6 +51,9 @@ export type PanelId =
   | "distribuidores"
   | "gastosAbonos"
   | "movimientos"
+  | "reportes"
+  | "configuracion"
+  | "showcase"
 
 export type ThemeStyle = "modern" | "retro" | "genz" | "minimal"
 
@@ -95,6 +101,9 @@ const navItems: NavItem[] = [
   { id: "distribuidores", label: "Distribuidores", icon: Truck },
   { id: "gastosAbonos", label: "Gastos/Abonos", icon: CreditCard },
   { id: "movimientos", label: "Movimientos", icon: ArrowUpDown },
+  { id: "reportes", label: "Reportes", icon: BarChart3 },
+  { id: "configuracion", label: "Config", icon: Settings },
+  { id: "showcase", label: "Showcase", icon: Film },
 ]
 
 // ═══════════════════════════════════════════════════════════════════════════

@@ -1,8 +1,8 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════════
-// CHRONOS INFINITY 2026 — FORMULARIO GASTO
-// Registro de gastos desde cualquier banco
+// CHRONOS INFINITY 2026 — FORMULARIO GASTO iOS PREMIUM
+// Registro de gastos con diseño iOS glassmorphism
 // ═══════════════════════════════════════════════════════════════
 
 import { useState, useTransition } from 'react'
@@ -16,6 +16,7 @@ import { cn } from '@/app/_lib/utils'
 import { formatCurrency } from '@/app/_lib/utils/formatters'
 import { BANCOS_CONFIG } from '@/app/_lib/constants/bancos'
 import type { Banco } from '@/database/schema'
+import { iOSGlassCard, iOSButton, iOSInput, iOSSelect, iOSPill, iOSNumberInput } from '../ui/ios'
 
 const GastoSchema = z.object({
   bancoId: z.string().min(1, 'Selecciona un banco'),

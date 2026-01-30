@@ -2,21 +2,19 @@
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════════════════════════════
- * 🏦✨ BANCO DETAIL MODAL PREMIUM — CHRONOS INFINITY 2026
- * ═══════════════════════════════════════════════════════════════════════════════════════════════════
- * 
- * Modal ultra premium para mostrar detalles completos de un banco con:
+ * 🏦✨ BANCO DETAIL MODAL PREMIUM iOS — CHRONOS INFINITY 2026
+ * ════════════════════════════════════════════════════════════════════════════════════════════════
+ *
+ * Modal ultra premium con diseño iOS para mostrar detalles completos de un banco:
  * - Gráficos animados de ingresos/gastos
  * - Timeline de movimientos recientes
- * - Estadísticas avanzadas
- * - Efectos glassmorphism GEN5
- * - Animaciones cinematográficas
+ * - Estadísticas avanzadas con glassmorphism iOS
  */
 
 import { AnimatePresence, motion } from 'motion/react'
 import { Activity, ArrowDownLeft, ArrowUpRight, Calendar, TrendingDown, TrendingUp, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { AuroraGlassCard } from '../ui/AuroraGlassSystem'
+import { iOSGlassCard, iOSSegmentedControl, iOSButton, iOSScrollView, iOSMetricCard, iOSProgress } from '../ui/ios'
 import dynamic from 'next/dynamic'
 
 // Lazy load charts
@@ -141,7 +139,7 @@ export function BancoDetailModal({ banco, isOpen, onClose }: BancoDetailModalPro
   if (!banco) return null
 
   const cambioPositivo = banco.cambio >= 0
-  const margen = banco.historicoIngresos > 0 
+  const margen = banco.historicoIngresos > 0
     ? ((banco.historicoIngresos - banco.historicoGastos) / banco.historicoIngresos * 100).toFixed(1)
     : 0
 
@@ -443,7 +441,7 @@ export function BancoDetailModal({ banco, isOpen, onClose }: BancoDetailModalPro
                         className="space-y-6"
                       >
                         <h3 className="mb-4 text-sm font-medium text-white/70">Estadísticas Avanzadas</h3>
-                        
+
                         {/* Stats Grid */}
                         <div className="grid gap-4 md:grid-cols-2">
                           <div className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-4">

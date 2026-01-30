@@ -5,8 +5,14 @@ import { db } from '@/database'
 import { bancos, movimientos } from '@/database/schema'
 import { desc, eq, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { z } from 'zod'
+import { type ActionResult, ActionHelpers } from './types'
+
+// ═══════════════════════════════════════════════════════════════
+// CHRONOS INFINITY 2026 - BANCOS SERVER ACTIONS
+// Optimizado con caché inteligente y ActionResult unificado
+// ═══════════════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════════════
 // SCHEMAS DE VALIDACIÓN ZOD
@@ -27,22 +33,73 @@ const GastoSchema = z.object({
 })
 
 // ═══════════════════════════════════════════════════════════════
-// SERVER ACTIONS
+// TIPOS LOCALES
+// ═══════════════════════════════════════════════════════════════
+
+type BancoData = Awaited<ReturnType<typeof db.query.bancos.findMany>>[number]
+type BancoConMovimientos = BancoData & {
+  movimientos: Awaited<ReturnType<typeof db.query.movimientos.findMany>>
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FUNCIONES CON CACHÉ INTELIGENTE
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Obtener todos los bancos con caché de 30 segundos
+ * Invalidación automática en operaciones de escritura
+ */
+const getBancosCached = unstable_cache(
+  async () => {
+    return await db.query.bancos.findMany({
+      where: eq(bancos.activo, true),
+      orderBy: (bancos, { asc }) => [asc(bancos.orden)],
+    })
+  },
+  ['bancos-all'],
+  {
+    revalidate: 30,
+    tags: ['bancos', 'bancos-list']
+  }
+)
+
+/**
+ * Obtener banco por ID con caché
+ */
+const getBancoByIdCached = unstable_cache(
+  async (id: string) => {
+    const [banco] = await db.select().from(bancos).where(eq(bancos.id, id)).limit(1)
+    return banco
+  },
+  ['banco-by-id'],
+  {
+    revalidate: 30,
+    tags: ['bancos']
+  }
+)
+
+// ═══════════════════════════════════════════════════════════════
+// SERVER ACTIONS PÚBLICAS
 // ═══════════════════════════════════════════════════════════════
 
 /**
  * Obtener todos los bancos con su capital actual
+ * @returns ActionResult<BancoData[]>
  */
-export async function getBancos() {
+export async function getBancos(): Promise<ActionResult<BancoData[]>> {
+  const startTime = performance.now()
+
   try {
-    const result = await db.query.bancos.findMany({
-      where: eq(bancos.activo, true),
-      orderBy: (bancos, { asc }) => [asc(bancos.orden)],
+    const result = await getBancosCached()
+    const duration = Math.round(performance.now() - startTime)
+
+    return ActionHelpers.success(result, undefined, {
+      duration,
+      cached: true
     })
-    return { success: true, data: result }
   } catch (error) {
     logger.error('Error obteniendo bancos:', error as Error, { context: 'bancos' })
-    return { error: 'Error al obtener bancos' }
+    return ActionHelpers.error('Error al obtener bancos', 'INTERNAL_ERROR')
   }
 }
 

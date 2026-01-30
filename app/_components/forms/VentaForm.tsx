@@ -1,8 +1,8 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════════
-// CHRONOS INFINITY 2026 — FORMULARIO VENTA PREMIUM
-// Wizard 4 pasos con distribución GYA automática
+// CHRONOS INFINITY 2026 — FORMULARIO VENTA iOS PREMIUM
+// Wizard 4 pasos con distribución GYA automática y diseño iOS
 // ═══════════════════════════════════════════════════════════════
 
 import { cn } from '@/app/_lib/utils'
@@ -26,6 +26,7 @@ import { useMemo, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import { iOSGlassCard, iOSButton, iOSInput, iOSSelect, iOSProgress, iOSPill, iOSSegmentedControl, iOSFormSection } from '../ui/ios'
 
 // ═══════════════════════════════════════════════════════════════
 // SCHEMAS

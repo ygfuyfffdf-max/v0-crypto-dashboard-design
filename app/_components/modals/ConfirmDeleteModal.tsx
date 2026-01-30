@@ -2,8 +2,8 @@
 
 /**
  * ═══════════════════════════════════════════════════════════════════════════
- * CHRONOS INFINITY 2026 — CONFIRM DELETE MODAL
- * Modal de confirmación para acciones destructivas
+ * CHRONOS INFINITY 2026 — CONFIRM DELETE MODAL iOS PREMIUM
+ * Modal de confirmación para acciones destructivas con diseño iOS
  * Con validación de seguridad y warnings personalizados
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -12,8 +12,7 @@ import { logger } from '@/app/lib/utils/logger'
 import { motion } from 'motion/react'
 import { AlertTriangle, Trash2 } from 'lucide-react'
 import { useState } from 'react'
-import { Modal } from '../ui/Modal'
-import { QuantumButton } from '../ui/QuantumElevatedUI'
+import { iOSAlert, iOSButton, iOSInput } from '../ui/ios'
 
 interface ConfirmDeleteModalProps {
   isOpen: boolean

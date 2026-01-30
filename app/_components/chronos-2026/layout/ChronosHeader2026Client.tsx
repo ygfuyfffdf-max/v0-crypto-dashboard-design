@@ -32,6 +32,9 @@ const PANEL_ROUTES: Record<PanelId, string> = {
   distribuidores: "/distribuidores",
   movimientos: "/movimientos",
   gastosAbonos: "/gastos-abonos",
+  reportes: "/reportes",
+  configuracion: "/configuracion",
+  showcase: "/showcase/visual",
 }
 
 const ROUTE_TO_PANEL: Record<string, PanelId> = {
@@ -44,6 +47,10 @@ const ROUTE_TO_PANEL: Record<string, PanelId> = {
   "/distribuidores": "distribuidores",
   "/movimientos": "movimientos",
   "/gastos-abonos": "gastosAbonos",
+  "/reportes": "reportes",
+  "/configuracion": "configuracion",
+  "/showcase": "showcase",
+  "/showcase/visual": "showcase",
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════

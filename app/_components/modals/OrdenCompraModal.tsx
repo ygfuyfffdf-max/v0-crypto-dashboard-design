@@ -1,8 +1,8 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CHRONOS INFINITY 2026 — MODAL ORDEN DE COMPRA
-// Wizard con creación automática de distribuidor usando Zustand
+// CHRONOS INFINITY 2026 — MODAL ORDEN DE COMPRA iOS PREMIUM
+// Wizard con creación automática de distribuidor - Diseño iOS glassmorphism
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { crearOrdenCompraCompleta } from '@/app/_actions/flujos-completos'
@@ -20,7 +20,7 @@ import { useEffect, useMemo, useState, useTransition } from 'react'
 import { FieldErrors, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { Button, Modal, ModalFooter } from '../ui/Modal'
+import { iOSModal, iOSButton, iOSGlassCard, iOSInput, iOSSelect, iOSProgress } from '../ui/ios'
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SCHEMA
