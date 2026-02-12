@@ -124,7 +124,7 @@ export const VolumetricLight = memo(function VolumetricLight({
   const materialRef = useRef<THREE.MeshBasicMaterial>(null)
 
   useFrame((state) => {
-    if (materialRef.current && materialRef.current.uniforms) {
+    if (materialRef.current) {
       // Pulso sutil de intensidad
       const pulse = Math.sin(state.clock.elapsedTime * 0.5) * 0.1 + 1
       materialRef.current.opacity = 0.8 * pulse * intensity
@@ -306,7 +306,7 @@ export const CausticsPlane = memo(function CausticsPlane({
   )
 
   useFrame((state) => {
-    if (materialRef.current && materialRef.current.uniforms) {
+    if (materialRef.current && materialRef.current.uniforms && materialRef.current.uniforms.uTime) {
       materialRef.current.uniforms.uTime.value = state.clock.elapsedTime * speed
     }
   })
@@ -376,22 +376,23 @@ export const UltraPremiumPostProcessing = memo(function UltraPremiumPostProcessi
 
   return (
     <EffectComposer multisampling={quality === 'ultra' ? 8 : 4}>
-      {/* SMAA Anti-aliasing */}
-      {qualitySettings.smaa && <SMAA />}
+      <>
+        {/* SMAA Anti-aliasing */}
+        {qualitySettings.smaa ? <SMAA /> : null}
 
-      {/* Tone Mapping ACES Filmic */}
-      <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+        {/* Tone Mapping ACES Filmic */}
+        <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
 
-      {/* Bloom Premium */}
-      <Bloom
-        intensity={bloomIntensity}
-        luminanceThreshold={0.2}
-        luminanceSmoothing={0.9}
-        kernelSize={qualitySettings.bloomKernel}
-        mipmapBlur
-      />
+        {/* Bloom Premium */}
+        <Bloom
+          intensity={bloomIntensity}
+          luminanceThreshold={0.2}
+          luminanceSmoothing={0.9}
+          kernelSize={qualitySettings.bloomKernel}
+          mipmapBlur
+        />
 
-      {/* Depth of Field con Bokeh */}
+        {/* Depth of Field con Bokeh */}
       {dofEnabled && (
         <DepthOfField focusDistance={focusDistance} focalLength={0.05} bokehScale={3} />
       )}
@@ -408,8 +409,9 @@ export const UltraPremiumPostProcessing = memo(function UltraPremiumPostProcessi
       {/* Vignette cinematográfico */}
       {vignetteEnabled && <Vignette darkness={0.4} offset={0.3} />}
 
-      {/* Film grain sutil */}
-      {noiseEnabled && <Noise opacity={0.02} blendFunction={BlendFunction.OVERLAY} />}
+        {/* Film grain sutil */}
+        {noiseEnabled && <Noise opacity={0.02} blendFunction={BlendFunction.OVERLAY} />}
+      </>
     </EffectComposer>
   )
 })
@@ -495,12 +497,17 @@ export const AmbientParticles = memo(function AmbientParticles({
   useFrame((state) => {
     if (pointsRef.current) {
       const positionAttribute = pointsRef.current.geometry.attributes.position
-      if (!positionAttribute) return
+      // Validación ultra robusta para evitar crasheos de WebGL
+      if (!positionAttribute || !positionAttribute.array) return
 
       const array = positionAttribute.array as Float32Array
+      if (!array || array.length === 0) return
 
       for (let i = 0; i < count; i++) {
         const i3 = i * 3
+
+        // Verificación de bounds
+        if (i3 + 2 >= array.length) return
 
         // Movimiento orgánico con noise
         const noise = Math.sin(state.clock.elapsedTime * speed + i * 0.1) * 0.01
@@ -508,20 +515,18 @@ export const AmbientParticles = memo(function AmbientParticles({
         const v2 = velocities[i3 + 1] ?? 0
         const v3 = velocities[i3 + 2] ?? 0
 
-        if (array[i3] !== undefined) array[i3] += v1 + noise
-        if (array[i3 + 1] !== undefined) {
-          array[i3 + 1] += v2 + Math.cos(state.clock.elapsedTime * speed * 0.5 + i) * 0.005
-        }
-        if (array[i3 + 2] !== undefined) array[i3 + 2] += v3
+        if (array[i3] !== undefined) (array[i3] as any) += v1 + noise
+        if (array[i3 + 1] !== undefined) (array[i3 + 1] as any) += v2 + Math.cos(state.clock.elapsedTime * speed * 0.5 + i) * 0.005
+        if (array[i3 + 2] !== undefined) (array[i3 + 2] as any) += v3
 
         // Wrap around
         const halfSpread = spread / 2
-        if (array[i3] !== undefined && array[i3] > halfSpread) array[i3] = -halfSpread
-        if (array[i3] !== undefined && array[i3] < -halfSpread) array[i3] = halfSpread
-        if (array[i3 + 1] !== undefined && array[i3 + 1] > halfSpread) array[i3 + 1] = -halfSpread
-        if (array[i3 + 1] !== undefined && array[i3 + 1] < -halfSpread) array[i3 + 1] = halfSpread
-        if (array[i3 + 2] !== undefined && array[i3 + 2] > halfSpread) array[i3 + 2] = -halfSpread
-        if (array[i3 + 2] !== undefined && array[i3 + 2] < -halfSpread) array[i3 + 2] = halfSpread
+        if (array[i3] !== undefined && (array[i3] as number) > halfSpread) (array[i3] as any) = -halfSpread
+        if (array[i3] !== undefined && (array[i3] as number) < -halfSpread) (array[i3] as any) = halfSpread
+        if (array[i3 + 1] !== undefined && (array[i3 + 1] as number) > halfSpread) (array[i3 + 1] as any) = -halfSpread
+        if (array[i3 + 1] !== undefined && (array[i3 + 1] as number) < -halfSpread) (array[i3 + 1] as any) = halfSpread
+        if (array[i3 + 2] !== undefined && (array[i3 + 2] as number) > halfSpread) (array[i3 + 2] as any) = -halfSpread
+        if (array[i3 + 2] !== undefined && (array[i3 + 2] as number) < -halfSpread) (array[i3 + 2] as any) = halfSpread
       }
 
       positionAttribute.needsUpdate = true
@@ -584,6 +589,30 @@ export const UltraPremiumScene = memo(function UltraPremiumScene({
   postProcessing = true,
 }: UltraPremiumSceneProps) {
   const focusRef = useRef<THREE.Mesh>(null)
+
+  // Manejo robusto de pérdida de contexto WebGL
+  const { gl } = useThree()
+  React.useEffect(() => {
+    const handleContextLost = (event: Event) => {
+      event.preventDefault()
+      console.warn('⚠️ WebGL Context Lost. Attempting to restore...')
+    }
+    const handleContextRestored = () => {
+      console.log('✅ WebGL Context Restored')
+    }
+
+    // Protección contra acceso nulo
+    if (!gl || !gl.domElement) return
+
+    const canvas = gl.domElement
+    canvas.addEventListener('webglcontextlost', handleContextLost, false)
+    canvas.addEventListener('webglcontextrestored', handleContextRestored, false)
+
+    return () => {
+      canvas.removeEventListener('webglcontextlost', handleContextLost)
+      canvas.removeEventListener('webglcontextrestored', handleContextRestored)
+    }
+  }, [gl])
 
   return (
     <Suspense fallback={null}>

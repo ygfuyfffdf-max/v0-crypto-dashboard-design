@@ -1,160 +1,58 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════════════════════════════
- * 🛡️ CHRONOS MIDDLEWARE — Adaptive Auth + Route Protection (PRODUCTION OPTIMIZED)
- * ═══════════════════════════════════════════════════════════════════════════════════════════════════
- *
- * Middleware adaptativo:
- * - Usa Clerk cuando está configurado
- * - Bypass mode para desarrollo sin Clerk
- * - Headers de seguridad
- * - Rate limiting ready
- */
+// 🔐 CHRONOS INFINITY - MIDDLEWARE CONFIGURATION
+// Middleware para proteger rutas y manejar autenticación
 
-import type { NextRequest } from 'next/server'
-import { NextResponse } from 'next/server'
+import { clerkMiddleware } from '@clerk/nextjs/server';
 
-const isProd = process.env.NODE_ENV === 'production'
-const isClerkConfigured = 
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.startsWith('pk_') &&
-  process.env.CLERK_SECRET_KEY?.startsWith('sk_')
+export default clerkMiddleware({
+  // Rutas públicas que no requieren autenticación
+  publicRoutes: [
+    '/',
+    '/login',
+    '/register',
+    '/api/auth/webhook',
+    '/api/health'
+  ],
 
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// RUTAS PROTEGIDAS Y PÚBLICAS
-// ═══════════════════════════════════════════════════════════════════════════════════════
+  // Rutas que deben ser ignoradas por el middleware
+  ignoredRoutes: [
+    '/api/auth/callback',
+    '/_next/static',
+    '/favicon.ico',
+    '/robots.txt',
+    '/manifest.json'
+  ],
 
-const protectedPaths = [
-  '/dashboard',
-  '/admin',
-  '/settings',
-  '/bancos',
-  '/ventas',
-  '/clientes',
-  '/distribuidores',
-  '/almacen',
-  '/movimientos',
-  '/gastos',
-  '/ordenes',
-  '/reportes',
-  '/ia',
-  '/configuracion',
-  '/ai-supreme',
-]
+  // Rutas que requieren autenticación
+  afterAuth(auth, req, evt) {
+    // Si el usuario no está autenticado y está intentando acceder a una ruta protegida
+    if (!auth.userId && !auth.isPublicRoute) {
+      return Response.redirect(new URL('/login', req.url));
+    }
 
-const publicPaths = [
-  '/',
-  '/sign-in',
-  '/sign-up',
-  '/login',
-  '/register',
-  '/api/webhooks',
-  '/api/public',
-  '/api/health',
-]
+    // Si el usuario está autenticado y está en la página de login/registro, redirigir al dashboard
+    if (auth.userId && (req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/register')) {
+      return Response.redirect(new URL('/welcome', req.url));
+    }
 
-function isProtectedRoute(pathname: string): boolean {
-  return protectedPaths.some(path => pathname.startsWith(path))
-}
+    // Permitir el acceso a rutas protegidas si el usuario está autenticado
+    return;
+  },
 
-function isPublicRoute(pathname: string): boolean {
-  return publicPaths.some(path => pathname.startsWith(path))
-}
+  // Configuración adicional
+  debug: process.env.NODE_ENV === 'development',
 
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// SECURITY HEADERS
-// ═══════════════════════════════════════════════════════════════════════════════════════
-
-function addSecurityHeaders(response: NextResponse): void {
-  if (isProd) {
-    response.headers.set('X-DNS-Prefetch-Control', 'on')
-    response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
-    response.headers.set('X-Frame-Options', 'SAMEORIGIN')
-    response.headers.set('X-Content-Type-Options', 'nosniff')
-    response.headers.set('X-XSS-Protection', '1; mode=block')
-    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-    response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  // Función personalizada para manejo de errores
+  onError(error, req) {
+    console.error('Middleware error:', error);
+    return Response.redirect(new URL('/error', req.url));
   }
-  
-  // Request ID para tracing
-  response.headers.set('x-request-id', crypto.randomUUID())
-  response.headers.set('x-auth-mode', isClerkConfigured ? 'clerk' : 'bypass')
-}
+});
 
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// BYPASS MIDDLEWARE (Development without Clerk)
-// ═══════════════════════════════════════════════════════════════════════════════════════
-
-function bypassMiddleware(request: NextRequest): NextResponse {
-  const { pathname } = request.nextUrl
-  const response = NextResponse.next()
-  
-  addSecurityHeaders(response)
-
-  // Redirect root to dashboard
-  if (pathname === '/') {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
-
-  return response
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// CLERK MIDDLEWARE (Production with Clerk)
-// ═══════════════════════════════════════════════════════════════════════════════════════
-
-async function clerkMiddlewareHandler(request: NextRequest): Promise<NextResponse> {
-  const { pathname } = request.nextUrl
-
-  try {
-    const { clerkMiddleware, createRouteMatcher } = await import('@clerk/nextjs/server')
-    
-    const isProtected = createRouteMatcher(protectedPaths.map(p => `${p}(.*)`))
-    const isPublic = createRouteMatcher(publicPaths.map(p => `${p}(.*)`))
-
-    return clerkMiddleware(async (auth, req) => {
-      const response = NextResponse.next()
-      addSecurityHeaders(response)
-
-      // Redirect root to dashboard
-      if (pathname === '/') {
-        return NextResponse.redirect(new URL('/dashboard', req.url))
-      }
-
-      // Protect routes
-      if (isProtected(req) && !isPublic(req)) {
-        await auth.protect()
-      }
-
-      return response
-    })(request, {} as never) as Promise<NextResponse>
-  } catch {
-    // Clerk not available, use bypass
-    return bypassMiddleware(request)
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// MAIN MIDDLEWARE
-// ═══════════════════════════════════════════════════════════════════════════════════════
-
-export default async function middleware(request: NextRequest): Promise<NextResponse> {
-  // Use Clerk if configured, otherwise bypass
-  if (isClerkConfigured) {
-    return clerkMiddlewareHandler(request)
-  }
-  
-  return bypassMiddleware(request)
-}
-
-// Configurar qué rutas debe procesar el middleware
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|json)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
   ],
-}
+};

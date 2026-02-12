@@ -1,4 +1,3 @@
-import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import type React from 'react'
 import {
@@ -21,18 +20,9 @@ import './globals.css'
 // Parche de emergencia para validación defensiva
 import '@/app/lib/utils/defensive-validation-patch'
 
-import { AppInitializer } from '@/app/_components/AppInitializer'
-import { ThemeProvider } from '@/app/_components/providers/ThemeProvider'
+import { AppProviders } from '@/app/providers/AppProviders'
 import { ConditionalClerkProvider } from '@/app/_components/providers/ConditionalClerkProvider'
-import { iOSProvider } from '@/app/_components/providers/iOSProvider'
-import { MotionSettingsProvider } from '@/app/_components/providers/MotionSettingsProvider'
-import { DefensiveErrorBoundary } from '@/app/lib/utils/DefensiveErrorBoundary'
-import { AuthProvider } from '@/app/providers/AuthProvider'
-import { LenisProvider } from '@/app/providers/LenisProvider'
-import { QueryProvider } from '@/app/providers/QueryProvider'
-import { ShaderProvider } from '@/app/providers/ShaderProvider'
-import { VoiceWorkerProvider } from '@/app/providers/VoiceWorkerProvider'
-import { PostHogProvider } from '@/app/providers/PostHogProvider'
+import { Analytics } from '@vercel/analytics/next'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
 // 🔤 FONT CONFIGURATION — System Fonts (No external dependencies)
@@ -123,45 +113,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           style={{
             fontFamily: systemFontSans,
           }}
-          suppressHydrationWarning
         >
-          <PostHogProvider>
-            <ThemeProvider>
-              <MotionSettingsProvider>
-                <QueryProvider>
-                  <AuthProvider>
-                    <ShaderProvider>
-                      <AppInitializer>
-                        <LenisProvider duration={1.2} wheelMultiplier={1} respectReducedMotion>
-                          <VoiceWorkerProvider>
-                            <iOSProvider toastPosition="top" disable3DEffects={true} disableParallax={true}>
-                              <DefensiveErrorBoundary>
-                                {/* Skip to main content for accessibility */}
-                                <a
-                                  href="#main-content"
-                                  className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:rounded-[var(--radius-md)] focus:bg-[var(--c-accent)] focus:px-4 focus:py-2 focus:text-white"
-                                >
-                                  Saltar al contenido principal
-                                </a>
+          <AppProviders>
+            {/* Skip to main content for accessibility */}
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:rounded-[var(--radius-md)] focus:bg-[var(--c-accent)] focus:px-4 focus:py-2 focus:text-white"
+            >
+              Saltar al contenido principal
+            </a>
 
-                                {/* Main content wrapper */}
-                                <div id="main-content" className="relative isolate">
-                                  {children}
-                                </div>
-                              </DefensiveErrorBoundary>
-                            </iOSProvider>
+            {/* Main content wrapper */}
+            <div id="main-content" className="relative isolate">
+              {children}
+            </div>
 
-                            {/* 🤖 Widget IA Flotante movido al Dashboard Layout para mejor contexto */}
-                            {/* Ver: app/(dashboard)/layout.tsx - SplineAIWidget */}
-                          </VoiceWorkerProvider>
-                        </LenisProvider>
-                      </AppInitializer>
-                    </ShaderProvider>
-                  </AuthProvider>
-                </QueryProvider>
-              </MotionSettingsProvider>
-            </ThemeProvider>
-          </PostHogProvider>
+            {/* 🤖 Widget IA Flotante movido al Dashboard Layout para mejor contexto */}
+            {/* Ver: app/(dashboard)/layout.tsx - SplineAIWidget */}
+          </AppProviders>
 
           {/* Vercel Analytics — Zero impact on Core Web Vitals */}
           <Analytics />
