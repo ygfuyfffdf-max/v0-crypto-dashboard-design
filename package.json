@@ -66,7 +66,7 @@
     "@ai-sdk/google": "^2.0.44",
     "@ai-sdk/openai": "^2.0.73",
     "@ai-sdk/react": "^3.0.41",
-    "@ai-sdk/xai": "^2.0.41",
+    "@ai-sdk/xai": "^3.0.54",
     "@clerk/nextjs": "^6.37.0",
     "@dimforge/rapier3d-compat": "^0.19.3",
     "@emotion/is-prop-valid": "latest",
