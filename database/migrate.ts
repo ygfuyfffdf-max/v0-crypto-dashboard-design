@@ -1,166 +1,225 @@
-// database/migrate.ts
-import { sql } from 'drizzle-orm'
-import { logger } from '../app/lib/utils/logger'
-import { db } from './index'
+import { drizzle } from 'drizzle-orm/libsql';
+import { createClient } from '@libsql/client';
+import * as schema from './schema';
+import { sql } from 'drizzle-orm';
 
-async function runMigration() {
-  logger.info('🔄 Running database migrations...', { context: 'Migration' })
+// Configuración: TURSO_* o DATABASE_* o fallback SQLite local
+const dbUrl =
+  process.env.TURSO_DATABASE_URL ||
+  (process.env.DATABASE_URL?.startsWith('libsql://') ? process.env.DATABASE_URL : null) ||
+  'file:./database/sqlite.db';
+const dbToken = process.env.TURSO_AUTH_TOKEN || process.env.DATABASE_AUTH_TOKEN || '';
 
+const client = createClient({
+  url: dbUrl,
+  authToken: dbToken || undefined,
+});
+
+const db = drizzle(client, { schema });
+
+async function migrate() {
   try {
-    // Create tables
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS usuarios (
+    console.log('🚀 Starting database migration...');
+    
+    // Verificar conexión
+    await client.execute('SELECT 1');
+    console.log('✅ Database connection successful');
+    
+    // Crear tablas
+    console.log('📋 Creating database tables...');
+    
+    // Crear tabla de usuarios
+    await client.execute(sql`
+      CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
         email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL,
-        nombre TEXT NOT NULL,
-        role TEXT DEFAULT 'viewer',
-        created_at INTEGER DEFAULT (unixepoch()),
-        updated_at INTEGER DEFAULT (unixepoch())
+        username TEXT,
+        first_name TEXT,
+        last_name TEXT,
+        image_url TEXT,
+        created_at INTEGER DEFAULT (unixepoch()) NOT NULL,
+        updated_at INTEGER DEFAULT (unixepoch()) NOT NULL
       )
-    `)
-
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS clientes (
+    `);
+    
+    // Crear tabla de configuraciones de usuario
+    await client.execute(sql`
+      CREATE TABLE IF NOT EXISTS user_settings (
         id TEXT PRIMARY KEY,
-        nombre TEXT NOT NULL,
-        email TEXT,
-        telefono TEXT,
-        direccion TEXT,
-        rfc TEXT,
-        limite_credito REAL DEFAULT 0,
-        saldo_pendiente REAL DEFAULT 0,
-        estado TEXT DEFAULT 'activo',
-        created_at INTEGER DEFAULT (unixepoch()),
-        updated_at INTEGER DEFAULT (unixepoch())
+        user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        theme TEXT CHECK(theme IN ('light', 'dark', 'system')) DEFAULT 'system',
+        language TEXT DEFAULT 'en',
+        timezone TEXT DEFAULT 'UTC',
+        notifications INTEGER DEFAULT 1,
+        created_at INTEGER DEFAULT (unixepoch()) NOT NULL,
+        updated_at INTEGER DEFAULT (unixepoch()) NOT NULL
       )
-    `)
-
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS distribuidores (
+    `);
+    
+    // Crear tabla de criptomonedas favoritas
+    await client.execute(sql`
+      CREATE TABLE IF NOT EXISTS favorite_cryptos (
         id TEXT PRIMARY KEY,
-        nombre TEXT NOT NULL,
-        empresa TEXT,
-        telefono TEXT,
-        email TEXT,
-        tipo_productos TEXT,
-        saldo_pendiente REAL DEFAULT 0,
-        estado TEXT DEFAULT 'activo',
-        created_at INTEGER DEFAULT (unixepoch()),
-        updated_at INTEGER DEFAULT (unixepoch())
+        user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        crypto_id TEXT NOT NULL,
+        symbol TEXT NOT NULL,
+        name TEXT NOT NULL,
+        added_at INTEGER DEFAULT (unixepoch()) NOT NULL
       )
-    `)
-
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS bancos (
+    `);
+    
+    // Crear tabla de alertas de precio
+    await client.execute(sql`
+      CREATE TABLE IF NOT EXISTS price_alerts (
         id TEXT PRIMARY KEY,
-        nombre TEXT NOT NULL,
-        tipo TEXT NOT NULL,
-        capital_actual REAL DEFAULT 0 NOT NULL,
-        historico_ingresos REAL DEFAULT 0 NOT NULL,
-        historico_gastos REAL DEFAULT 0 NOT NULL,
-        color TEXT NOT NULL,
-        icono TEXT,
-        orden INTEGER DEFAULT 0,
-        activo INTEGER DEFAULT 1,
-        updated_at INTEGER DEFAULT (unixepoch())
+        user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        crypto_id TEXT NOT NULL,
+        symbol TEXT NOT NULL,
+        target_price REAL NOT NULL,
+        current_price REAL,
+        alert_type TEXT CHECK(alert_type IN ('above', 'below')) NOT NULL,
+        is_active INTEGER DEFAULT 1,
+        triggered_at INTEGER,
+        created_at INTEGER DEFAULT (unixepoch()) NOT NULL,
+        updated_at INTEGER DEFAULT (unixepoch()) NOT NULL
       )
-    `)
-
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS ventas (
+    `);
+    
+    // Crear tabla de portfolios
+    await client.execute(sql`
+      CREATE TABLE IF NOT EXISTS portfolios (
         id TEXT PRIMARY KEY,
-        cliente_id TEXT NOT NULL REFERENCES clientes(id),
-        fecha INTEGER NOT NULL,
-        cantidad INTEGER NOT NULL,
-        precio_venta_unidad REAL NOT NULL,
-        precio_compra_unidad REAL NOT NULL,
-        precio_flete REAL DEFAULT 0,
-        precio_total_venta REAL NOT NULL,
-        monto_pagado REAL DEFAULT 0,
-        monto_restante REAL NOT NULL,
-        monto_boveda_monte REAL DEFAULT 0,
-        monto_fletes REAL DEFAULT 0,
-        monto_utilidades REAL DEFAULT 0,
-        estado_pago TEXT DEFAULT 'pendiente',
-        observaciones TEXT,
-        created_by TEXT REFERENCES usuarios(id),
-        created_at INTEGER DEFAULT (unixepoch()),
-        updated_at INTEGER DEFAULT (unixepoch())
+        user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        name TEXT NOT NULL,
+        description TEXT,
+        is_default INTEGER DEFAULT 0,
+        total_value REAL DEFAULT 0,
+        created_at INTEGER DEFAULT (unixepoch()) NOT NULL,
+        updated_at INTEGER DEFAULT (unixepoch()) NOT NULL
       )
-    `)
-
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS ordenes_compra (
+    `);
+    
+    // Crear tabla de activos en portfolio
+    await client.execute(sql`
+      CREATE TABLE IF NOT EXISTS portfolio_assets (
         id TEXT PRIMARY KEY,
-        distribuidor_id TEXT NOT NULL REFERENCES distribuidores(id),
-        fecha INTEGER NOT NULL,
-        numero_orden TEXT UNIQUE,
-        cantidad INTEGER NOT NULL,
-        precio_unitario REAL NOT NULL,
-        subtotal REAL NOT NULL,
-        iva REAL DEFAULT 0,
+        portfolio_id TEXT NOT NULL REFERENCES portfolios(id) ON DELETE CASCADE,
+        crypto_id TEXT NOT NULL,
+        symbol TEXT NOT NULL,
+        name TEXT NOT NULL,
+        amount REAL NOT NULL,
+        average_buy_price REAL NOT NULL,
+        current_price REAL,
+        total_value REAL,
+        profit_loss REAL,
+        profit_loss_percentage REAL,
+        created_at INTEGER DEFAULT (unixepoch()) NOT NULL,
+        updated_at INTEGER DEFAULT (unixepoch()) NOT NULL
+      )
+    `);
+    
+    // Crear tabla de transacciones
+    await client.execute(sql`
+      CREATE TABLE IF NOT EXISTS transactions (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        portfolio_id TEXT NOT NULL REFERENCES portfolios(id) ON DELETE CASCADE,
+        crypto_id TEXT NOT NULL,
+        symbol TEXT NOT NULL,
+        type TEXT CHECK(type IN ('buy', 'sell')) NOT NULL,
+        amount REAL NOT NULL,
+        price REAL NOT NULL,
         total REAL NOT NULL,
-        monto_pagado REAL DEFAULT 0,
-        monto_restante REAL NOT NULL,
-        estado TEXT DEFAULT 'pendiente',
-        banco_origen_id TEXT REFERENCES bancos(id),
-        observaciones TEXT,
-        created_by TEXT REFERENCES usuarios(id),
-        created_at INTEGER DEFAULT (unixepoch()),
-        updated_at INTEGER DEFAULT (unixepoch())
+        fee REAL DEFAULT 0,
+        notes TEXT,
+        transaction_date INTEGER NOT NULL,
+        created_at INTEGER DEFAULT (unixepoch()) NOT NULL
       )
-    `)
-
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS movimientos (
+    `);
+    
+    // Crear tabla de configuraciones de notificaciones
+    await client.execute(sql`
+      CREATE TABLE IF NOT EXISTS notification_settings (
         id TEXT PRIMARY KEY,
-        banco_id TEXT NOT NULL REFERENCES bancos(id),
-        tipo TEXT NOT NULL,
-        monto REAL NOT NULL,
-        fecha INTEGER NOT NULL,
-        concepto TEXT NOT NULL,
-        referencia TEXT,
-        banco_origen_id TEXT REFERENCES bancos(id),
-        banco_destino_id TEXT REFERENCES bancos(id),
-        cliente_id TEXT REFERENCES clientes(id),
-        distribuidor_id TEXT REFERENCES distribuidores(id),
-        venta_id TEXT REFERENCES ventas(id),
-        orden_compra_id TEXT REFERENCES ordenes_compra(id),
-        observaciones TEXT,
-        created_by TEXT REFERENCES usuarios(id),
-        created_at INTEGER DEFAULT (unixepoch())
+        user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        email_alerts INTEGER DEFAULT 1,
+        price_alerts INTEGER DEFAULT 1,
+        news_alerts INTEGER DEFAULT 1,
+        portfolio_alerts INTEGER DEFAULT 1,
+        alert_frequency TEXT CHECK(alert_frequency IN ('immediate', 'daily', 'weekly')) DEFAULT 'immediate',
+        quiet_hours TEXT,
+        created_at INTEGER DEFAULT (unixepoch()) NOT NULL,
+        updated_at INTEGER DEFAULT (unixepoch()) NOT NULL
       )
-    `)
-
-    await db.run(sql`
-      CREATE TABLE IF NOT EXISTS almacen (
+    `);
+    
+    // Crear tabla de actividad reciente
+    await client.execute(sql`
+      CREATE TABLE IF NOT EXISTS recent_activity (
         id TEXT PRIMARY KEY,
-        nombre TEXT NOT NULL,
-        descripcion TEXT,
-        cantidad INTEGER NOT NULL DEFAULT 0,
-        precio_compra REAL NOT NULL,
-        precio_venta REAL NOT NULL,
-        minimo INTEGER DEFAULT 0,
-        ubicacion TEXT,
-        created_at INTEGER DEFAULT (unixepoch()),
-        updated_at INTEGER DEFAULT (unixepoch())
+        user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        type TEXT CHECK(type IN ('login', 'logout', 'price_alert_triggered', 'portfolio_created', 'asset_added', 'asset_removed', 'transaction_completed', 'settings_updated')) NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT,
+        metadata TEXT,
+        created_at INTEGER DEFAULT (unixepoch()) NOT NULL
       )
-    `)
-
-    // Create indexes
-    await db.run(sql`CREATE INDEX IF NOT EXISTS email_idx ON usuarios(email)`)
-    await db.run(sql`CREATE INDEX IF NOT EXISTS cliente_nombre_idx ON clientes(nombre)`)
-    await db.run(sql`CREATE INDEX IF NOT EXISTS venta_cliente_idx ON ventas(cliente_id)`)
-    await db.run(sql`CREATE INDEX IF NOT EXISTS venta_fecha_idx ON ventas(fecha)`)
-    await db.run(sql`CREATE INDEX IF NOT EXISTS mov_banco_idx ON movimientos(banco_id)`)
-    await db.run(sql`CREATE INDEX IF NOT EXISTS mov_fecha_idx ON movimientos(fecha)`)
-
-    logger.info('✅ Migrations completed successfully!', { context: 'Migration' })
+    `);
+    
+    // Crear índices para mejorar el rendimiento
+    console.log('🔍 Creating database indexes...');
+    
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_user_settings_user_id ON user_settings(user_id)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_favorite_cryptos_user_id ON favorite_cryptos(user_id)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_favorite_cryptos_crypto_id ON favorite_cryptos(crypto_id)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_price_alerts_user_id ON price_alerts(user_id)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_price_alerts_crypto_id ON price_alerts(crypto_id)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_price_alerts_is_active ON price_alerts(is_active)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_portfolios_user_id ON portfolios(user_id)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_portfolio_assets_portfolio_id ON portfolio_assets(portfolio_id)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_portfolio_assets_crypto_id ON portfolio_assets(crypto_id)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_transactions_portfolio_id ON transactions(portfolio_id)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_transactions_transaction_date ON transactions(transaction_date)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_notification_settings_user_id ON notification_settings(user_id)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_recent_activity_user_id ON recent_activity(user_id)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_recent_activity_type ON recent_activity(type)`);
+    await client.execute(sql`CREATE INDEX IF NOT EXISTS idx_recent_activity_created_at ON recent_activity(created_at)`);
+    
+    console.log('✅ Database migration completed successfully!');
+    
+    // Verificar tablas creadas
+    const tables = await client.execute(`
+      SELECT name FROM sqlite_master 
+      WHERE type='table' AND name NOT LIKE 'sqlite_%'
+    `);
+    
+    console.log(`📊 Created ${tables.rows.length} tables:`);
+    tables.rows.forEach((table: any) => {
+      console.log(`  - ${table.name}`);
+    });
+    
   } catch (error) {
-    logger.error('❌ Migration failed', error as Error, { context: 'Migration' })
-    process.exit(1)
+    console.error('❌ Migration failed:', error);
+    throw error;
+  } finally {
+    await client.close();
+    console.log('🔒 Database connection closed');
   }
 }
 
-runMigration()
+// Ejecutar migración si se ejecuta directamente
+if (require.main === module) {
+  migrate()
+    .then(() => {
+      console.log('🎉 Migration script completed successfully!');
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error('💥 Migration script failed:', error);
+      process.exit(1);
+    });
+}
+
+export { migrate };

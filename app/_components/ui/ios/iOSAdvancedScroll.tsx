@@ -459,7 +459,7 @@ export const iOSScrollContainer = memo(forwardRef<HTMLDivElement, iOSScrollConta
                 initial={{ opacity: 0, scale: 0.8, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <ArrowUp size={18} />

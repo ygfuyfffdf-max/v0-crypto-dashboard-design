@@ -199,7 +199,7 @@ export function BancoDetailModal({ banco, isOpen, onClose }: BancoDetailModalPro
                           background: `linear-gradient(135deg, ${banco.color}, ${banco.color}CC)`,
                           boxShadow: `0 8px 32px ${banco.color}40`,
                         }}
-                        whileHover={{ scale: 1.05, rotate: 5 }}
+                        whileHover={{ scale: 1.02, rotate: 5 }}
                       >
                         <span className="text-2xl font-bold">
                           {banco.icono || banco.nombre[0]}
@@ -533,3 +533,4 @@ export function BancoDetailModal({ banco, isOpen, onClose }: BancoDetailModalPro
     </AnimatePresence>
   )
 }
+

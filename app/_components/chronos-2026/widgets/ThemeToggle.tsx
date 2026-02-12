@@ -82,7 +82,7 @@ export function ThemeToggle({
               className={`relative flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
                 theme.mode === mode ? 'text-white' : 'text-white/50 hover:text-white/80'
               }`}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
             >
               {theme.mode === mode && (
@@ -117,7 +117,7 @@ export function ThemeToggle({
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
         className={`group relative flex items-center gap-2 overflow-hidden rounded-xl border border-white/10 bg-white/5 ${currentSize.button} backdrop-blur-xl transition-all hover:border-white/20 hover:bg-white/10 hover:shadow-xl ${className}`}
-        whileHover={{ scale: 1.05, y: -2 }}
+        whileHover={{ scale: 1.02, y: -2 }}
         whileTap={{ scale: 0.95 }}
         style={{
           boxShadow: '0 0 20px var(--color-primary)20',
@@ -228,3 +228,4 @@ export function ThemeToggle({
     </motion.button>
   )
 }
+

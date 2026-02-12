@@ -236,6 +236,8 @@ function ProactiveSuggestionCard({
   )
 }
 
+import { useZeroBrain } from '@/app/_hooks/useZeroBrain'
+
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // 🧠 COGNITO WIDGET — Componente Principal
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -277,6 +279,9 @@ export function CognitoWidget({
   const [showSettings, setShowSettings] = useState(false)
   const [isPending, startTransition] = useTransition()
 
+  // Brain Hook (Zero Force Logic)
+  const zeroBrain = useZeroBrain()
+
   // Refs
   const chatContainerRef = useRef<HTMLDivElement>(null)
 
@@ -296,12 +301,12 @@ export function CognitoWidget({
       setState('listening')
     } else if (isSpeaking) {
       setState('speaking')
-    } else if (isProcessing) {
+    } else if (isProcessing || zeroBrain.isProcessing) {
       setState('thinking')
     } else {
       setState('idle')
     }
-  }, [isListening, isSpeaking, isProcessing, setState])
+  }, [isListening, isSpeaking, isProcessing, zeroBrain.isProcessing, setState])
 
   // Notificar cambios de estado
   useEffect(() => {
@@ -320,14 +325,11 @@ export function CognitoWidget({
     }
   }, [context.history])
 
-  // NO añadir mensaje de bienvenida al inicio - usamos UI visual en su lugar
-  // El mensaje de bienvenida se muestra como interfaz visual interactiva
-
   // Handler de submit
   const handleSubmit = useCallback(
     async (text?: string) => {
       const query = text || inputValue.trim()
-      if (!query || isProcessing) return
+      if (!query || isProcessing || zeroBrain.isProcessing) return
 
       setInputValue('')
       setIsProcessing(true)
@@ -338,6 +340,40 @@ export function CognitoWidget({
       incrementQueries()
 
       try {
+        // 1. INTENTAR PROCESAR COMO COMANDO ZERO (ACCIÓN)
+        // Prioridad a acciones sobre charla
+        const commandResult = await zeroBrain.processCommand(query)
+
+        if (commandResult.success && commandResult.action !== 'UNKNOWN') {
+           // ES UN COMANDO EXITOSO
+           const responseContent = `✅ ${commandResult.message}`
+           
+           addMessage({
+             role: 'assistant',
+             content: responseContent,
+             mode,
+             metadata: {
+               executionTime: 0.5, // Simulado por ahora
+               confidence: 0.99
+             }
+           })
+
+           // Hablar respuesta
+           if (enableVoice && !context.preferences.voiceEnabled === false) {
+             speak(commandResult.message)
+           }
+
+           // Ejecutar callback de acción si existe
+           if (commandResult.action) {
+             onActionExecuted?.(commandResult.action)
+           }
+           
+           setIsProcessing(false)
+           setState('idle')
+           return
+        }
+
+        // 2. SI NO ES COMANDO, PROCESAR COMO CHAT (LLM)
         startTransition(async () => {
           const response = await processQuery(query, mode)
 
@@ -389,6 +425,7 @@ export function CognitoWidget({
     [
       inputValue,
       isProcessing,
+      zeroBrain, // Dep
       mode,
       addMessage,
       incrementQueries,
@@ -399,6 +436,7 @@ export function CognitoWidget({
       addProactiveSuggestion,
       onMessage,
       setState,
+      onActionExecuted
     ],
   )
 
@@ -514,7 +552,7 @@ export function CognitoWidget({
           <motion.button
             onClick={() => setShowSettings(!showSettings)}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-white/40 transition-colors hover:bg-white/5 hover:text-white/70"
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
           >
             <Settings className="h-4 w-4" />
@@ -523,7 +561,7 @@ export function CognitoWidget({
           <motion.button
             onClick={handleToggleCollapse}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-white/40 transition-colors hover:bg-white/5 hover:text-white/70"
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
           >
             {isCollapsed ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}

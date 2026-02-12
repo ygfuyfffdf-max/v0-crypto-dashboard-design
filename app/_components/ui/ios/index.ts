@@ -481,7 +481,7 @@ export {
   iOSProvider,
   useiOS,
   iOSCard,
-  iOSScrollView,
+  iOSScrollView as iOSScrollViewUltimate,
   iOSSheet,
   iOSButton as iOSButtonUltimate,
   iOSInput as iOSInputUltimate,
@@ -500,7 +500,7 @@ export {
   ModalScrollContainer as iOSModalScrollContainer,
   HorizontalScroll,
   ScrollSnapItem,
-  useAdvancedScroll,
+  useAdvancedScroll as useAdvancedScrollFromSystem,
   type ScrollState,
   type iOSScrollContainerProps as AdvancedScrollContainerProps,
   type HorizontalScrollProps,
@@ -562,7 +562,7 @@ export {
   useToast as useToastAdvanced,
   iOSAlert as iOSAlertAdvanced,
   iOSConfirm,
-  type Toast,
+  type Toast as ToastAdvanced,
   type ToastVariant,
   type ToastContextType,
   type iOSAlertProps as AdvancedAlertProps,
@@ -587,3 +587,60 @@ export {
   type iOSEmptyStateProps,
   type iOSLoadingProps,
 } from './iOSIntegrationWrapper'
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// CLEAN DESIGN SYSTEM — SIN efectos 3D problemáticos
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+export {
+  CleanDesignProvider,
+  useCleanDesign,
+  CleanDesignTokens,
+  CleanMetricCard,
+  CleanButton,
+  CleanScrollContainer,
+  CleanInput,
+  type CleanMetricCardProps,
+  type CleanButtonProps,
+  type CleanScrollContainerProps,
+  type CleanInputProps,
+} from './iOSCleanDesignSystem'
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// ULTRA MODAL SYSTEM — Modales avanzados con scroll
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+export {
+  UltraModal,
+  UltraAlert,
+  UltraConfirmationSheet,
+  UltraFormModal,
+  UltraDetailModal,
+  useModalContext,
+  type UltraModalProps,
+  type UltraAlertProps,
+  type UltraConfirmationSheetProps,
+  type UltraFormModalProps,
+  type UltraDetailModalProps,
+  type ConfirmationOption,
+  type ModalVariant,
+  type ModalSize,
+  type DrawerPosition,
+} from './iOSUltraModalSystem'
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// MOBILE OPTIMIZED SYSTEM — Layout y navegación mobile
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+export {
+  iOSTabBarClean,
+  iOSFABClean,
+  iOSHeaderClean,
+  iOSPageLayout as iOSPageLayoutClean,
+  iOSListSection,
+  iOSListItem as iOSListItemClean,
+  iOSSearchBarClean,
+  type iOSListSectionProps,
+  type ListItemProps,
+  type iOSSearchBarProps as CleanSearchBarProps,
+} from './iOSMobileOptimized'

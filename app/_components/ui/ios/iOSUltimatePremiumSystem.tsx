@@ -761,7 +761,7 @@ export const iOSSheet = memo(function iOSSheet({
                         <motion.button
                           onClick={onClose}
                           className="p-2 rounded-full bg-white/[0.08] text-white/70 hover:bg-white/[0.12] hover:text-white transition-colors"
-                          whileHover={{ scale: 1.05 }}
+                          whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.95 }}
                         >
                           <X size={18} />

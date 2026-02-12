@@ -234,12 +234,13 @@ export function ZeroAIWidget({
   const [isMuted, setIsMuted] = useState(false)
   const [audioLevel, setAudioLevel] = useState(0)
   const [transcript, setTranscript] = useState('')
-  const [isWakeWordEnabled, _setIsWakeWordEnabled] = useState(true)
+  const [isWakeWordEnabled, setIsWakeWordEnabled] = useState(true)
 
-  // Refs for future audio implementation
-  const _audioContextRef = useRef<AudioContext | null>(null)
-  const _analyserRef = useRef<AnalyserNode | null>(null)
-  const _animationRef = useRef<number>(0)
+  // Logic
+  const router = useRouter()
+  const zeroBrain = useZeroBrain()
+  const zeroForce = useRef(getZeroForce())
+  const animationRef = useRef<number>(0)
 
   // Size mapping
   const sizeMap = {
@@ -254,39 +255,99 @@ export function ZeroAIWidget({
     'bottom-left': 'left-6 bottom-6',
   }
 
-  // Simulate audio level changes for demo
+  // Inicializar detección de wake word
   useEffect(() => {
-    let interval: NodeJS.Timeout | undefined
-
-    if (currentState === 'listening' || currentState === 'speaking') {
-      interval = setInterval(() => {
-        setAudioLevel(Math.random() * 0.5 + 0.3)
-      }, 100)
+    if (isWakeWordEnabled && !isMuted) {
+      zeroForce.current.startWakeWordDetection()
     } else {
-      setAudioLevel(0)
+      zeroForce.current.stopWakeWordDetection()
     }
 
     return () => {
-      if (interval) clearInterval(interval)
+      zeroForce.current.stopWakeWordDetection()
+    }
+  }, [isWakeWordEnabled, isMuted])
+
+  // Loop de visualización de audio (Real-time Audio Reactive)
+  useEffect(() => {
+    const updateAudioLevel = () => {
+      const level = zeroForce.current.getAudioLevel()
+      setAudioLevel(level)
+      animationRef.current = requestAnimationFrame(updateAudioLevel)
+    }
+
+    if (currentState === 'listening' || currentState === 'speaking') {
+      updateAudioLevel()
+    } else {
+      setAudioLevel(0)
+      if (animationRef.current) cancelAnimationFrame(animationRef.current)
+    }
+
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current)
     }
   }, [currentState])
 
-  // Handle click to toggle listening
-  const handleClick = useCallback(() => {
-    if (currentState === 'idle') {
+  // Manejo del ciclo de escucha y respuesta
+  const handleListeningCycle = useCallback(async () => {
+    try {
       setCurrentState('listening')
       setTranscript('')
-    } else if (currentState === 'listening') {
+
+      // 1. Escuchar comando (STT)
+      const text = await zeroForce.current.startListening()
+      setTranscript(text)
+      
+      if (!text) {
+        setCurrentState('idle')
+        return
+      }
+
+      // 2. Procesar intención (Brain)
       setCurrentState('thinking')
-      // Simulate processing
-      setTimeout(() => {
-        setCurrentState('speaking')
-        setTimeout(() => {
-          setCurrentState('idle')
-        }, 2000)
-      }, 1500)
+      const result = await zeroBrain.processCommand(text)
+
+      // 3. Ejecutar acción
+      if (result.success && result.action === 'NAVIGATE' && result.data) {
+        router.push(result.data)
+      }
+
+      // 4. Responder (TTS)
+      setCurrentState('speaking')
+      setTranscript(result.message)
+      if (!isMuted) {
+        await zeroForce.current.speak(result.message)
+      } else {
+        // Si está muteado, solo mostrar texto un momento
+        await new Promise(resolve => setTimeout(resolve, 3000))
+      }
+
+    } catch (error) {
+      console.error('Error en ciclo Zero:', error)
+      setCurrentState('error')
+      setTimeout(() => setCurrentState('idle'), 2000)
+    } finally {
+      if (currentState !== 'error') {
+        setCurrentState('idle')
+        setTranscript('')
+        // Reactivar wake word
+        if (isWakeWordEnabled && !isMuted) {
+          zeroForce.current.startWakeWordDetection()
+        }
+      }
     }
-  }, [currentState])
+  }, [isMuted, isWakeWordEnabled, router, zeroBrain, currentState])
+
+  // Handle click to toggle listening manually
+  const handleClick = useCallback(() => {
+    if (currentState === 'idle') {
+      handleListeningCycle()
+    } else {
+      // Cancelar si se toca mientras está activo
+      setCurrentState('idle')
+      zeroForce.current.stopWakeWordDetection() // Reset
+    }
+  }, [currentState, handleListeningCycle])
 
   // Toggle expanded state
   const toggleExpanded = useCallback(() => {
@@ -392,7 +453,7 @@ export function ZeroAIWidget({
       {/* Main widget */}
       <motion.div
         className={`relative ${sizeMap[size]} cursor-pointer`}
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.95 }}
         onClick={handleClick}
         onContextMenu={(e) => {

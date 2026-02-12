@@ -91,7 +91,9 @@ export function SafeEffectComposer({
   try {
     return (
       <Suspense fallback={null}>
-        <EffectComposer multisampling={multisampling}>{children}</EffectComposer>
+        <EffectComposer multisampling={multisampling}>
+          {children as React.ReactElement}
+        </EffectComposer>
       </Suspense>
     )
   } catch {

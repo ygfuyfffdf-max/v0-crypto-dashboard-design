@@ -738,7 +738,7 @@ export function DolaAIWidget({
                       ? 'bg-gradient-to-r from-violet-500 to-cyan-500 text-white'
                       : 'bg-white/5 text-white/30',
                   )}
-                  whileHover={inputValue.trim() ? { scale: 1.05 } : {}}
+                  whileHover={inputValue.trim() ? { scale: 1.02 } : {}}
                   whileTap={inputValue.trim() ? { scale: 0.95 } : {}}
                   disabled={!inputValue.trim()}
                 >
@@ -817,3 +817,4 @@ export function DolaAIWidget({
 }
 
 export default DolaAIWidget
+

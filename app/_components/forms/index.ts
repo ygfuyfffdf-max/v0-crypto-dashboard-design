@@ -11,7 +11,7 @@ export { AbonoClienteForm, PagoDistribuidorForm } from './AbonoForm'
 export { VentaFormGen5 } from './VentaFormGen5'
 export { WizardVentaPremium } from './WizardVentaPremium'
 
-// Re-exportar componentes iOS de formularios
+// Re-exportar componentes iOS de formularios clásicos
 export {
   iOSInput,
   iOSTextArea,
@@ -21,4 +21,13 @@ export {
   iOSNumberInput,
   iOSFormContainer,
   iOSFormSection,
+} from '../ui/ios'
+
+// Re-exportar componentes iOS de formularios avanzados
+export {
+  iOSForm,
+  iOSFormGroup,
+  iOSTextInput,
+  iOSToggleField,
+  useFormAdvanced,
 } from '../ui/ios'

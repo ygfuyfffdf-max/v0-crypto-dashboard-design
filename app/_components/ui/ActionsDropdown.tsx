@@ -139,7 +139,7 @@ export function ActionsDropdown({
               ? '0 0 20px rgba(139, 0, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
               : 'inset 0 1px 0 rgba(255, 255, 255, 0.05)',
         }}
-        whileHover={{ scale: 1.08 }}
+        whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.95 }}
         aria-expanded={isOpen}
         aria-haspopup="true"
@@ -284,3 +284,4 @@ export function ActionsDropdown({
     </div>
   )
 }
+

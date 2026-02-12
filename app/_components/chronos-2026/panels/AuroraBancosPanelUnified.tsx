@@ -78,6 +78,17 @@ import {
   AuroraTabs,
 } from "../../ui/AuroraGlassSystem"
 
+// 🍎 iOS PREMIUM SYSTEM 2026 — Sistema de UI definitivo
+import {
+  iOSScrollContainer,
+  iOSSection,
+  iOSGrid,
+  iOSMetricCardPremium,
+  iOSEntityCard,
+  useToastAdvanced,
+  iOSConfirm,
+} from "../../ui/ios"
+
 // Aurora Charts - Lazy Loaded for performance
 const AuroraAreaChart = dynamic(
   () => import("../../charts/AuroraPremiumCharts").then((mod) => mod.AuroraAreaChart),
@@ -2728,7 +2739,7 @@ export function AuroraBancosPanelUnified({
               }}
               aria-label={loading ? "Actualizando datos..." : "Actualizar datos de bancos"}
               className="rounded-xl border border-white/10 bg-white/5 p-3 text-white/60 transition-colors hover:text-white"
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
             >
               <RefreshCw size={20} className={loading ? "animate-spin" : ""} aria-hidden="true" />
@@ -2775,6 +2786,47 @@ export function AuroraBancosPanelUnified({
             className="transition-spring hover-elevate"
           />
         </div>
+
+        {/* ═══════════════════════════════════════════════════════════════════════════════
+         * 🍎 iOS PREMIUM METRICS — Cards limpias SIN efectos 3D problemáticos
+         * Estilo iOS 18+ con glassmorphism Gen6, sin tilt con cursor
+         * ═══════════════════════════════════════════════════════════════════════════════ */}
+        <iOSSection title="Vista iOS Premium" description="Cards limpias sin efectos 3D" className="mb-6">
+          <iOSGrid cols={4} gap="md">
+            <iOSMetricCardPremium
+              title="Capital Total"
+              value={`$${(stats.capitalTotal / 1000).toFixed(0)}K`}
+              icon={Wallet}
+              iconColor="#8B5CF6"
+              trend={{ value: 12.5, direction: 'up' }}
+              variant="default"
+            />
+            <iOSMetricCardPremium
+              title="Ingresos"
+              value={`$${(stats.ingresosTotal / 1000000).toFixed(1)}M`}
+              icon={TrendingUp}
+              iconColor="#10B981"
+              trend={{ value: 18.3, direction: 'up' }}
+              variant="default"
+            />
+            <iOSMetricCardPremium
+              title="Gastos"
+              value={`$${(stats.gastosTotal / 1000000).toFixed(1)}M`}
+              icon={TrendingDown}
+              iconColor="#EC4899"
+              trend={{ value: 5.2, direction: 'down' }}
+              variant="default"
+            />
+            <iOSMetricCardPremium
+              title="Balance Neto"
+              value={`$${(stats.balanceNeto / 1000).toFixed(0)}K`}
+              icon={CircleDollarSign}
+              iconColor="#06B6D4"
+              trend={{ value: 15.0, direction: 'up' }}
+              variant="featured"
+            />
+          </iOSGrid>
+        </iOSSection>
 
         {/* Main Grid */}
         <div className="grid grid-cols-12 gap-6">

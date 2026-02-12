@@ -331,7 +331,7 @@ function ChatMessage({
                 key={i}
                 onClick={() => onAction?.(action)}
                 className="flex items-center gap-1 rounded-full border border-purple-500/30 bg-purple-500/20 px-3 py-1 text-xs text-purple-300 transition-colors hover:bg-purple-500/30"
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Zap className="h-3 w-3" />
@@ -660,7 +660,7 @@ export function AIVoiceOrbWidget({
                     key={cmd.id}
                     onClick={() => handleQuickCommand(cmd)}
                     className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs whitespace-nowrap text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     {cmd.icon}
@@ -728,7 +728,7 @@ export function AIVoiceOrbWidget({
                         ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30'
                         : 'bg-white/10 text-white/50 hover:bg-white/20 hover:text-white'
                     } `}
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
@@ -754,7 +754,7 @@ export function AIVoiceOrbWidget({
                   onClick={() => handleSendMessage(input)}
                   disabled={!input.trim() || isTyping}
                   className="rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 p-3 text-white shadow-lg shadow-purple-500/20 hover:from-purple-400 hover:to-blue-400 disabled:cursor-not-allowed disabled:opacity-50"
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   {isTyping ? (

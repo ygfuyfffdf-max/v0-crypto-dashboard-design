@@ -439,7 +439,7 @@ const QuickActionButton = memo(function QuickActionButton({
         color
       )}
       onClick={onClick}
-      whileHover={{ scale: 1.05, y: -2 }}
+      whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.95 }}
     >
       {icon}
@@ -760,3 +760,4 @@ export function BankingDashboard({ className, compact = false }: BankingDashboar
 }
 
 export default BankingDashboard
+

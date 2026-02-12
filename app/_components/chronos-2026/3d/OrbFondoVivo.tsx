@@ -222,10 +222,10 @@ const QuantumOrb = memo(function QuantumOrb({ mood, pulse }: QuantumOrbProps) {
   )
 
   useFrame((state) => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime
-      materialRef.current.uniforms.uPulse.value = pulse
-      materialRef.current.uniforms.uMood.value = mood
+    if (materialRef.current && materialRef.current.uniforms) {
+      if (materialRef.current.uniforms.uTime) materialRef.current.uniforms.uTime.value = state.clock.elapsedTime
+      if (materialRef.current.uniforms.uPulse) materialRef.current.uniforms.uPulse.value = pulse
+      if (materialRef.current.uniforms.uMood) materialRef.current.uniforms.uMood.value = mood
     }
 
     if (meshRef.current) {
@@ -327,12 +327,14 @@ const ParticleSwarm = memo(function ParticleSwarm({ count, mood, pulse }: Partic
           count={count}
           array={particles.positions}
           itemSize={3}
+          args={[particles.positions, 3]}
         />
         <bufferAttribute
           attach="attributes-color"
           count={count}
           array={particles.colors}
           itemSize={3}
+          args={[particles.colors, 3]}
         />
       </bufferGeometry>
       <pointsMaterial

@@ -10,18 +10,20 @@
  * ┌─────────────────────────────────────────────────────────────────────────────────────┐
  * │                           FLOWDISTRIBUTOR ENGINE                                    │
  * ├─────────────────────────────────────────────────────────────────────────────────────┤
- * │  ORDEN DE COMPRA                                                                    │
+ * │  ORDEN DE COMPRA (LOTE)                                                            │
  * │  ├─> Crear/Actualizar Distribuidor (perfil + adeudo)                               │
  * │  ├─> Entrada Almacén (stock += cantidad)                                           │
- * │  └─> Registro histórico entradas                                                   │
+ * │  ├─> Registro histórico entradas                                                   │
+ * │  └─> Trazabilidad: cantidadOriginal, cantidadVendida, cantidadRestante             │
  * ├─────────────────────────────────────────────────────────────────────────────────────┤
- * │  VENTA                                                                              │
+ * │  VENTA (FIFO)                                                                      │
+ * │  ├─> Asignación Lotes FIFO (consume OCs más antiguas)                              │
  * │  ├─> Crear/Actualizar Cliente (perfil + deuda según estado pago)                   │
  * │  ├─> Salida Almacén (stock -= cantidad)                                            │
- * │  ├─> Distribución a 3 bancos:                                                      │
- * │  │   ├─> Bóveda Monte: precioCompra × cantidad (COSTO)                             │
+ * │  ├─> Distribución a 3 bancos (LÓGICA SAGRADA):                                     │
+ * │  │   ├─> Bóveda Monte: Costo Real Lotes (COSTO)                                    │
  * │  │   ├─> Flete Sur: precioFlete × cantidad (TRANSPORTE)                            │
- * │  │   └─> Utilidades: (precioVenta - precioCompra - precioFlete) × cantidad         │
+ * │  │   └─> Utilidades: (precioVenta - CostoReal - Flete) × cantidad                  │
  * │  └─> Estado pago afecta capital vs histórico                                       │
  * ├─────────────────────────────────────────────────────────────────────────────────────┤
  * │  7 BANCOS                                                                           │
@@ -32,22 +34,9 @@
  * │  ├─> profit: CASA DE CAMBIO - Compra/Venta USD/MXN                                 │
  * │  ├─> leftie: Banco operativo USD                                                   │
  * │  └─> azteca: Banco operativo MXN                                                   │
- * │                                                                                     │
- * │  Cada banco tiene:                                                                  │
- * │  - capitalActual = historicoIngresos - historicoGastos                             │
- * │  - historicoIngresos (acumulativo, nunca decrece)                                  │
- * │  - historicoGastos (acumulativo, nunca decrece)                                    │
- * │  - historicoTransferencias (acumulativo)                                           │
- * │  - Operaciones: Ingreso, Gasto, Transferencia                                      │
- * ├─────────────────────────────────────────────────────────────────────────────────────┤
- * │  PROFIT - CASA DE CAMBIO                                                           │
- * │  ├─> Compra USD: Ingresa USD al sistema, sale MXN                                  │
- * │  ├─> Venta USD: Sale USD del sistema, ingresa MXN                                  │
- * │  ├─> Tipo de cambio configurable                                                   │
- * │  └─> Ganancia = (tipoCambioVenta - tipoCambioCompra) × montoUSD                    │
  * └─────────────────────────────────────────────────────────────────────────────────────┘
  *
- * @version 3.0.0 - Sistema completo integrado
+ * @version 3.1.0 - Sistema completo integrado con FIFO y Trazabilidad
  * ═══════════════════════════════════════════════════════════════════════════════════════
  */
 
@@ -94,6 +83,8 @@ export interface Distribuidor {
   totalOrdenesCompra: number // Suma histórica de todas las OC
   totalPagado: number // Lo que hemos pagado
   adeudoPendiente: number // totalOrdenesCompra - totalPagado
+  gananciaNetaPromedio?: number
+  volumenProveedor?: number
   // Referencias
   ordenesCompra: string[] // IDs de OC
 }
@@ -104,7 +95,9 @@ export interface OrdenCompra {
   distribuidorId: string
   distribuidorNombre: string // Snapshot
   // Producto
-  cantidad: number
+  cantidad: number // Cantidad Original
+  cantidadVendida: number // Trazabilidad
+  cantidadRestante: number // Stock actual del lote
   precioUnitarioUSD: number // Precio de compra por unidad en USD
   // Totales
   costoTotalUSD: number // cantidad × precioUnitarioUSD
@@ -115,6 +108,11 @@ export interface OrdenCompra {
   montoRestante: number
   estadoPago: EstadoPago
   bancoOrigen?: BancoId // De qué banco se pagó
+  // Métricas de Rentabilidad
+  gananciaBruta?: number
+  gananciaNeta?: number
+  margenBruto?: number
+  valorStockRestante?: number
   // Almacén
   entradaAlmacenId?: string // Referencia a entrada generada
 }
@@ -128,8 +126,18 @@ export interface Cliente {
   totalVentas: number // Suma histórica de todas las ventas
   totalPagado: number // Lo que ha pagado
   deudaPendiente: number // totalVentas - totalPagado
+  riesgo?: string
+  fidelidad?: string
+  gananciaGenerada?: number
   // Referencias
   ventas: string[] // IDs de ventas
+}
+
+export interface LoteVenta {
+  ocId: string
+  cantidad: number
+  costoUnitario: number
+  ganancia: number
 }
 
 export interface Venta {
@@ -140,21 +148,24 @@ export interface Venta {
   // Producto
   cantidad: number
   precioVentaUSD: number // Precio de venta por unidad
-  precioCompraUSD: number // Costo (de la OC relacionada)
+  precioCompraUSD: number // Costo promedio (referencial) o calculado
   precioFleteUSD: number // Flete por unidad (default 500)
   // Totales
   precioTotalVenta: number // cantidad × precioVentaUSD
   // Distribución GYA
-  montoBovedaMonte: number // precioCompraUSD × cantidad
+  montoBovedaMonte: number // Costo Real (Suma de lotes)
   montoFletes: number // precioFleteUSD × cantidad
-  montoUtilidades: number // (precioVentaUSD - precioCompraUSD - precioFleteUSD) × cantidad
+  montoUtilidades: number // (precioTotalVenta - montoBovedaMonte - montoFletes)
   // Pagos
   montoPagado: number
   montoRestante: number
   estadoPago: EstadoPago
+  // Trazabilidad
+  origenLotes: LoteVenta[]
+  gananciaNetaVenta?: number
+  margenNeto?: number
   // Almacén
   salidaAlmacenId?: string // Referencia a salida generada
-  ocRelacionada?: string // OC de donde viene el stock
 }
 
 export interface MovimientoAlmacen {
@@ -170,6 +181,8 @@ export interface MovimientoAlmacen {
   // Stock
   stockAnterior: number
   stockNuevo: number
+  // Trazabilidad
+  origenLotes?: LoteVenta[]
 }
 
 export interface Almacen {
@@ -293,26 +306,26 @@ export const BANCO_CONFIG: Record<
  * Calcula la distribución GYA de una venta
  *
  * FÓRMULAS SAGRADAS:
- * - Bóveda Monte = precioCompra × cantidad (COSTO)
+ * - Bóveda Monte = costoTotalReal (Suma de costos de lotes FIFO)
  * - Flete Sur = precioFlete × cantidad (TRANSPORTE)
- * - Utilidades = (precioVenta - precioCompra - precioFlete) × cantidad (GANANCIA NETA)
+ * - Utilidades = precioTotalVenta - Bóveda Monte - Flete Sur (GANANCIA NETA)
  */
 export function calcularDistribucionVenta(datos: {
   cantidad: number
-  precioVentaUSD: number
-  precioCompraUSD: number
-  precioFleteUSD: number
+  precioTotalVenta: number
+  costoTotalReal: number // Calculado vía FIFO
+  precioFleteTotal: number
 }): {
   montoBovedaMonte: number
   montoFletes: number
   montoUtilidades: number
   total: number
 } {
-  const { cantidad, precioVentaUSD, precioCompraUSD, precioFleteUSD } = datos
+  const { cantidad, precioTotalVenta, costoTotalReal, precioFleteTotal } = datos
 
-  const montoBovedaMonte = precioCompraUSD * cantidad
-  const montoFletes = precioFleteUSD * cantidad
-  const montoUtilidades = (precioVentaUSD - precioCompraUSD - precioFleteUSD) * cantidad
+  const montoBovedaMonte = costoTotalReal
+  const montoFletes = precioFleteTotal
+  const montoUtilidades = precioTotalVenta - montoBovedaMonte - montoFletes
 
   return {
     montoBovedaMonte,
@@ -324,10 +337,6 @@ export function calcularDistribucionVenta(datos: {
 
 /**
  * Calcula distribución proporcional según estado de pago
- *
- * - COMPLETO: 100% va al capital de cada banco
- * - PARCIAL: Solo el % pagado va al capital
- * - PENDIENTE: 0% al capital (solo histórico)
  */
 export function calcularDistribucionSegunPago(
   distribucionBase: { montoBovedaMonte: number; montoFletes: number; montoUtilidades: number },
@@ -343,34 +352,37 @@ export function calcularDistribucionSegunPago(
   let estadoPago: EstadoPago = 'pendiente'
   let proporcionPagada = 0
 
-  if (montoPagado >= totalVenta) {
+  if (totalVenta <= 0) {
+     return {
+        capitalBovedaMonte: 0,
+        capitalFletes: 0,
+        capitalUtilidades: 0,
+        proporcionPagada: 1,
+        estadoPago: 'completo'
+     }
+  }
+
+  if (montoPagado >= totalVenta - 0.01) {
     estadoPago = 'completo'
     proporcionPagada = 1
   } else if (montoPagado > 0) {
     estadoPago = 'parcial'
-    proporcionPagada = montoPagado / totalVenta
+    proporcionPagada = Math.min(1, Math.max(0, montoPagado / totalVenta))
   }
 
   return {
-    capitalBovedaMonte: distribucionBase.montoBovedaMonte * proporcionPagada,
-    capitalFletes: distribucionBase.montoFletes * proporcionPagada,
-    capitalUtilidades: distribucionBase.montoUtilidades * proporcionPagada,
+    capitalBovedaMonte: Number((distribucionBase.montoBovedaMonte * proporcionPagada).toFixed(2)),
+    capitalFletes: Number((distribucionBase.montoFletes * proporcionPagada).toFixed(2)),
+    capitalUtilidades: Number((distribucionBase.montoUtilidades * proporcionPagada).toFixed(2)),
     proporcionPagada,
     estadoPago,
   }
 }
 
-/**
- * Calcula el capital actual de un banco
- * FÓRMULA: capitalActual = historicoIngresos - historicoGastos
- */
 export function calcularCapitalBanco(historicoIngresos: number, historicoGastos: number): number {
   return historicoIngresos - historicoGastos
 }
 
-/**
- * Procesa una transferencia entre bancos
- */
 export function procesarTransferencia(
   bancoOrigen: Banco,
   bancoDestino: Banco,
@@ -382,7 +394,6 @@ export function procesarTransferencia(
   movimientoOrigen: Partial<MovimientoBanco>
   movimientoDestino: Partial<MovimientoBanco>
 } {
-  // Validar fondos suficientes
   if (bancoOrigen.capitalActual < monto) {
     throw new Error(
       `Fondos insuficientes en ${bancoOrigen.nombre}. Disponible: ${bancoOrigen.capitalActual}, Requerido: ${monto}`,
@@ -391,7 +402,6 @@ export function procesarTransferencia(
 
   const ahora = new Date()
 
-  // Actualizar banco origen (GASTO)
   const bancoOrigenActualizado: Banco = {
     ...bancoOrigen,
     historicoGastos: bancoOrigen.historicoGastos + monto,
@@ -402,7 +412,6 @@ export function procesarTransferencia(
     ),
   }
 
-  // Actualizar banco destino (INGRESO)
   const bancoDestinoActualizado: Banco = {
     ...bancoDestino,
     historicoIngresos: bancoDestino.historicoIngresos + monto,
@@ -444,9 +453,6 @@ export function procesarTransferencia(
   }
 }
 
-/**
- * Procesa un gasto desde un banco
- */
 export function procesarGasto(
   banco: Banco,
   monto: number,
@@ -480,9 +486,6 @@ export function procesarGasto(
   return { bancoActualizado, movimiento }
 }
 
-/**
- * Procesa un ingreso a un banco
- */
 export function procesarIngreso(
   banco: Banco,
   monto: number,
@@ -516,28 +519,15 @@ export function procesarIngreso(
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
 export interface TipoCambioConfig {
-  compraUSD: number // Precio al que COMPRAMOS dólares (pagamos en pesos)
-  ventaUSD: number // Precio al que VENDEMOS dólares (recibimos pesos)
-  // La ganancia está en: ventaUSD > compraUSD
+  compraUSD: number
+  ventaUSD: number
 }
 
-/**
- * Calcula operación de casa de cambio
- *
- * COMPRA USD: Pagamos MXN, recibimos USD
- * - MXN sale de Profit (o banco origen)
- * - USD entra a boveda_usa o leftie
- *
- * VENTA USD: Pagamos USD, recibimos MXN
- * - USD sale de boveda_usa o leftie
- * - MXN entra a Profit
- * - Ganancia = (tipoCambioVenta - tipoCambioCompraOriginal) × montoUSD
- */
 export function calcularOperacionCasaCambio(
   tipo: TipoOperacionFX,
   montoUSD: number,
   tipoCambio: number,
-  tipoCambioCompraOriginal?: number, // Para calcular ganancia en ventas
+  tipoCambioCompraOriginal?: number,
 ): {
   montoMXN: number
   ganancia: number
@@ -553,7 +543,7 @@ export function calcularOperacionCasaCambio(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
-// ALMACÉN - ENTRADAS Y SALIDAS
+// ALMACÉN - ENTRADAS Y SALIDAS (FIFO + TRAZABILIDAD)
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
 /**
@@ -598,32 +588,84 @@ export function procesarEntradaAlmacen(
 }
 
 /**
- * Procesa salida de almacén (desde Venta)
+ * Asigna lotes FIFO para una venta
+ * Retorna qué OCs se consumen y cuánta cantidad de cada una
+ */
+export function asignarLotesFIFO(
+  ordenesCompra: Record<string, OrdenCompra>,
+  cantidadSolicitada: number
+): {
+  lotesUsados: LoteVenta[]
+  ordenesActualizadas: Record<string, OrdenCompra>
+  costoTotalReal: number
+} {
+  const lotesUsados: LoteVenta[] = []
+  const ordenesActualizadas = { ...ordenesCompra }
+  let cantidadRestantePorCubrir = cantidadSolicitada
+  let costoTotalReal = 0
+
+  // 1. Filtrar OCs con stock disponible y ordenar por fecha (FIFO)
+  const lotesDisponibles = Object.values(ordenesCompra)
+    .filter((oc) => oc.cantidadRestante > 0)
+    .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
+
+  // 2. Iterar lotes
+  for (const lote of lotesDisponibles) {
+    if (cantidadRestantePorCubrir <= 0) break
+
+    const cantidadTomar = Math.min(lote.cantidadRestante, cantidadRestantePorCubrir)
+    const costoLote = cantidadTomar * lote.precioUnitarioUSD
+
+    // Registrar lote usado
+    lotesUsados.push({
+      ocId: lote.id,
+      cantidad: cantidadTomar,
+      costoUnitario: lote.precioUnitarioUSD,
+      ganancia: 0, // Se calcula después con precio venta
+    })
+
+    // Actualizar métricas del lote
+    const loteActualizado = { ...lote }
+    loteActualizado.cantidadRestante -= cantidadTomar
+    loteActualizado.cantidadVendida += cantidadTomar
+    loteActualizado.valorStockRestante = loteActualizado.cantidadRestante * loteActualizado.precioUnitarioUSD
+    
+    ordenesActualizadas[lote.id] = loteActualizado
+
+    costoTotalReal += costoLote
+    cantidadRestantePorCubrir -= cantidadTomar
+  }
+
+  if (cantidadRestantePorCubrir > 0) {
+    throw new Error(`Stock insuficiente en lotes. Faltan ${cantidadRestantePorCubrir} unidades.`)
+  }
+
+  return { lotesUsados, ordenesActualizadas, costoTotalReal }
+}
+
+/**
+ * Procesa salida de almacén (desde Venta) con Lógica FIFO
  */
 export function procesarSalidaAlmacen(
   almacen: Almacen,
+  ordenesCompra: Record<string, OrdenCompra>, // Input para FIFO
   cantidad: number,
   precioVentaUSD: number,
   ventaId: string,
 ): {
   almacenActualizado: Almacen
+  ordenesCompraActualizadas: Record<string, OrdenCompra>
   movimiento: MovimientoAlmacen
+  lotesUsados: LoteVenta[]
+  costoTotalReal: number
 } {
-  // Validar stock suficiente
-  if (almacen.stockActual < cantidad) {
-    throw new Error(
-      `Stock insuficiente. Disponible: ${almacen.stockActual}, Solicitado: ${cantidad}`,
-    )
-  }
+  // 1. Asignar Lotes FIFO
+  const { lotesUsados, ordenesActualizadas, costoTotalReal } = asignarLotesFIFO(ordenesCompra, cantidad)
 
-  const valorTotal = cantidad * precioVentaUSD
+  // 2. Actualizar Almacén
+  const valorTotalVenta = cantidad * precioVentaUSD
   const stockAnterior = almacen.stockActual
   const stockNuevo = stockAnterior - cantidad
-
-  // Calcular valor promedio del stock para la salida
-  const costoPromedioUnitario =
-    almacen.stockActual > 0 ? almacen.valorStockUSD / almacen.stockActual : 0
-  const valorSalidaAlCosto = cantidad * costoPromedioUnitario
 
   const movimiento: MovimientoAlmacen = {
     id: `salida_${Date.now()}`,
@@ -631,23 +673,31 @@ export function procesarSalidaAlmacen(
     tipo: 'salida',
     cantidad,
     precioUnitarioUSD: precioVentaUSD,
-    valorTotalUSD: valorTotal,
+    valorTotalUSD: valorTotalVenta,
     referenciaId: ventaId,
     referenciaTipo: 'venta',
     stockAnterior,
     stockNuevo,
+    origenLotes: lotesUsados,
   }
 
   const almacenActualizado: Almacen = {
     ...almacen,
     stockActual: stockNuevo,
-    valorStockUSD: Math.max(0, almacen.valorStockUSD - valorSalidaAlCosto),
+    // Restamos el costo real de los lotes, no un promedio
+    valorStockUSD: Math.max(0, almacen.valorStockUSD - costoTotalReal), 
     totalSalidas: almacen.totalSalidas + cantidad,
-    valorTotalSalidas: almacen.valorTotalSalidas + valorTotal,
+    valorTotalSalidas: almacen.valorTotalSalidas + valorTotalVenta,
     movimientos: [...almacen.movimientos, movimiento],
   }
 
-  return { almacenActualizado, movimiento }
+  return { 
+    almacenActualizado, 
+    ordenesCompraActualizadas: ordenesActualizadas,
+    movimiento, 
+    lotesUsados,
+    costoTotalReal 
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
@@ -664,17 +714,14 @@ export interface EstadisticasVentas {
 }
 
 export interface EstadisticasRentabilidad {
-  margenBrutoPromedio: number // (precioVenta - precioCompra) / precioVenta
-  margenNetoPromedio: number // utilidad / totalVenta
-  rotacionInventario: number // ventas / stockPromedio
-  diasInventario: number // 365 / rotacionInventario
-  puntoEquilibrio: number // costosFijos / margenContribucion
-  roi: number // utilidadNeta / capitalInvertido
+  margenBrutoPromedio: number
+  margenNetoPromedio: number
+  rotacionInventario: number
+  diasInventario: number
+  puntoEquilibrio: number
+  roi: number
 }
 
-/**
- * Calcula estadísticas de rentabilidad
- */
 export function calcularEstadisticasRentabilidad(datos: {
   ventas: Venta[]
   costosFijos: number
@@ -694,7 +741,6 @@ export function calcularEstadisticasRentabilidad(datos: {
     }
   }
 
-  // Calcular totales
   let totalVenta = 0
   let totalCosto = 0
   let totalUtilidad = 0
@@ -708,18 +754,11 @@ export function calcularEstadisticasRentabilidad(datos: {
   }
 
   const margenBrutoPromedio = totalVenta > 0 ? ((totalVenta - totalCosto) / totalVenta) * 100 : 0
-
   const margenNetoPromedio = totalVenta > 0 ? (totalUtilidad / totalVenta) * 100 : 0
-
   const rotacionInventario = stockPromedio > 0 ? totalUnidades / stockPromedio : 0
-
   const diasInventario = rotacionInventario > 0 ? 365 / rotacionInventario : 0
-
-  // Margen de contribución promedio por unidad
   const margenContribucionUnit = ventas.length > 0 ? totalUtilidad / totalUnidades : 0
-
   const puntoEquilibrio = margenContribucionUnit > 0 ? costosFijos / margenContribucionUnit : 0
-
   const roi = capitalInvertido > 0 ? (totalUtilidad / capitalInvertido) * 100 : 0
 
   return {
@@ -732,9 +771,6 @@ export function calcularEstadisticasRentabilidad(datos: {
   }
 }
 
-/**
- * Predice ventas futuras basado en histórico (regresión lineal simple)
- */
 export function predecirVentas(ventasHistoricas: { mes: number; monto: number }[]): number {
   if (ventasHistoricas.length < 2) {
     return ventasHistoricas.length > 0 ? ventasHistoricas[0]?.monto || 0 : 0
@@ -759,8 +795,6 @@ export function predecirVentas(ventasHistoricas: { mes: number; monto: number }[
 
   const pendiente = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX)
   const intercepto = (sumY - pendiente * sumX) / n
-
-  // Predecir siguiente mes
   const ultimaVenta = ventasHistoricas[n - 1]
   const siguienteMes = (ultimaVenta?.mes || 0) + 1
   return Math.max(0, pendiente * siguienteMes + intercepto)
@@ -807,28 +841,20 @@ export function validarVenta(datos: {
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
 export const FlowDistributorEngine = {
-  // Cálculos
   calcularDistribucionVenta,
   calcularDistribucionSegunPago,
   calcularCapitalBanco,
   calcularOperacionCasaCambio,
   calcularEstadisticasRentabilidad,
   predecirVentas,
-
-  // Operaciones Banco
   procesarTransferencia,
   procesarGasto,
   procesarIngreso,
-
-  // Almacén
   procesarEntradaAlmacen,
   procesarSalidaAlmacen,
-
-  // Validaciones
+  asignarLotesFIFO,
   validarOrdenCompra,
   validarVenta,
-
-  // Constantes
   FLETE_DEFAULT_USD,
   BANCOS_RECIBEN_VENTAS,
   BANCOS_OPERATIVOS,

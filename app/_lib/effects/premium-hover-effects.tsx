@@ -26,9 +26,10 @@ import { useEffect, useRef, useState } from 'react'
 
 /**
  * Hook para botón magnético (atracción al cursor)
- * @param enabled - Permite deshabilitar el efecto (default: true)
+ * @param enabled - Permite deshabilitar el efecto (default: false - DESHABILITADO para mejor UX)
+ * NOTA: Deshabilitado por defecto para evitar efectos tediosos con el cursor
  */
-export function useMagneticHover(strength: number = 0.3, returnSpeed: number = 100, enabled: boolean = true) {
+export function useMagneticHover(strength: number = 0.15, returnSpeed: number = 100, enabled: boolean = false) {
   const ref = useRef<HTMLElement>(null)
 
   const x = useMotionValue(0)
@@ -216,9 +217,9 @@ export function MagneticButton({
     <motion.button
       ref={ref as any}
       style={{ x, y }}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className={`relative overflow-hidden rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-3 font-medium text-white transition-all duration-300 hover:shadow-xl hover:shadow-violet-500/50 ${className}`}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
+      className={`relative overflow-hidden rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-3 font-medium text-white transition-all duration-300 hover:shadow-lg hover:shadow-violet-500/30 ${className}`}
       {...restProps}
     >
       {children}
@@ -276,8 +277,8 @@ export function GlowButton({
     <motion.button
       style={{ boxShadow }}
       {...handlers}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
       className={`rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-3 font-medium text-white transition-all duration-300 ${className}`}
       {...restProps}
     >
@@ -341,8 +342,8 @@ export function RippleButton({
 
   return (
     <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
       onMouseEnter={handleMouseEnter}
       className={`relative overflow-hidden rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-3 font-medium text-white ${className}`}
       {...restProps}
@@ -384,10 +385,10 @@ export function FloatingHoverCard({
   return (
     <motion.div
       whileHover={{
-        y: -10,
-        boxShadow: '0 20px 40px rgba(139, 92, 246, 0.3)',
+        y: -3,
+        boxShadow: '0 12px 24px rgba(139, 92, 246, 0.2)',
       }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
       className={`cursor-pointer rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl ${className}`}
     >
       {children}

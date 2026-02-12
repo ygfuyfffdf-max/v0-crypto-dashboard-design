@@ -61,7 +61,6 @@ export const BancoCardPremium = memo(function BancoCardPremium({
 
   return (
     <motion.div
-      whileHover={{ scale: 1.02, y: -4 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={cn(
@@ -70,7 +69,7 @@ export const BancoCardPremium = memo(function BancoCardPremium({
         'border-2 transition-all duration-300',
         selected
           ? 'border-emerald-500/50 shadow-lg shadow-emerald-500/20'
-          : 'border-white/10 hover:border-white/20',
+          : 'border-white/10 hover:border-white/20 hover:bg-gray-900/95',
         className
       )}
     >
@@ -231,14 +230,13 @@ export const ResumenFinancieroCard = memo(function ResumenFinancieroCard({
 
   return (
     <motion.div
-      whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={cn(
         'p-5 rounded-2xl cursor-pointer',
         `bg-gradient-to-br ${config.bg}`,
         `border ${config.border}`,
-        'transition-all duration-300',
+        'transition-all duration-200 hover:brightness-110',
         className
       )}
     >
@@ -363,14 +361,13 @@ export const TipoMovimientoCard = memo(function TipoMovimientoCard({
 
   return (
     <motion.div
-      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={cn(
         'p-4 rounded-xl cursor-pointer',
         config.bg,
         `border ${config.border}`,
-        'hover:shadow-lg transition-all duration-200',
+        'hover:brightness-110 transition-all duration-200',
         className
       )}
     >

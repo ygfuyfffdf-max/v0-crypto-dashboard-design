@@ -113,7 +113,7 @@ export const PAGE_TRANSITIONS = {
   morph: {
     initial: { opacity: 0, scale: 0.95, y: 20, filter: 'blur(5px)' },
     animate: { opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' },
-    exit: { opacity: 0, scale: 1.05, y: -20, filter: 'blur(5px)' },
+    exit: { opacity: 0, scale: 1.02, y: -20, filter: 'blur(5px)' },
     transition: SPRING_PRESETS.premium,
   },
 
@@ -165,7 +165,7 @@ export const COMPONENT_VARIANTS = {
       boxShadow: '0 0 0 rgba(139, 0, 255, 0)',
     },
     hover: {
-      scale: 1.05,
+      scale: 1.02,
       boxShadow: '0 0 30px rgba(139, 0, 255, 0.5)',
       transition: SPRING_PRESETS.bouncy,
     },
@@ -322,7 +322,7 @@ export const SCROLL_VARIANTS = {
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
 export const HOVER_LIFT: MotionProps = {
-  whileHover: { y: -4, transition: SPRING_PRESETS.snappy },
+  whileHover: { y: -2, transition: SPRING_PRESETS.snappy },
   whileTap: { y: 0, scale: 0.98 },
 }
 
@@ -334,8 +334,8 @@ export const HOVER_GLOW: MotionProps = {
 }
 
 export const HOVER_SCALE: MotionProps = {
-  whileHover: { scale: 1.05, transition: SPRING_PRESETS.snappy },
-  whileTap: { scale: 0.95 },
+  whileHover: { scale: 1.01, transition: SPRING_PRESETS.snappy },
+  whileTap: { scale: 0.98 },
 }
 
 export const PRESS_SCALE: MotionProps = {
@@ -649,3 +649,4 @@ export default {
   FloatingElement,
   GlowOrb,
 }
+

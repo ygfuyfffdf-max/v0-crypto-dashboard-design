@@ -94,6 +94,17 @@ import {
   EnhancedAuroraCard as AuroraGlassCard,
 } from "../../ui/EnhancedAuroraSystem"
 
+// 🍎 iOS PREMIUM SYSTEM 2026 — Sistema de UI sin efectos 3D problemáticos
+import {
+  iOSScrollContainer,
+  iOSSection,
+  iOSGrid,
+  iOSEntityCard,
+  iOSMetricCardPremium,
+  useToastAdvanced as useiOSToast,
+  iOSConfirm,
+} from "../../ui/ios"
+
 // Aurora Charts - Lazy Loaded for performance
 const AuroraBarChart = dynamic(
   () => import("../../charts/AuroraPremiumCharts").then((mod) => mod.AuroraBarChart),
@@ -506,7 +517,6 @@ function DistribuidorCard({
           ? `0 20px 50px ${catConfig.color}30, 0 0 80px ${catConfig.color}15`
           : "0 8px 30px rgba(0,0,0,0.4)",
       }}
-      whileHover={{ scale: 1.02, y: -8 }}
       whileTap={{ scale: 0.98 }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -1616,7 +1626,7 @@ export function AuroraDistribuidoresPanelUnified({
                     ? "border-cyan-500/30 bg-cyan-500/20 text-cyan-400"
                     : "border-white/10 bg-white/5 text-white/60 hover:text-white"
                 )}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Filter size={20} />
@@ -1637,7 +1647,7 @@ export function AuroraDistribuidoresPanelUnified({
                   loading ? "Actualizando datos..." : "Actualizar lista de distribuidores"
                 }
                 className="rounded-xl border border-white/10 bg-white/5 p-3 text-white/60 transition-colors hover:text-white"
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <RefreshCw size={20} className={loading ? "animate-spin" : ""} aria-hidden="true" />
@@ -1827,6 +1837,42 @@ export function AuroraDistribuidoresPanelUnified({
               className="transition-spring hover-elevate"
             />
           </div>
+
+          {/* ═══════════════════════════════════════════════════════════════════════════
+           * 🍎 iOS PREMIUM METRICS — Distribuidores sin efectos 3D problemáticos
+           * ═══════════════════════════════════════════════════════════════════════════ */}
+          <iOSSection title="Distribuidores iOS" description="Vista limpia sin efectos 3D" className="mb-6">
+            <iOSGrid cols={4} gap="md">
+              <iOSMetricCardPremium
+                title="Total Distribuidores"
+                value={String(stats.total)}
+                icon={Building2}
+                iconColor="#06B6D4"
+                variant="default"
+              />
+              <iOSMetricCardPremium
+                title="Total Compras"
+                value={`$${(stats.totalCompras / 1000000).toFixed(1)}M`}
+                icon={ShoppingCart}
+                iconColor="#10B981"
+                trend={{ value: 12.5, direction: 'up' }}
+                variant="featured"
+              />
+              <iOSMetricCardPremium
+                title="Deuda Total"
+                value={`$${(stats.deudaTotal / 1000).toFixed(0)}K`}
+                icon={Wallet}
+                iconColor="#FBBF24"
+                trend={{ value: 8.3, direction: 'down' }}
+              />
+              <iOSMetricCardPremium
+                title="Órdenes Totales"
+                value={String(stats.ordenesTotales)}
+                icon={Package}
+                iconColor="#8B5CF6"
+              />
+            </iOSGrid>
+          </iOSSection>
 
           {/* Main Grid */}
           <div className="grid grid-cols-12 gap-6">

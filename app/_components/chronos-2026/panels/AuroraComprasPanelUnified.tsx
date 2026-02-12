@@ -54,6 +54,17 @@ import {
   EnhancedAuroraCard as AuroraGlassCard,
 } from '../../ui/EnhancedAuroraSystem'
 
+// 🍎 iOS PREMIUM SYSTEM 2026 — Sistema de UI sin efectos 3D problemáticos
+import {
+  iOSScrollContainer,
+  iOSSection,
+  iOSGrid,
+  iOSMetricCardPremium,
+  iOSInfoCard,
+  useToastAdvanced as useiOSToast,
+  iOSConfirm,
+} from '../../ui/ios'
+
 // Aurora Charts - Lazy Loaded for performance
 const AuroraAreaChart = dynamic(
   () => import('../../charts/AuroraPremiumCharts').then((mod) => mod.AuroraAreaChart),
@@ -987,7 +998,7 @@ export const AuroraComprasPanelUnified = ({
                 }}
                 aria-label={loading ? 'Actualizando datos...' : 'Actualizar órdenes de compra'}
                 className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-3 text-white/60 backdrop-blur-sm transition-all duration-300 hover:border-cyan-500/30 hover:bg-white/10 hover:text-white hover:shadow-[0_0_20px_rgba(34,211,238,0.2)]"
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <RefreshCw size={20} className={loading ? 'animate-spin' : ''} aria-hidden="true" />
@@ -996,43 +1007,46 @@ export const AuroraComprasPanelUnified = ({
             </div>
           </header>
 
-          {/* Stats Row */}
-          <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <AuroraStatWidget
-              label="Total Compras"
-              value={`$${stats.montoTotal.toLocaleString()}`}
-              icon={<ShoppingBag size={20} />}
-              color="cyan"
-              change={18.5}
-              trend="up"
-              className="transition-spring hover-elevate"
-            />
-            <AuroraStatWidget
-              label="Pendientes"
-              value={`$${stats.montoPendiente.toLocaleString()}`}
-              icon={<Clock size={20} />}
-              color="gold"
-              change={-5.2}
-              trend="down"
-              className="transition-spring hover-elevate"
-            />
-            <AuroraStatWidget
-              label="Completadas"
-              value={`$${stats.montoCompletado.toLocaleString()}`}
-              icon={<CheckCircle size={20} />}
-              color="emerald"
-              change={12.8}
-              trend="up"
-              className="transition-spring hover-elevate"
-            />
-            <AuroraStatWidget
-              label="Parciales"
-              value={stats.parciales.toString()}
-              icon={<CreditCard size={20} />}
-              color="gold"
-              className="transition-spring hover-elevate"
-            />
-          </div>
+          {/* ═══════════════════════════════════════════════════════════════════════════════
+           * 🍎 iOS PREMIUM METRICS — Cards limpias SIN efectos 3D problemáticos
+           * Estilo iOS 18+ con glassmorphism Gen6, sin tilt con cursor
+           * ═══════════════════════════════════════════════════════════════════════════════ */}
+          <iOSSection title="Métricas de Compras" description="Vista iOS Premium" className="mb-6">
+            <iOSGrid cols={4} gap="md">
+              <iOSMetricCardPremium
+                title="Total Compras"
+                value={`$${stats.montoTotal.toLocaleString()}`}
+                icon={ShoppingBag}
+                iconColor="#06B6D4"
+                trend={{ value: 18.5, direction: 'up' }}
+                variant="featured"
+              />
+              <iOSMetricCardPremium
+                title="Pendientes"
+                value={`$${stats.montoPendiente.toLocaleString()}`}
+                icon={Clock}
+                iconColor="#F59E0B"
+                trend={{ value: 5.2, direction: 'down' }}
+                variant="default"
+              />
+              <iOSMetricCardPremium
+                title="Completadas"
+                value={`$${stats.montoCompletado.toLocaleString()}`}
+                icon={CheckCircle}
+                iconColor="#10B981"
+                trend={{ value: 12.8, direction: 'up' }}
+                variant="default"
+              />
+              <iOSMetricCardPremium
+                title="Parciales"
+                value={stats.parciales.toString()}
+                icon={CreditCard}
+                iconColor="#F59E0B"
+                trend={{ value: 0, direction: 'neutral' }}
+                variant="default"
+              />
+            </iOSGrid>
+          </iOSSection>
 
           {/* Main Grid */}
           <div className="grid grid-cols-12 gap-6">

@@ -307,7 +307,7 @@ const OracleOrb = memo(function OracleOrb({
     <motion.button
       onClick={onClick}
       className="relative cursor-pointer"
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.95 }}
     >
       <canvas ref={canvasRef} style={{ width: orbSize, height: orbSize }} />
@@ -759,7 +759,7 @@ export function TheOracleWithin({
                         ? 'bg-emerald-500/20 text-emerald-400'
                         : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white'
                     }`}
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     {isVoiceEnabled ? <Mic size={18} /> : <MicOff size={18} />}
@@ -793,7 +793,7 @@ export function TheOracleWithin({
                     style={{
                       background: `linear-gradient(135deg, ${PALETTE.violetElectric}, ${PALETTE.plasmaPink})`,
                     }}
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     {state === 'thinking' ? (

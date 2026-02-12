@@ -59,7 +59,7 @@ export function useFadeInScroll() {
 }
 
 /**
- * Hook para rotación 3D durante scroll
+ * Hook para rotación 3D durante scroll (intensidad reducida para mejor UX)
  */
 export function useRotate3DScroll() {
   const ref = useRef<HTMLElement>(null)
@@ -68,8 +68,9 @@ export function useRotate3DScroll() {
     offset: ['start end', 'end start'],
   })
 
-  const rotateX = useTransform(scrollYProgress, [0, 1], [15, -15])
-  const rotateY = useTransform(scrollYProgress, [0, 1], [-15, 15])
+  // Intensidad reducida de 15 a 5 grados para efecto más sutil
+  const rotateX = useTransform(scrollYProgress, [0, 1], [5, -5])
+  const rotateY = useTransform(scrollYProgress, [0, 1], [-5, 5])
 
   return { ref, rotateX, rotateY }
 }
@@ -91,7 +92,7 @@ export function useStickyScale() {
 }
 
 /**
- * Hook para efecto de zoom-in mientras scrolleas
+ * Hook para efecto de zoom-in mientras scrolleas (intensidad reducida)
  */
 export function useZoomInScroll() {
   const ref = useRef<HTMLElement>(null)
@@ -100,8 +101,9 @@ export function useZoomInScroll() {
     offset: ['start end', 'center center'],
   })
 
-  const scale = useTransform(scrollYProgress, [0, 1], [0.5, 1])
-  const blur = useTransform(scrollYProgress, [0, 1], [10, 0])
+  // Escala inicial más alta (0.85 vs 0.5) para efecto más sutil
+  const scale = useTransform(scrollYProgress, [0, 1], [0.85, 1])
+  const blur = useTransform(scrollYProgress, [0, 1], [3, 0])
 
   return { ref, scale, blur }
 }
@@ -271,15 +273,20 @@ export function RevealSection({
 
 /**
  * Hook para parallax 3D con movimiento del mouse
+ * @param intensity - Intensidad del efecto (default: 5 - reducido)
+ * @param enabled - Habilitado o no (default: false - DESHABILITADO para mejor UX)
+ * NOTA: Deshabilitado por defecto para evitar tracking tedioso con cursor
  */
-export function useMouseParallax3D(intensity: number = 10) {
+export function useMouseParallax3D(intensity: number = 5, enabled: boolean = false) {
   const x = useMotionValue(0)
   const y = useMotionValue(0)
 
-  const rotateX = useTransform(y, [-0.5, 0.5], [intensity, -intensity])
-  const rotateY = useTransform(x, [-0.5, 0.5], [-intensity, intensity])
+  const rotateX = useTransform(y, [-0.5, 0.5], enabled ? [intensity, -intensity] : [0, 0])
+  const rotateY = useTransform(x, [-0.5, 0.5], enabled ? [-intensity, intensity] : [0, 0])
 
   useEffect(() => {
+    if (!enabled) return // No activar tracking si está deshabilitado
+    
     const handleMouseMove = (event: MouseEvent) => {
       const { clientX, clientY } = event
       const { innerWidth, innerHeight } = window
@@ -290,7 +297,7 @@ export function useMouseParallax3D(intensity: number = 10) {
 
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [x, y])
+  }, [x, y, enabled])
 
   return { rotateX, rotateY }
 }
@@ -298,18 +305,21 @@ export function useMouseParallax3D(intensity: number = 10) {
 interface MouseParallax3DCardProps {
   children: React.ReactNode
   intensity?: number
+  enabled?: boolean
   className?: string
 }
 
 /**
  * Card con parallax 3D controlado por mouse
+ * @param enabled - Deshabilitado por defecto para evitar tracking tedioso
  */
 export function MouseParallax3DCard({
   children,
-  intensity = 10,
+  intensity = 5,
+  enabled = false,
   className = '',
 }: MouseParallax3DCardProps) {
-  const { rotateX, rotateY } = useMouseParallax3D(intensity)
+  const { rotateX, rotateY } = useMouseParallax3D(intensity, enabled)
 
   return (
     <motion.div

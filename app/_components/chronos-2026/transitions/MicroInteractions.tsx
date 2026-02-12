@@ -545,7 +545,7 @@ export function Badge({
       )}
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.02 }}
     >
       {pulse && (
         <span className="relative flex h-2 w-2">

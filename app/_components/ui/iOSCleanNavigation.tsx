@@ -465,7 +465,7 @@ export const CleanFAB = memo(function CleanFAB({
             background: `linear-gradient(135deg, ${color}, ${color}cc)`,
             boxShadow: `0 8px 32px ${color}50`,
           }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
           animate={{ rotate: isExpanded ? 45 : 0 }}
         >

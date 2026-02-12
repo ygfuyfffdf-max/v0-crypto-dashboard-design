@@ -61,17 +61,17 @@ import {
   LineChartIcon,
   Layers,
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/app/_components/ui/card'
+import { Button } from '@/app/_components/ui/button'
+import { Badge } from '@/app/_components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/_components/ui/tabs'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/app/_components/ui/select'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -79,8 +79,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { cn } from '@/lib/utils'
+} from '@/app/_components/ui/dropdown-menu'
+import { cn } from '@/app/_lib/utils'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -415,7 +415,7 @@ function GraficoPie({
         </Pie>
         <Tooltip
           content={({ active, payload }) =>
-            active && payload?.length ? (
+            active && payload?.length && payload[0] ? (
               <div className="bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-xl p-3">
                 <p className="text-white font-medium">
                   {payload[0].name}: {payload[0].value?.toLocaleString()}
@@ -465,7 +465,7 @@ function GraficoRadial({ datos, altura = 300 }: GraficoRadialProps) {
         />
         <Tooltip
           content={({ active, payload }) =>
-            active && payload?.length ? (
+            active && payload?.length && payload[0] && payload[0].payload ? (
               <div className="bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-xl p-3">
                 <p className="text-white font-medium">
                   {payload[0].payload.nombre}: {payload[0].value}%
@@ -697,7 +697,7 @@ export default function MetricsDashboardSupreme({
                       className="p-3 rounded-xl"
                       style={{ backgroundColor: `${metrica.color}20` }}
                     >
-                      <IconoMetrica className="w-6 h-6" style={{ color: metrica.color }} />
+                      {(IconoMetrica as any)({ className: 'w-6 h-6', style: { color: metrica.color } })}
                     </div>
                   </div>
 

@@ -37,6 +37,9 @@ import {
   ArrowUpRight,
   ArrowDownRight
 } from 'lucide-react'
+import { SupremeSparkline } from './iOSVisualComponents'
+
+import { useKocmocSound } from '@/app/hooks/useKocmocSound'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // iOS METRIC CARD - Card para KPIs y métricas
@@ -51,6 +54,7 @@ interface iOSMetricCardProps {
     direction: 'up' | 'down' | 'neutral'
     label?: string
   }
+  sparklineData?: number[] // NEW: Support for sparklines
   icon?: LucideIcon
   iconColor?: string
   footer?: ReactNode
@@ -65,6 +69,7 @@ export const iOSMetricCard = memo(function iOSMetricCard({
   value,
   subtitle,
   trend,
+  sparklineData,
   icon: Icon,
   iconColor = '#8B5CF6',
   footer,
@@ -74,9 +79,22 @@ export const iOSMetricCard = memo(function iOSMetricCard({
   loading = false,
 }: iOSMetricCardProps) {
   const [isPressed, setIsPressed] = useState(false)
+  const { playHover, playClick } = useKocmocSound()
 
   const TrendIcon = trend?.direction === 'up' ? TrendingUp : trend?.direction === 'down' ? TrendingDown : Minus
   const trendColor = trend?.direction === 'up' ? 'text-emerald-400' : trend?.direction === 'down' ? 'text-red-400' : 'text-white/40'
+  const sparklineColor = trend?.direction === 'up' ? '#10B981' : trend?.direction === 'down' ? '#F43F5E' : iconColor
+
+  const handleMouseEnter = () => {
+    if (onClick) playHover()
+  }
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      playClick()
+      onClick()
+    }
+  }
 
   if (variant === 'compact') {
     return (
@@ -88,14 +106,15 @@ export const iOSMetricCard = memo(function iOSMetricCard({
           onClick && 'cursor-pointer',
           className
         )}
-        onClick={onClick}
+        onClick={handleClick}
+        onMouseEnter={handleMouseEnter}
         onPointerDown={() => onClick && setIsPressed(true)}
         onPointerUp={() => setIsPressed(false)}
         onPointerLeave={() => setIsPressed(false)}
-        whileHover={onClick ? { backgroundColor: 'rgba(255,255,255,0.08)' } : undefined}
+        whileHover={onClick ? { backgroundColor: 'rgba(255,255,255,0.08)', scale: 1.02 } : undefined}
         whileTap={onClick ? { scale: 0.98 } : undefined}
       >
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 relative z-10">
           {Icon && (
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
@@ -115,6 +134,13 @@ export const iOSMetricCard = memo(function iOSMetricCard({
             </div>
           )}
         </div>
+        
+        {/* Background Sparkline for Compact */}
+        {sparklineData && (
+          <div className="absolute bottom-0 left-0 right-0 h-8 opacity-20 pointer-events-none">
+             <SupremeSparkline data={sparklineData} color={sparklineColor} height={32} showArea={false} />
+          </div>
+        )}
       </motion.div>
     )
   }
@@ -131,7 +157,8 @@ export const iOSMetricCard = memo(function iOSMetricCard({
           onClick && 'cursor-pointer',
           className
         )}
-        onClick={onClick}
+        onClick={handleClick}
+        onMouseEnter={handleMouseEnter}
         whileHover={onClick ? { scale: 1.01, y: -2 } : undefined}
         whileTap={onClick ? { scale: 0.99 } : undefined}
         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
@@ -139,7 +166,14 @@ export const iOSMetricCard = memo(function iOSMetricCard({
         {/* Shine effect */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
 
-        <div className="relative">
+        {/* Sparkline Background */}
+        {sparklineData && (
+          <div className="absolute bottom-0 left-0 right-0 h-32 opacity-15 pointer-events-none mix-blend-screen">
+             <SupremeSparkline data={sparklineData} color={sparklineColor} height={128} />
+          </div>
+        )}
+
+        <div className="relative z-10">
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
             {Icon && (
@@ -155,10 +189,10 @@ export const iOSMetricCard = memo(function iOSMetricCard({
             )}
             {trend && (
               <div className={cn(
-                'flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium',
-                trend.direction === 'up' && 'bg-emerald-500/15 text-emerald-400',
-                trend.direction === 'down' && 'bg-red-500/15 text-red-400',
-                trend.direction === 'neutral' && 'bg-white/10 text-white/50'
+                'flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium backdrop-blur-md',
+                trend.direction === 'up' && 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20',
+                trend.direction === 'down' && 'bg-red-500/15 text-red-400 border border-red-500/20',
+                trend.direction === 'neutral' && 'bg-white/10 text-white/50 border border-white/10'
               )}>
                 <TrendIcon size={12} />
                 <span>{Math.abs(trend.value)}%</span>
@@ -168,7 +202,7 @@ export const iOSMetricCard = memo(function iOSMetricCard({
 
           {/* Value */}
           <div className="mb-2">
-            <p className="text-3xl font-bold text-white">{value}</p>
+            <p className="text-3xl font-bold text-white tracking-tight">{value}</p>
             {subtitle && (
               <p className="text-sm text-white/40 mt-1">{subtitle}</p>
             )}
@@ -199,7 +233,8 @@ export const iOSMetricCard = memo(function iOSMetricCard({
         onClick && 'cursor-pointer',
         className
       )}
-      onClick={onClick}
+      onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
       onPointerDown={() => onClick && setIsPressed(true)}
       onPointerUp={() => setIsPressed(false)}
       onPointerLeave={() => setIsPressed(false)}
@@ -209,8 +244,15 @@ export const iOSMetricCard = memo(function iOSMetricCard({
     >
       {/* Top shine */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+      
+      {/* Sparkline Background */}
+      {sparklineData && (
+        <div className="absolute bottom-0 left-0 right-0 h-20 opacity-10 pointer-events-none">
+           <SupremeSparkline data={sparklineData} color={sparklineColor} height={80} />
+        </div>
+      )}
 
-      <div className="relative">
+      <div className="relative z-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2.5">
@@ -233,7 +275,7 @@ export const iOSMetricCard = memo(function iOSMetricCard({
             {loading ? (
               <div className="h-8 w-24 bg-white/10 rounded-lg animate-pulse" />
             ) : (
-              <p className="text-2xl font-bold text-white">{value}</p>
+              <p className="text-2xl font-bold text-white tracking-tight">{value}</p>
             )}
             {subtitle && (
               <p className="text-xs text-white/40 mt-1">{subtitle}</p>
@@ -242,8 +284,9 @@ export const iOSMetricCard = memo(function iOSMetricCard({
 
           {trend && (
             <div className={cn(
-              'flex items-center gap-1 text-sm font-medium',
-              trendColor
+              'flex items-center gap-1 text-sm font-medium px-2 py-0.5 rounded-lg backdrop-blur-sm',
+              trendColor,
+              trend.direction === 'up' ? 'bg-emerald-500/5' : trend.direction === 'down' ? 'bg-red-500/5' : 'bg-white/5'
             )}>
               {trend.direction === 'up' ? <ArrowUpRight size={16} /> : trend.direction === 'down' ? <ArrowDownRight size={16} /> : null}
               <span>{trend.value > 0 ? '+' : ''}{trend.value}%</span>
@@ -591,6 +634,8 @@ export const iOSActionCard = memo(function iOSActionCard({
   secondaryAction,
   className,
 }: iOSActionCardProps) {
+  const { playHover, playClick } = useKocmocSound()
+
   return (
     <motion.div
       className={cn(
@@ -601,6 +646,7 @@ export const iOSActionCard = memo(function iOSActionCard({
       )}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      onMouseEnter={playHover}
     >
       {/* Top shine */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
@@ -631,7 +677,8 @@ export const iOSActionCard = memo(function iOSActionCard({
           <div className="flex items-center gap-3 pt-3 border-t border-white/[0.06]">
             {secondaryAction && (
               <motion.button
-                onClick={secondaryAction.onClick}
+                onClick={() => { playClick(); secondaryAction.onClick() }}
+                onMouseEnter={playHover}
                 className={cn(
                   'flex-1 px-4 py-2.5 rounded-xl',
                   'bg-white/[0.08] text-white/70',
@@ -645,7 +692,8 @@ export const iOSActionCard = memo(function iOSActionCard({
             )}
             {primaryAction && (
               <motion.button
-                onClick={primaryAction.onClick}
+                onClick={() => { playClick(); primaryAction.onClick() }}
+                onMouseEnter={playHover}
                 disabled={primaryAction.loading}
                 className={cn(
                   'flex-1 px-4 py-2.5 rounded-xl',

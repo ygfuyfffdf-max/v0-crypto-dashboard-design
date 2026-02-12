@@ -473,7 +473,7 @@ export function FormSubmit({
         'transition-all duration-200',
         className
       )}
-      whileHover={!isSubmitting && isValid ? { scale: 1.02 } : {}}
+      whileHover={!isSubmitting && isValid ? { scale: 1.005 } : {}}
       whileTap={!isSubmitting && isValid ? { scale: 0.98 } : {}}
     >
       {isSubmitting ? (

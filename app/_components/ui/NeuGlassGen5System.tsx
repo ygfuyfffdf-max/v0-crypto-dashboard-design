@@ -432,7 +432,7 @@ export function NeuGlassButton({
       onMouseLeave={() => setIsHovered(false)}
       onClick={onClick}
       disabled={disabled || loading}
-      whileHover={!disabled ? { scale: 1.05, y: -2 } : {}}
+      whileHover={!disabled ? { scale: 1.02, y: -2 } : {}}
       whileTap={!disabled ? { scale: 0.95 } : {}}
     >
       {/* Shimmer on hover */}
@@ -640,7 +640,7 @@ export function NeuGlassBadge({
         className,
       )}
       style={style}
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.02 }}
     >
       {pulse && (
         <motion.span
@@ -660,3 +660,4 @@ export function NeuGlassBadge({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export { NEU_GLASS_COLORS as COLORS }
+

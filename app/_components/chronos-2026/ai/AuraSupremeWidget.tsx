@@ -543,7 +543,7 @@ const VoiceButton = memo(function VoiceButton({
           : "bg-gradient-to-br from-violet-500 to-purple-600",
         isDisabled && "cursor-not-allowed opacity-50"
       )}
-      whileHover={!isDisabled ? { scale: 1.05 } : undefined}
+      whileHover={!isDisabled ? { scale: 1.02 } : undefined}
       whileTap={!isDisabled ? { scale: 0.95 } : undefined}
       style={{
         boxShadow: isListening
@@ -1233,7 +1233,7 @@ export const AuraSupremeWidget = memo(function AuraSupremeWidget({
                     ? "bg-violet-500 text-white hover:bg-violet-600"
                     : "bg-white/5 text-white/30"
                 )}
-                whileHover={inputValue.trim() ? { scale: 1.05 } : undefined}
+                whileHover={inputValue.trim() ? { scale: 1.02 } : undefined}
                 whileTap={inputValue.trim() ? { scale: 0.95 } : undefined}
               >
                 {status === "thinking" ? (
@@ -1251,3 +1251,4 @@ export const AuraSupremeWidget = memo(function AuraSupremeWidget({
 })
 
 export default AuraSupremeWidget
+

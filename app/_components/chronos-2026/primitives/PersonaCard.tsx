@@ -81,7 +81,7 @@ export function PersonaCard({
           ease: [0.22, 1, 0.36, 1],
         }}
         whileHover={{
-          scale: 1.05,
+          scale: 1.02,
           rotate: 5,
           transition: { duration: 0.3 },
         }}
@@ -264,3 +264,4 @@ export function BankPersonaCard({
     </div>
   )
 }
+

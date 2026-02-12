@@ -146,7 +146,7 @@ const EMOTION_CONFIGS: Record<
   },
   stress: {
     eyeGlow: '#EF4444',
-    eyeScale: 1.15,
+    eyescale: 1.02,
     bodyTilt: -3,
     breathingSpeed: 1.8,
     blinkRate: 1000,
@@ -233,9 +233,9 @@ const GESTURE_ANIMATIONS: Record<
       ],
       body: [
         { scale: 1, tilt: 0 },
-        { scale: 1.05, tilt: 5 },
+        { scale: 1.02, tilt: 5 },
         { scale: 1.1, tilt: -5 },
-        { scale: 1.05, tilt: 5 },
+        { scale: 1.02, tilt: 5 },
         { scale: 1, tilt: 0 },
       ],
     },
@@ -828,3 +828,5 @@ const SplineAvatarController = forwardRef<SplineAvatarControllerRef, SplineAvata
 SplineAvatarController.displayName = 'SplineAvatarController'
 
 export default SplineAvatarController
+
+

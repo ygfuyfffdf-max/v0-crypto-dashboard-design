@@ -127,11 +127,11 @@ export function HolographicCard({
   const mouseY = useMotionValue(0)
 
   // Springs suavizados
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [10, -10]), {
+  const rotateX = useSpring(useTransform(mouseY, [0, 0], [0, 0]), {
     stiffness: 300,
     damping: 30,
   })
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-10, 10]), {
+  const rotateY = useSpring(useTransform(mouseX, [0, 0], [0, 0]), {
     stiffness: 300,
     damping: 30,
   })
@@ -651,3 +651,4 @@ export function DepthCard({ children, depth = 3, className = '' }: DepthCardProp
 }
 
 export default HolographicCard
+

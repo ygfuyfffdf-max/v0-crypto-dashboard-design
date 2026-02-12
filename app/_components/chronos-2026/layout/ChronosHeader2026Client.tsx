@@ -17,6 +17,7 @@ import {
 import { NotificationsPanel } from "@/app/_components/modals/NotificationsPanel"
 import { usePathname, useRouter } from "next/navigation"
 import { useCallback, useMemo, useState } from "react"
+import { useClerk } from "@clerk/nextjs"
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // MAPEO DE RUTAS
@@ -34,7 +35,6 @@ const PANEL_ROUTES: Record<PanelId, string> = {
   gastosAbonos: "/gastos-abonos",
   reportes: "/reportes",
   configuracion: "/configuracion",
-  showcase: "/showcase/visual",
 }
 
 const ROUTE_TO_PANEL: Record<string, PanelId> = {
@@ -49,8 +49,6 @@ const ROUTE_TO_PANEL: Record<string, PanelId> = {
   "/gastos-abonos": "gastosAbonos",
   "/reportes": "reportes",
   "/configuracion": "configuracion",
-  "/showcase": "showcase",
-  "/showcase/visual": "showcase",
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -60,6 +58,7 @@ const ROUTE_TO_PANEL: Record<string, PanelId> = {
 export function ChronosHeader2026Client() {
   const router = useRouter()
   const pathname = usePathname()
+  const { signOut } = useClerk()
   const [theme, setTheme] = useState<ThemeStyle>("modern")
   const [notificationsOpen, setNotificationsOpen] = useState(false)
 
@@ -121,12 +120,15 @@ export function ChronosHeader2026Client() {
     router.push("/ayuda")
   }, [router])
 
-  // Cerrar sesión
-  const handleLogout = useCallback(() => {
-    // TODO: Integrar con sistema de autenticación real
-    // Por ahora solo redirige al login
-    router.push("/login")
-  }, [router])
+  // Cerrar sesión - integrado con Clerk
+  const handleLogout = useCallback(async () => {
+    try {
+      await signOut({ redirectUrl: "/login" })
+    } catch {
+      // Fallback if Clerk is not configured
+      router.push("/login")
+    }
+  }, [signOut, router])
 
   return (
     <>

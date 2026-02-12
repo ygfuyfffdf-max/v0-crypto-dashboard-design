@@ -206,7 +206,12 @@ export function LineChartVentas({ className }: LineChartVentasProps) {
         const avg = lastThree.reduce((s, d) => s + d.ventas, 0) / 3
         const first = lastThree[0]
         const last = lastThree[2]
-        const trendValue: number = first && last ? ((last as any).ventas - (first as any).ventas) / 2 : 0
+        let trendValue = 0
+        if (first && last) {
+          const firstVal = Number(first.ventas)
+          const lastVal = Number(last.ventas)
+          trendValue = (lastVal - firstVal) / 2
+        }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (chartData as any[]).push({

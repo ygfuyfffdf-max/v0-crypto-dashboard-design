@@ -863,6 +863,16 @@ body::before {
     display: none;
   }
 
+  /* scrollbar-hide alias para compatibilidad */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   /* ═══════════════════ iOS PREMIUM SCROLL SYSTEM 2026 ═══════════════════ */
 
   /* Scrollbar hidden pero visible al hacer scroll */

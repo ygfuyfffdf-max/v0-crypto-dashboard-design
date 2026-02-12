@@ -363,7 +363,6 @@ export function NavigationSidebar({
               'text-white/50 transition-colors hover:bg-white/5 hover:text-white',
               isCollapsed ? 'justify-center' : 'justify-start',
             )}
-            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <motion.div animate={{ rotate: isCollapsed ? 180 : 0 }} transition={{ duration: 0.3 }}>
@@ -416,8 +415,8 @@ export function NavigationSidebar({
           'border border-white/10 bg-black/80 backdrop-blur-xl',
           'text-white transition-colors hover:bg-white/10',
         )}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.96 }}
       >
         <Menu className="h-5 w-5" aria-hidden="true" />
       </motion.button>

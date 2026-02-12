@@ -83,6 +83,17 @@ import {
   EnhancedAuroraCard as AuroraGlassCard,
 } from '../../ui/EnhancedAuroraSystem'
 
+// 🍎 iOS PREMIUM SYSTEM 2026 — Sistema de UI sin efectos 3D problemáticos
+import {
+  iOSScrollContainer,
+  iOSSection,
+  iOSGrid,
+  iOSMetricCardPremium,
+  iOSInfoCard,
+  useToastAdvanced as useiOSToast,
+  iOSConfirm,
+} from '../../ui/ios'
+
 // Aurora Charts - Lazy Loaded for performance
 const AuroraAreaChart = dynamic(
   () => import('../../charts/AuroraPremiumCharts').then((mod) => mod.AuroraAreaChart),
@@ -1894,7 +1905,7 @@ export function AuroraAlmacenPanelUnified({
                 }}
                 aria-label={loading ? 'Actualizando datos...' : 'Actualizar inventario'}
                 className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-3 text-white/60 backdrop-blur-sm transition-all duration-300 hover:border-amber-500/30 hover:bg-white/10 hover:text-white hover:shadow-[0_0_20px_rgba(251,191,36,0.2)]"
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <RefreshCw size={20} className={loading ? 'animate-spin' : ''} aria-hidden="true" />
@@ -1946,6 +1957,44 @@ export function AuroraAlmacenPanelUnified({
               trend={stats.alertas > 0 ? 'down' : 'neutral'}
             />
           </div>
+
+          {/* ═══════════════════════════════════════════════════════════════════════════
+           * 🍎 iOS PREMIUM METRICS — Almacén sin efectos 3D problemáticos
+           * ═══════════════════════════════════════════════════════════════════════════ */}
+          <iOSSection title="Inventario iOS" description="Vista limpia del almacén" className="mb-6">
+            <iOSGrid cols={4} gap="md">
+              <iOSMetricCardPremium
+                title="Valor Inventario"
+                value={inventarioFromOrdenes.valor >= 1000000
+                  ? `$${(inventarioFromOrdenes.valor / 1000000).toFixed(1)}M`
+                  : `$${(inventarioFromOrdenes.valor / 1000).toFixed(0)}K`}
+                subtitle={`${inventarioFromOrdenes.piezas.toLocaleString()} piezas`}
+                icon={Warehouse}
+                iconColor="#FBBF24"
+                trend={{ value: 8.5, direction: 'up' }}
+                variant="featured"
+              />
+              <iOSMetricCardPremium
+                title="Entradas (Mes)"
+                value={stats.totalEntradas.toLocaleString()}
+                icon={ArrowDownLeft}
+                iconColor="#10B981"
+                trend={{ value: 12.3, direction: 'up' }}
+              />
+              <iOSMetricCardPremium
+                title="Salidas (Mes)"
+                value={stats.totalSalidas.toLocaleString()}
+                icon={ArrowUpRight}
+                iconColor="#06B6D4"
+              />
+              <iOSInfoCard
+                title="Alertas de Stock"
+                description={`${stats.alertas} productos requieren atención`}
+                icon={AlertTriangle}
+                variant={stats.alertas > 0 ? 'warning' : 'success'}
+              />
+            </iOSGrid>
+          </iOSSection>
 
           {/* Main Tabs */}
           <AuroraGlassCard className="mb-6 p-4">

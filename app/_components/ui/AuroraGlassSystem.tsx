@@ -319,7 +319,7 @@ export const AuroraGlassCard = forwardRef<HTMLDivElement, AuroraGlassCardProps>(
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={onClick}
-        whileHover={enableHover ? { scale: 1.02, y: -4 } : undefined}
+        whileHover={enableHover ? { scale: 1.005 } : undefined}
         whileTap={onClick ? { scale: 0.98 } : undefined}
       >
         {/* Glow effect */}
@@ -510,8 +510,8 @@ export function AuroraStatWidget({
               trendColors[trend],
             )}
             style={{ background: trendBgColors[trend] }}
-            whileHover={{ scale: 1.08 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
           >
             {/* Shine sweep on hover */}
             <motion.div
@@ -963,7 +963,7 @@ export function AuroraBadge({
       style={variantStyles[variant]}
       animate={pulse ? { scale: [1, 1.05, 1] } : undefined}
       transition={pulse ? { duration: 2, repeat: Infinity } : undefined}
-      whileHover={{ scale: 1.05, y: -1 }}
+      whileHover={{ scale: 1.01 }}
     >
       {/* Shine sweep */}
       <motion.span

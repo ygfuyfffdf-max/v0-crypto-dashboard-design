@@ -35,9 +35,9 @@ import {
   Target,
   Zap
 } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
+import { Card, CardContent } from '@/app/_components/ui/card'
+import { Badge } from '@/app/_components/ui/badge'
+import { cn } from '@/app/_lib/utils'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -252,12 +252,14 @@ function Sparkline({
         strokeLinejoin="round"
       />
       {/* Punto final */}
-      <circle
-        cx={width}
-        cy={height - ((valores[valores.length - 1] - min) / range) * height}
-        r={3}
-        fill={color}
-      />
+      {valores.length > 0 && range > 0 && (
+        <circle
+          cx={width}
+          cy={height - (((valores[valores.length - 1] || 0) - min) / range) * height}
+          r={3}
+          fill={color}
+        />
+      )}
     </svg>
   )
 }
@@ -286,7 +288,7 @@ function ContadorAnimado({
   className
 }: ContadorAnimadoProps) {
   const [valorActual, setValorActual] = useState(0)
-  const frameRef = useRef<number>()
+  const frameRef = useRef<number>(0)
 
   useEffect(() => {
     const inicio = performance.now()
@@ -417,8 +419,8 @@ export default function KPICardAnimated({
   // Mouse parallax effect
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
-  const rotateX = useTransform(mouseY, [-100, 100], [5, -5])
-  const rotateY = useTransform(mouseX, [-100, 100], [-5, 5])
+  const rotateX = useTransform(mouseY, [0, 0], [0, 0])
+  const rotateY = useTransform(mouseX, [0, 0], [0, 0])
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return
@@ -580,7 +582,7 @@ export default function KPICardAnimated({
                 `bg-gradient-to-br ${colores.iconBg}`,
                 sizes.iconContainerSize
               )}>
-                <Icono className={cn(sizes.iconSize, colores.iconText)} />
+                {(Icono as any)({ className: cn(sizes.iconSize, colores.iconText) })}
               </div>
 
               {/* Sparkline */}
@@ -632,3 +634,4 @@ export function KPICardPorcentaje(props: Omit<KPICardProps, 'formato'>) {
 }
 
 export { KPICardAnimated as KPICard }
+

@@ -616,7 +616,7 @@ export function TraceabilityDetailCard({
                 <motion.button
                   onClick={onClose}
                   className="p-2 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors"
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <Eye className="h-5 w-5" />

@@ -109,6 +109,8 @@ const extendedNavItems: NavItem[] = [
   },
 ]
 
+import { KocmocUIWrapper } from '@/app/_components/cinematics/KocmocCommon'
+
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // iOS INTEGRATION WRAPPER
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -157,7 +159,7 @@ export const iOSIntegrationWrapper = memo(function iOSIntegrationWrapper({
   return (
     <iOSProvider accentColor="#8B5CF6" blurIntensity="high">
       <iOSToastProvider position={toastPosition}>
-        <div className={cn('min-h-screen bg-zinc-950', className)}>
+        <KocmocUIWrapper className={className} transparent={true} showParticles={false}>
           {/* Mobile Header */}
           {showHeader && isMobile && headerTitle && (
             <iOSMobileHeader
@@ -188,11 +190,13 @@ export const iOSIntegrationWrapper = memo(function iOSIntegrationWrapper({
               showQuickActions
             />
           )}
-        </div>
+        </KocmocUIWrapper>
       </iOSToastProvider>
     </iOSProvider>
   )
 })
+
+import { KocmocMiniLogo } from '@/app/_components/cinematics/KocmocCommon'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // iOS PAGE LAYOUT - Layout para páginas individuales
@@ -264,16 +268,25 @@ export const iOSPageLayout = memo(function iOSPageLayout({
 
       {/* Desktop Header */}
       {showHeader && !isMobile && title && (
-        <div className="px-6 py-8 border-b border-white/[0.06]">
+        <div className="px-6 py-8 border-b border-white/[0.06] flex items-center justify-between">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h1 className="text-3xl font-bold text-white">{title}</h1>
+            <div className="flex items-center gap-4 mb-2">
+              <h1 className="text-3xl font-bold text-white tracking-tight">{title}</h1>
+              <KocmocMiniLogo className="opacity-50 scale-75 origin-left" />
+            </div>
             {subtitle && (
-              <p className="text-white/50 mt-1">{subtitle}</p>
+              <p className="text-white/50">{subtitle}</p>
             )}
           </motion.div>
+          
+          {headerRightAction && (
+            <div className="flex items-center gap-3">
+              {headerRightAction}
+            </div>
+          )}
         </div>
       )}
 

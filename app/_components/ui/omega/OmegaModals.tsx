@@ -49,8 +49,8 @@ export function OmegaModal({
   // Parallax effect
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
-  const rotateX = useSpring(useTransform(mouseY, [-300, 300], [5, -5]), OMEGA.springs.ultraSmooth)
-  const rotateY = useSpring(useTransform(mouseX, [-300, 300], [-5, 5]), OMEGA.springs.ultraSmooth)
+  const rotateX = useSpring(useTransform(mouseY, [0, 0], [0, 0]), OMEGA.springs.ultraSmooth)
+  const rotateY = useSpring(useTransform(mouseX, [0, 0], [0, 0]), OMEGA.springs.ultraSmooth)
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
@@ -546,3 +546,4 @@ function OmegaToastItem({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export type { OmegaToast }
+

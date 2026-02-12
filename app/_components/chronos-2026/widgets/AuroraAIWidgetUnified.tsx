@@ -388,7 +388,7 @@ function MetricPill({
       className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.1)' }}
+      whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.1)' }}
     >
       <Icon className="h-3.5 w-3.5" style={{ color }} />
       <span className="text-xs font-semibold text-white">{value}</span>
@@ -745,7 +745,7 @@ export function AuroraAIWidgetUnified({
             <motion.div
               style={{ x: orbX, y: orbY }}
               onClick={handleActivate}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
             >
               <CanvasOrb state={state} size={sizeConfig.orb} audioLevel={audioLevel} />
@@ -821,7 +821,7 @@ export function AuroraAIWidgetUnified({
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   {suggestion}
@@ -881,3 +881,4 @@ export function AuroraAIWidgetUnified({
 }
 
 export default AuroraAIWidgetUnified
+

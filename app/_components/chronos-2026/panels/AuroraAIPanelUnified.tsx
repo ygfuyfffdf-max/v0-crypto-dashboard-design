@@ -346,7 +346,6 @@ function CanvasOrb3D({
       style={{ width: size, height: size }}
       className="cursor-pointer"
       onClick={onClick}
-      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     />
   )
@@ -461,17 +460,8 @@ interface MetricCardProps {
 
 function GlassMetricCard({ icon, label, value, color, glow, delay = 0, trend }: MetricCardProps) {
   const ref = useRef<HTMLDivElement>(null)
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), DESIGN.springs.smooth)
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), DESIGN.springs.smooth)
-
-  const handleMouse = (e: React.MouseEvent) => {
-    if (!ref.current) return
-    const rect = ref.current.getBoundingClientRect()
-    mouseX.set((e.clientX - rect.left) / rect.width - 0.5)
-    mouseY.set((e.clientY - rect.top) / rect.height - 0.5)
-  }
+  // REMOVIDO: Mouse tracking 3D problemático (rotateX/rotateY)
+  // Ahora usa estilo iOS limpio sin efectos tediosos
 
   return (
     <motion.div
@@ -480,13 +470,7 @@ function GlassMetricCard({ icon, label, value, color, glow, delay = 0, trend }: 
       initial={{ opacity: 0, y: -30, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ delay, ...DESIGN.springs.bouncy }}
-      onMouseMove={handleMouse}
-      onMouseLeave={() => {
-        mouseX.set(0)
-        mouseY.set(0)
-      }}
-      style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
-      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
     >
       <div
         className="relative overflow-hidden rounded-2xl p-4"
@@ -631,7 +615,7 @@ function QuickActionButton({
         border: '1px solid rgba(255, 255, 255, 0.1)',
       }}
       whileHover={{
-        scale: 1.05,
+        scale: 1.02,
         borderColor: `${color}50`,
         background: 'rgba(255, 255, 255, 0.1)',
       }}
@@ -942,7 +926,7 @@ export function AuroraAIPanelUnified({
                 border: `1px solid ${DESIGN.glass.border}`,
                 backdropFilter: `blur(${DESIGN.glass.blur}px)`,
               }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
             >
               <ArrowLeft className="h-4 w-4" />
@@ -1168,7 +1152,7 @@ export function AuroraAIPanelUnified({
                 backdropFilter: `blur(${DESIGN.glass.blur}px)`,
                 boxShadow: isListening ? `0 0 20px ${DESIGN.colors.cyan.glow}` : 'none',
               }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
               onClick={toggleVoice}
             >
@@ -1206,7 +1190,7 @@ export function AuroraAIPanelUnified({
                 border: `1px solid ${DESIGN.glass.border}`,
                 backdropFilter: `blur(${DESIGN.glass.blur}px)`,
               }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsSpeaking(!isSpeaking)}
             >
@@ -1228,7 +1212,7 @@ export function AuroraAIPanelUnified({
                 backdropFilter: `blur(${DESIGN.glass.blur}px)`,
                 boxShadow: inputValue.trim() ? `0 0 20px ${DESIGN.colors.violet.glow}` : 'none',
               }}
-              whileHover={inputValue.trim() ? { scale: 1.05 } : undefined}
+              whileHover={inputValue.trim() ? { scale: 1.02 } : undefined}
               whileTap={inputValue.trim() ? { scale: 0.95 } : undefined}
               disabled={!inputValue.trim() || isProcessing}
             >
@@ -1242,3 +1226,4 @@ export function AuroraAIPanelUnified({
 }
 
 export default AuroraAIPanelUnified
+

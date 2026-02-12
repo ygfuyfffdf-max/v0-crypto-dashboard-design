@@ -189,31 +189,36 @@ export function CognitoAvatar({
       }
 
       // ═══════════════════════════════════════════════════════════════
-      // CAPA 3: NÚCLEO PRINCIPAL
+      // CAPA 3: NÚCLEO PRINCIPAL (QUANTUM CORE)
       // ═══════════════════════════════════════════════════════════════
       const coreRadius = 55 + Math.sin(time * 2) * 8 + currentAudioLevel * 15
+      
+      // Efecto de distorsión cuántica en el núcleo
+      const distortionX = Math.sin(time * 3) * (currentState === 'thinking' ? 5 : 2)
+      const distortionY = Math.cos(time * 2.5) * (currentState === 'thinking' ? 5 : 2)
+
       const coreGradient = ctx.createRadialGradient(
-        centerX + parallaxX * 0.3 + Math.cos(time * 1.5) * 5,
-        centerY + parallaxY * 0.3 + Math.sin(time * 1.5) * 5,
+        centerX + parallaxX * 0.3 + Math.cos(time * 1.5) * 5 + distortionX,
+        centerY + parallaxY * 0.3 + Math.sin(time * 1.5) * 5 + distortionY,
         0,
         centerX + parallaxX * 0.1,
         centerY + parallaxY * 0.1,
         coreRadius,
       )
 
-      // Colores dinámicos según estado
+      // Colores dinámicos según estado con mayor saturación
       const hexPrimary = stateColors.primary.replace('#', '')
       const hexAccent = stateColors.accent.replace('#', '')
 
       coreGradient.addColorStop(
         0,
-        `rgba(${parseInt(hexPrimary.substring(0, 2), 16)}, ${parseInt(hexPrimary.substring(2, 4), 16)}, ${parseInt(hexPrimary.substring(4, 6), 16)}, 0.9)`,
+        `rgba(${parseInt(hexPrimary.substring(0, 2), 16)}, ${parseInt(hexPrimary.substring(2, 4), 16)}, ${parseInt(hexPrimary.substring(4, 6), 16)}, 0.95)`,
       )
       coreGradient.addColorStop(
         0.4,
-        `rgba(${parseInt(hexAccent.substring(0, 2), 16)}, ${parseInt(hexAccent.substring(2, 4), 16)}, ${parseInt(hexAccent.substring(4, 6), 16)}, 0.5)`,
+        `rgba(${parseInt(hexAccent.substring(0, 2), 16)}, ${parseInt(hexAccent.substring(2, 4), 16)}, ${parseInt(hexAccent.substring(4, 6), 16)}, 0.6)`,
       )
-      coreGradient.addColorStop(0.7, stateColors.glow)
+      coreGradient.addColorStop(0.8, stateColors.glow)
       coreGradient.addColorStop(1, 'transparent')
 
       ctx.beginPath()
@@ -221,24 +226,25 @@ export function CognitoAvatar({
       ctx.fillStyle = coreGradient
       ctx.fill()
 
-      // Inner core brillante
+      // Inner core brillante (Singularidad)
       const innerCore = ctx.createRadialGradient(
         centerX + parallaxX * 0.2 - 10,
         centerY + parallaxY * 0.2 - 10,
         0,
         centerX + parallaxX * 0.1,
         centerY + parallaxY * 0.1,
-        30,
+        currentState === 'speaking' ? 40 : 30,
       )
-      innerCore.addColorStop(0, 'rgba(255, 255, 255, 0.9)')
-      innerCore.addColorStop(0.3, 'rgba(255, 255, 255, 0.3)')
+      innerCore.addColorStop(0, 'rgba(255, 255, 255, 1)')
+      innerCore.addColorStop(0.2, 'rgba(255, 255, 255, 0.8)')
+      innerCore.addColorStop(0.5, `rgba(${parseInt(hexPrimary.substring(0, 2), 16)}, ${parseInt(hexPrimary.substring(2, 4), 16)}, ${parseInt(hexPrimary.substring(4, 6), 16)}, 0.4)`)
       innerCore.addColorStop(1, 'transparent')
 
       ctx.beginPath()
       ctx.arc(
         centerX + parallaxX * 0.15,
         centerY + parallaxY * 0.15,
-        25 + Math.sin(time * 3) * 3,
+        (25 + Math.sin(time * 3) * 3) * (1 + currentAudioLevel * 0.5),
         0,
         Math.PI * 2,
       )

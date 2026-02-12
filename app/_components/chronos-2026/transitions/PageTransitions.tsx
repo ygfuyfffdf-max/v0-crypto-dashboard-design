@@ -450,7 +450,7 @@ export function ParticlePortal({
           key={pathname}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.05 }}
+          exit={{ opacity: 0, scale: 1.02 }}
           transition={{ duration: duration * 0.6 }}
           className={className}
         >
@@ -529,7 +529,7 @@ export function QuantumBlur({
         initial={{
           opacity: 0,
           filter: `blur(${maxBlur}px) brightness(1.5)`,
-          scale: 1.05,
+          scale: 1.02,
         }}
         animate={{
           opacity: 1,
@@ -829,3 +829,4 @@ export function RevealOnScroll({
     </motion.div>
   )
 }
+

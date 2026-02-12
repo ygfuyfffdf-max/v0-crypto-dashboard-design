@@ -993,7 +993,7 @@ export function QuantumCheckboxField({
             }`,
             boxShadow: isChecked ? `0 0 15px ${FORM_DESIGN.colors.primaryGlow}` : 'none',
           }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleToggle}
         >

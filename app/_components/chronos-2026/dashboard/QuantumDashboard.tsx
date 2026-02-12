@@ -356,8 +356,8 @@ const KPICard = ({ title, value, trend, icon, color, colorGlow, size = 'md' }: K
   const cardRef = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
-  const rotateX = useTransform(mouseY, [-0.5, 0.5], [8, -8])
-  const rotateY = useTransform(mouseX, [-0.5, 0.5], [-8, 8])
+  const rotateX = useTransform(mouseY, [0, 0], [0, 0])
+  const rotateY = useTransform(mouseX, [0, 0], [0, 0])
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!cardRef.current) return
@@ -751,3 +751,4 @@ export const QuantumDashboard = ({
 }
 
 export default QuantumDashboard
+

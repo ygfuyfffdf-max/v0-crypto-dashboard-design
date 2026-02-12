@@ -219,11 +219,11 @@ export const PremiumKpiCard = memo(function PremiumKpiCard({
   const mouseY = useMotionValue(0)
 
   // Spring physics for smooth tilt
-  const rotateX = useSpring(useTransform(mouseY, [-150, 150], [12, -12]), {
+  const rotateX = useSpring(useTransform(mouseY, [0, 0], [0, 0]), {
     stiffness: 300,
     damping: 30,
   })
-  const rotateY = useSpring(useTransform(mouseX, [-150, 150], [-12, 12]), {
+  const rotateY = useSpring(useTransform(mouseX, [0, 0], [0, 0]), {
     stiffness: 300,
     damping: 30,
   })
@@ -456,3 +456,4 @@ export const PremiumKpiCardGrid = memo(function PremiumKpiCardGrid({
 })
 
 export default PremiumKpiCard
+

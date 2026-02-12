@@ -87,9 +87,12 @@ export function MessageBubble({ message, isLast }: MessageBubbleProps) {
             'group relative rounded-2xl px-4 py-3',
             isUser
               ? 'bg-gradient-to-br from-violet-600 to-indigo-600 text-white'
-              : 'border border-white/10 bg-white/5 text-white/90',
+              : 'border border-white/10 bg-white/5 text-white/90 backdrop-blur-md',
             isUser ? 'rounded-tr-sm' : 'rounded-tl-sm',
           )}
+          style={{
+            boxShadow: !isUser ? '0 4px 20px rgba(0, 0, 0, 0.1)' : '0 4px 15px rgba(124, 58, 237, 0.3)'
+          }}
         >
           {/* Contenido del mensaje */}
           <div className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</div>
@@ -99,7 +102,7 @@ export function MessageBubble({ message, isLast }: MessageBubbleProps) {
             <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-white/5 pt-2">
               {message.metadata.confidence && (
                 <span className="flex items-center gap-1 rounded-full bg-white/5 px-2 py-0.5 text-xs text-white/50">
-                  <Sparkles className="h-3 w-3" />
+                  <Sparkles className="h-3 w-3 text-amber-400" />
                   {Math.round(message.metadata.confidence * 100)}% confianza
                 </span>
               )}
@@ -126,7 +129,7 @@ export function MessageBubble({ message, isLast }: MessageBubbleProps) {
               {message.metadata.suggestions.map((suggestion, i) => (
                 <motion.button
                   key={i}
-                  className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+                  className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-white/70 transition-colors hover:bg-violet-500/20 hover:border-violet-500/30 hover:text-violet-200"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -176,7 +179,10 @@ function KPICard({ kpi }: KPICardProps) {
   }
 
   return (
-    <div className="rounded-lg border border-white/10 bg-white/5 p-2">
+    <motion.div 
+      className="rounded-lg border border-white/10 bg-white/5 p-2 backdrop-blur-sm"
+      whileHover={{ scale: 1.02, backgroundColor: 'rgba(255, 255, 255, 0.08)' }}
+    >
       <div className="text-xs text-white/50">{kpi.label}</div>
       <div className="flex items-baseline gap-1">
         <span className="text-lg font-semibold text-white">
@@ -186,11 +192,11 @@ function KPICard({ kpi }: KPICardProps) {
       </div>
       {kpi.trend && kpi.change && (
         <div className={cn('flex items-center gap-1 text-xs', trendColors[kpi.trend])}>
-          {kpi.trend === 'up' ? '↑' : kpi.trend === 'down' ? '↓' : '→'}
+          {kpi.trend === 'up' ? <TrendingUp className="h-3 w-3" /> : kpi.trend === 'down' ? '↓' : '→'}
           {kpi.change}%
         </div>
       )}
-    </div>
+    </motion.div>
   )
 }
 
@@ -316,7 +322,7 @@ export function ChatInput({
               ? 'bg-gradient-to-br from-violet-500 to-indigo-600 text-white'
               : 'bg-white/10 text-white/40',
           )}
-          whileHover={value.trim() ? { scale: 1.05 } : {}}
+          whileHover={value.trim() ? { scale: 1.02 } : {}}
           whileTap={value.trim() ? { scale: 0.95 } : {}}
         >
           <Send className="h-4 w-4" />
@@ -472,3 +478,4 @@ export function ModeSelector({ currentMode, onModeChange, className }: ModeSelec
 }
 
 export default MessageBubble
+

@@ -9,7 +9,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { cn } from '@/app/_lib/utils'
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import { Sparkles, X } from 'lucide-react'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -75,19 +75,6 @@ export function Modal({
     setIsMounted(true)
   }, [])
 
-  // Mouse tracking for glare effect
-  const mouseX = useMotionValue(0.5)
-  const mouseY = useMotionValue(0.5)
-  const springX = useSpring(mouseX, { stiffness: 200, damping: 30 })
-  const springY = useSpring(mouseY, { stiffness: 200, damping: 30 })
-
-  // Pre-compute glare gradient to avoid hooks inside JSX
-  const glareGradient = useTransform(
-    [springX, springY],
-    ([x, y]) =>
-      `radial-gradient(600px circle at ${(x as number) * 100}% ${(y as number) * 100}%, ${variantGlows[variant].shadow}, transparent 40%)`,
-  )
-
   // Cerrar con ESC
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -106,15 +93,6 @@ export function Modal({
       document.body.style.overflow = ''
     }
   }, [isOpen, handleKeyDown])
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      const rect = e.currentTarget.getBoundingClientRect()
-      mouseX.set((e.clientX - rect.left) / rect.width)
-      mouseY.set((e.clientY - rect.top) / rect.height)
-    },
-    [mouseX, mouseY],
-  )
 
   // SSR safe portal
   if (typeof window === 'undefined') return null
@@ -189,7 +167,6 @@ export function Modal({
                   className,
                 )}
                 onClick={(e) => e.stopPropagation()}
-                onMouseMove={handleMouseMove}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 style={{
@@ -224,11 +201,11 @@ export function Modal({
                       'linear-gradient(135deg, rgba(20, 15, 30, 0.98) 0%, rgba(8, 6, 15, 0.99) 100%)',
                   }}
                 >
-                  {/* Glare effect following cursor */}
-                  <motion.div
-                    className="pointer-events-none absolute inset-0 rounded-3xl opacity-40"
+                  {/* Static elegant glow - NO mouse tracking for better UX */}
+                  <div
+                    className="pointer-events-none absolute inset-0 rounded-3xl opacity-30"
                     style={{
-                      background: glareGradient,
+                      background: `radial-gradient(600px circle at 50% 30%, ${glowConfig.shadow}, transparent 60%)`,
                     }}
                   />
 
@@ -402,7 +379,7 @@ export function Button({
       disabled={disabled || isLoading}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      whileHover={{ scale: disabled || isLoading ? 1 : 1.02, y: disabled || isLoading ? 0 : -1 }}
+      whileHover={{ scale: disabled || isLoading ? 1 : 1.005 }}
       whileTap={{ scale: disabled || isLoading ? 1 : 0.98 }}
       style={{
         boxShadow:

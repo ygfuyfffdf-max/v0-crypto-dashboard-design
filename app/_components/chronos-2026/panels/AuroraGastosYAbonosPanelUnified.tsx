@@ -81,6 +81,16 @@ import {
   EnhancedAuroraCard as AuroraGlassCard,
 } from '../../ui/EnhancedAuroraSystem'
 
+// 🍎 iOS PREMIUM SYSTEM 2026 — Sistema de UI sin efectos 3D problemáticos
+import {
+  iOSScrollContainer,
+  iOSSection,
+  iOSGrid,
+  iOSMetricCardPremium,
+  useToastAdvanced as useiOSToast,
+  iOSConfirm,
+} from '../../ui/ios'
+
 // Aurora Charts
 // Aurora Charts - Lazy Loaded for performance
 const AuroraAreaChart = dynamic(
@@ -1200,43 +1210,52 @@ export function AuroraGastosYAbonosPanelUnified({
             )}
           </AnimatePresence>
 
-          {/* Stats Row */}
-          <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <AuroraStatWidget
-              label="Total Gastos"
-              value={`$${metricas.totalGastos.toLocaleString()}`}
-              icon={<TrendingDown size={20} />}
-              color="magenta"
-              change={
-                metricas.tendencia === 'up' ? metricas.cambioMensual : -metricas.cambioMensual
-              }
-              trend={metricas.tendencia === 'up' ? 'up' : 'down'}
-              className="transition-spring hover-elevate"
-            />
-            <AuroraStatWidget
-              label="Total Abonos"
-              value={`$${metricas.totalAbonos.toLocaleString()}`}
-              icon={<TrendingUp size={20} />}
-              color="emerald"
-              change={12.5}
-              trend="up"
-              className="transition-spring hover-elevate"
-            />
-            <AuroraStatWidget
-              label="Balance"
-              value={`$${(metricas.totalAbonos - metricas.totalGastos).toLocaleString()}`}
-              icon={<Target size={20} />}
-              color={metricas.totalAbonos >= metricas.totalGastos ? 'emerald' : 'magenta'}
-              className="transition-spring hover-elevate"
-            />
-            <AuroraStatWidget
-              label="Prom. Diario"
-              value={`$${Math.round(metricas.promedioGastoDiario).toLocaleString()}`}
-              icon={<DollarSign size={20} />}
-              color="cyan"
-              className="transition-spring hover-elevate"
-            />
-          </div>
+          {/* ═══════════════════════════════════════════════════════════════════════════════
+           * 🍎 iOS PREMIUM METRICS — Cards limpias SIN efectos 3D problemáticos
+           * Estilo iOS 18+ con glassmorphism Gen6, sin tilt con cursor
+           * ═══════════════════════════════════════════════════════════════════════════════ */}
+          <iOSSection title="Métricas Financieras" description="Vista iOS Premium" className="mb-6">
+            <iOSGrid cols={4} gap="md">
+              <iOSMetricCardPremium
+                title="Total Gastos"
+                value={`$${metricas.totalGastos.toLocaleString()}`}
+                icon={TrendingDown}
+                iconColor="#EC4899"
+                trend={{
+                  value: metricas.cambioMensual,
+                  direction: metricas.tendencia === 'up' ? 'up' : 'down'
+                }}
+                variant="default"
+              />
+              <iOSMetricCardPremium
+                title="Total Abonos"
+                value={`$${metricas.totalAbonos.toLocaleString()}`}
+                icon={TrendingUp}
+                iconColor="#10B981"
+                trend={{ value: 12.5, direction: 'up' }}
+                variant="default"
+              />
+              <iOSMetricCardPremium
+                title="Balance"
+                value={`$${(metricas.totalAbonos - metricas.totalGastos).toLocaleString()}`}
+                icon={Target}
+                iconColor={metricas.totalAbonos >= metricas.totalGastos ? '#10B981' : '#EC4899'}
+                trend={{
+                  value: Math.abs(((metricas.totalAbonos - metricas.totalGastos) / (metricas.totalGastos || 1)) * 100),
+                  direction: metricas.totalAbonos >= metricas.totalGastos ? 'up' : 'down'
+                }}
+                variant="featured"
+              />
+              <iOSMetricCardPremium
+                title="Prom. Diario"
+                value={`$${Math.round(metricas.promedioGastoDiario).toLocaleString()}`}
+                icon={DollarSign}
+                iconColor="#06B6D4"
+                trend={{ value: 0, direction: 'neutral' }}
+                variant="default"
+              />
+            </iOSGrid>
+          </iOSSection>
 
           {/* Main Grid */}
           <div className="grid grid-cols-12 gap-6">

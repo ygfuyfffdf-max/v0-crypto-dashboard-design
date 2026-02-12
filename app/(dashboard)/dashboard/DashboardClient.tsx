@@ -1,8 +1,8 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════════════
- * 🚀 DASHBOARD CLIENT WRAPPER — CHRONOS INFINITY 2026 PREMIUM
+ * 🚀 DASHBOARD CLIENT WRAPPER — CHRONOS INFINITY 2026 PREMIUM (iOS EDITION)
  * ═══════════════════════════════════════════════════════════════════════════════════════
- * Con animación de apertura KOCMOC ΧΡΟΝΟΣ premium
+ * Con animación de apertura KOCMOC ΧΡΟΝΟΣ premium + Sistema iOS Clean Design
  * ═══════════════════════════════════════════════════════════════════════════════════════
  */
 
@@ -11,6 +11,7 @@
 import dynamic from 'next/dynamic'
 import { AnimatePresence, motion } from 'motion/react'
 import { useState, useEffect, useCallback } from 'react'
+import { Card } from '@/app/_components/ui/card'
 
 // Logo KOCMOC para loading premium
 const KocmocLogo = dynamic(
@@ -19,18 +20,6 @@ const KocmocLogo = dynamic(
       default: mod.KocmocLogo,
     })),
   { ssr: false }
-)
-
-// Lazy load del dashboard para evitar errores en SSR
-const AuroraDashboardUnified = dynamic(
-  () =>
-    import('@/app/_components/chronos-2026/panels/AuroraDashboardUnified').then((mod) => ({
-      default: mod.AuroraDashboardUnified,
-    })),
-  {
-    ssr: false,
-    loading: () => null, // Manejamos el loading manualmente
-  }
 )
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
@@ -72,6 +61,8 @@ function KocmocLoadingScreen({ onComplete }: { onComplete?: () => void }) {
       }, 500)
       return () => clearTimeout(timer)
     }
+    // Agregar return para el caso cuando phase !== 'complete'
+    return undefined
   }, [phase, onComplete])
 
   return (
@@ -182,7 +173,7 @@ function KocmocLoadingScreen({ onComplete }: { onComplete?: () => void }) {
           transition={{ duration: 2, repeat: Infinity }}
         >
           {phase === 'logo' && 'INICIALIZANDO'}
-          {phase === 'loading' && 'CARGANDO SISTEMA'}
+          {phase === 'loading' && 'CARGANDO SISTEMA iOS'}
           {phase === 'complete' && 'ΧΡΟΝΟΣ READY'}
         </motion.p>
 
@@ -244,8 +235,16 @@ export default function DashboardClient() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
+            className="min-h-screen bg-black"
           >
-            <AuroraDashboardUnified />
+            <Card className="max-w-6xl mx-auto p-6">
+              <h1 className="text-3xl font-bold text-white mb-2">Chronos 2026</h1>
+              <p className="text-gray-400 mb-6">Dashboard Financiero</p>
+              <div className="bg-gray-800 rounded-lg p-8 text-center">
+                <h2 className="text-xl font-semibold text-white mb-4">Dashboard Unificado</h2>
+                <p className="text-gray-400">Funcionalidad de dashboard en desarrollo</p>
+              </div>
+            </Card>
           </motion.div>
         )}
       </AnimatePresence>

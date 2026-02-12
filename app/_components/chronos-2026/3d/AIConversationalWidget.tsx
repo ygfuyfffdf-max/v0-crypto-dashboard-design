@@ -465,7 +465,7 @@ export function AIConversationalWidget({
                     {suggestions.map((suggestion) => (
                       <motion.button
                         key={suggestion.id}
-                        whileHover={{ scale: 1.05 }}
+                        whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleSuggestion(suggestion.command)}
                         className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs whitespace-nowrap text-white/80 transition-colors hover:bg-white/10"

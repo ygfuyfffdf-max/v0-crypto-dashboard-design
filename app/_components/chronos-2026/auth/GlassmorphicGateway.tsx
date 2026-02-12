@@ -855,7 +855,7 @@ export function GlassmorphicGateway({
                     backdropFilter: 'blur(20px)',
                     border: `1px solid ${PALETTE.glassBorder}`,
                   }}
-                  whileHover={{ scale: 1.05, boxShadow: `0 0 20px ${PALETTE.violetGlow}` }}
+                  whileHover={{ scale: 1.02, boxShadow: `0 0 20px ${PALETTE.violetGlow}` }}
                   whileTap={{ scale: 0.95 }}
                 >
                   {provider.icon}
@@ -892,3 +892,4 @@ export function GlassmorphicGateway({
 }
 
 export default GlassmorphicGateway
+

@@ -338,7 +338,7 @@ export const PremiumButton: React.FC<PremiumButtonProps> = ({
         className,
       )}
       style={variantStyles[variant]}
-      whileHover={!disabled && !loading ? { scale: 1.05 } : {}}
+      whileHover={!disabled && !loading ? { scale: 1.02 } : {}}
       whileTap={!disabled && !loading ? { scale: 0.98 } : {}}
       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
     >
@@ -489,10 +489,11 @@ export const Badge: React.FC<BadgeProps> = ({
         border: `1px solid ${colors.bg}50`,
         boxShadow: glow ? `0 0 20px ${colors.bg}40` : 'none',
       }}
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.02 }}
       transition={{ type: 'spring', stiffness: 400 }}
     >
       {children}
     </motion.span>
   )
 }
+

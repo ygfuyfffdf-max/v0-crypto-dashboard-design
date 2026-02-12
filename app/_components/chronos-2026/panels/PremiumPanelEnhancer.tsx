@@ -80,7 +80,7 @@ export const PremiumPanelWrapper = memo(function PremiumPanelWrapper({
   showAmbient = true,
   glowColor = 'violet',
   intensity = 'medium',
-  interactive = true,
+  interactive = false, // DESHABILITADO por defecto - efectos 3D causan UX tediosa
 }: PremiumPanelWrapperProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isHovered, setIsHovered] = useState(false)
@@ -92,9 +92,10 @@ export const PremiumPanelWrapper = memo(function PremiumPanelWrapper({
   const x = useSpring(mouseX, springConfig)
   const y = useSpring(mouseY, springConfig)
 
-  // Transforms para efectos parallax
-  const rotateX = useTransform(y, [-0.5, 0.5], [2, -2])
-  const rotateY = useTransform(x, [-0.5, 0.5], [-2, 2])
+  // Transforms para efectos parallax - DESHABILITADOS por defecto
+  // Los efectos 3D con cursor son tediosos
+  const rotateX = useTransform(y, [-0.5, 0.5], [0, 0]) // Deshabilitado
+  const rotateY = useTransform(x, [-0.5, 0.5], [0, 0]) // Deshabilitado
   const glowX = useTransform(x, [-0.5, 0.5], ['40%', '60%'])
   const glowY = useTransform(y, [-0.5, 0.5], ['40%', '60%'])
 

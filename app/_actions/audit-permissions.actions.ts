@@ -163,12 +163,13 @@ export async function obtenerLogsAudit(filtros: FiltrosAuditDB): Promise<Resulta
       .limit(filtros.limite || 50)
       .offset(filtros.offset || 0)
 
-    const [{ count }] = await db
+    const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(auditLog)
       .where(whereClause)
 
-    return { exito: true, datos: { logs, total: count } }
+    const total = countResult[0]?.count ?? 0
+    return { exito: true, datos: { logs, total } }
   } catch (error) {
     console.error('Error obteniendo logs:', error)
     return { exito: false, error: error instanceof Error ? error.message : 'Error desconocido' }
@@ -189,10 +190,12 @@ export async function obtenerEstadisticasAudit(dias: number = 7): Promise<Result
     desde.setDate(desde.getDate() - dias)
 
     // Total
-    const [{ total }] = await db
+    const totalResult = await db
       .select({ total: sql<number>`count(*)` })
       .from(auditLog)
       .where(gte(auditLog.timestamp, desde))
+
+    const totalCount = totalResult[0]?.total ?? 0
 
     // Por módulo
     const porModuloRaw = await db
@@ -240,7 +243,7 @@ export async function obtenerEstadisticasAudit(dias: number = 7): Promise<Result
     return {
       exito: true,
       datos: {
-        total,
+        total: totalCount,
         porModulo,
         porAccion,
         porUsuario: porUsuario.map(u => ({
@@ -558,6 +561,18 @@ export async function verificarPermiso(params: VerificarPermisoParams): Promise<
           const horaActual = ahora.getHours() * 60 + ahora.getMinutes()
           const [hInicio, mInicio] = permiso.horaInicio.split(':').map(Number)
           const [hFin, mFin] = permiso.horaFin.split(':').map(Number)
+          
+          if (hInicio === undefined || mInicio === undefined || hFin === undefined || mFin === undefined) {
+            return {
+              exito: true,
+              datos: {
+                permitido: false,
+                requiereAprobacion: false,
+                motivo: 'Formato de hora inválido',
+              },
+            }
+          }
+          
           const inicioMin = hInicio * 60 + mInicio
           const finMin = hFin * 60 + mFin
 
@@ -637,32 +652,29 @@ export async function crearSolicitudAprobacion(params: {
       id,
       solicitanteId: params.solicitanteId,
       solicitanteNombre: params.solicitanteNombre,
-      aprobadorId: params.aprobadorId,
-      operacion: params.operacion,
+      aprobadorRolId: params.aprobadorId || '',
+      accion: params.operacion,
+      entidadTipo: params.modulo,
       modulo: params.modulo,
-      entidadId: params.entidadId,
-      monto: params.monto,
-      bancoId: params.bancoId,
-      bancoNombre: params.bancoNombre,
-      detalles: params.detalles,
-      datosOperacion: params.datosOperacion ? JSON.stringify(params.datosOperacion) : undefined,
+      entidadId: params.entidadId || '',
+      monto: params.monto || 0,
+      bancoId: params.bancoId || '',
+      bancoNombre: params.bancoNombre || '',
+      motivo: params.detalles || '',
+      datosOperacion: params.datosOperacion ? JSON.stringify(params.datosOperacion) : '{}',
       estado: 'pendiente'
     })
 
     // Crear notificación para el aprobador
     await db.insert(notificaciones).values({
       id: `notif_${nanoid()}`,
-      usuarioId: params.aprobadorId,
+      usuarioId: params.aprobadorId || '',
       tipo: 'aprobacion',
       prioridad: params.monto && params.monto > 50000 ? 'urgente' : 'alta',
-      categoria: 'aprobaciones',
       titulo: '🔐 Aprobación Requerida',
       mensaje: `${params.solicitanteNombre} solicita aprobación para ${params.operacion}`,
-      descripcion: params.detalles,
       modulo: params.modulo,
       entidadId: params.entidadId,
-      leida: false,
-      archivada: false
     })
 
     revalidatePath('/aprobaciones')
@@ -688,10 +700,10 @@ export async function procesarAprobacion(params: {
       .update(aprobacionesPendientes)
       .set({
         estado: params.decision,
-        aprobadoPor: params.aprobadorId,
-        aprobadoNombre: params.aprobadorNombre,
-        comentarios: params.comentarios,
-        procesadoAt: new Date()
+        resueltoPor: params.aprobadorId,
+        resueltoNombre: params.aprobadorNombre,
+        motivoRechazo: params.comentarios,
+        fechaResolucion: new Date()
       })
       .where(eq(aprobacionesPendientes.id, params.aprobacionId))
 
@@ -707,14 +719,10 @@ export async function procesarAprobacion(params: {
         usuarioId: solicitud.solicitanteId,
         tipo: params.decision === 'aprobada' ? 'success' : 'error',
         prioridad: 'alta',
-        categoria: 'aprobaciones',
         titulo: params.decision === 'aprobada' ? '✅ Solicitud Aprobada' : '❌ Solicitud Rechazada',
-        mensaje: `Tu solicitud de ${solicitud.operacion} ha sido ${params.decision} por ${params.aprobadorNombre}`,
-        descripcion: params.comentarios,
+        mensaje: `Tu solicitud de ${solicitud.accion} ha sido ${params.decision} por ${params.aprobadorNombre}`,
         modulo: solicitud.modulo,
         entidadId: solicitud.entidadId ?? undefined,
-        leida: false,
-        archivada: false
       })
     }
 
@@ -735,10 +743,10 @@ export async function obtenerAprobacionesPendientes(aprobadorId: string): Promis
       .select()
       .from(aprobacionesPendientes)
       .where(and(
-        eq(aprobacionesPendientes.aprobadorId, aprobadorId),
+        eq(aprobacionesPendientes.aprobadorRolId, aprobadorId),
         eq(aprobacionesPendientes.estado, 'pendiente')
       ))
-      .orderBy(desc(aprobacionesPendientes.creadoAt))
+      .orderBy(desc(aprobacionesPendientes.createdAt))
 
     return { exito: true, datos: pendientes }
   } catch (error) {

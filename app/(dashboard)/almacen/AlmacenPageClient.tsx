@@ -1,215 +1,170 @@
 'use client'
 
 /**
- * ═══════════════════════════════════════════════════════════════════════════════════════════════════
+ * ═══════════════════════════════════════════════════════════════════════════════════════
  * 🏭 ALMACEN PAGE CLIENT — CHRONOS INFINITY 2026
- * ═══════════════════════════════════════════════════════════════════════════════════════════════════
+ * ═══════════════════════════════════════════════════════════════════════════════════════
+ * Página completa de gestión de almacén/inventario con panel Aurora premium
  */
 
-import { deleteProducto, getProductos } from '@/app/_actions/almacen'
-import { AuroraAlmacenPanelUnified } from '@/app/_components/chronos-2026/panels'
-import { ConfirmDeleteModal } from '@/app/_components/modals/ConfirmDeleteModal'
+import { useState } from 'react'
+import { AuroraAlmacenPanelUnified } from '@/app/_components/chronos-2026/panels/AuroraAlmacenPanelUnified'
 import { ProductoModal } from '@/app/_components/modals/ProductoModal'
-import { logger } from '@/app/lib/utils/logger'
-import { useCallback, useEffect, useState } from 'react'
+import { CorteAlmacenModal } from '@/app/_components/modals/CorteAlmacenModal'
+import { ConfirmDeleteModal } from '@/app/_components/modals/ConfirmDeleteModal'
 import { toast } from 'sonner'
-
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-// TYPES
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-
-interface ProductoFromAPI {
-  id: string
-  nombre: string
-  descripcion?: string | null
-  cantidad: number | null
-  precioCompra: number
-  precioVenta: number
-  minimo: number | null
-  ubicacion?: string | null
-}
-
-interface ProductoForPanel {
-  id: string
-  nombre: string
-  sku: string
-  categoria: string
-  stockActual: number
-  stockMinimo: number
-  stockMaximo: number
-  precioUnitario: number
-  valorInventario: number
-  ultimoMovimiento: string
-  ubicacion: string
-  estado: 'normal' | 'bajo' | 'critico' | 'exceso'
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-// TRANSFORM
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-
-function transformProductoForPanel(p: ProductoFromAPI): ProductoForPanel {
-  const stockActual = p.cantidad ?? 0
-  const stockMinimo = p.minimo ?? 0
-  let estado: ProductoForPanel['estado'] = 'normal'
-
-  if (stockActual === 0) {
-    estado = 'critico'
-  } else if (stockActual < stockMinimo) {
-    estado = 'bajo'
-  } else if (stockActual > stockMinimo * 3) {
-    estado = 'exceso'
-  }
-
-  return {
-    id: p.id,
-    nombre: p.nombre,
-    sku: p.id.slice(0, 8).toUpperCase(),
-    categoria: 'General',
-    stockActual,
-    stockMinimo,
-    stockMaximo: stockMinimo * 5,
-    precioUnitario: p.precioVenta,
-    valorInventario: stockActual * p.precioCompra,
-    ultimoMovimiento: 'Hoy',
-    ubicacion: p.ubicacion ?? 'A-01',
-    estado,
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-// MAIN COMPONENT
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+import { useAlmacenData } from '@/app/hooks/useDataHooks'
 
 export function AlmacenPageClient() {
-  const [productos, setProductos] = useState<ProductoForPanel[]>([])
-  const [loading, setLoading] = useState(true)
-  const [refreshKey, setRefreshKey] = useState(0)
-
-  // Modal states
   const [showProductoModal, setShowProductoModal] = useState(false)
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [selectedProducto, setSelectedProducto] = useState<ProductoForPanel | null>(null)
-  const [productoModalMode, setProductoModalMode] = useState<'create' | 'edit'>('create')
+  const [showCorteModal, setShowCorteModal] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [selectedProductoId, setSelectedProductoId] = useState<string | null>(null)
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create')
 
-  // Fetch data
-  const fetchProductos = useCallback(async () => {
-    setLoading(true)
+  const { data: almacenData, loading, refetch } = useAlmacenData()
+
+  const handleNuevoProducto = () => {
+    setModalMode('create')
+    setSelectedProductoId(null)
+    setShowProductoModal(true)
+  }
+
+  const handleEditarProducto = (productoId: string) => {
+    setModalMode('edit')
+    setSelectedProductoId(productoId)
+    setShowProductoModal(true)
+  }
+
+  const handleEliminarProducto = (productoId: string) => {
+    setSelectedProductoId(productoId)
+    setShowDeleteConfirm(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!selectedProductoId) return
+
     try {
-      // Primero sincronizar entradas/salidas con OCs y ventas
-      try {
-        await fetch('/api/sistema/sync-almacen', { method: 'POST' })
-      } catch {
-        // Ignorar error de sincronización, continuar con fetch
-      }
-
-      const result = await getProductos()
-
-      if (result.error || !result.data) {
-        throw new Error(result.error || 'Error fetching productos')
-      }
-
-      // Asegurar que result.data sea un array
-      const dataArray = Array.isArray(result.data) ? result.data : []
-      setProductos(dataArray.map((p: any) => transformProductoForPanel(p)))
-
-      logger.info('Productos cargados', {
-        context: 'AlmacenPageClient',
-        data: { count: dataArray.length },
+      const response = await fetch(`/api/almacen/${selectedProductoId}`, {
+        method: 'DELETE',
       })
-    } catch (error) {
-      logger.error('Error cargando productos', error as Error, { context: 'AlmacenPageClient' })
-      toast.error('Error al cargar inventario')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
 
-  useEffect(() => {
-    fetchProductos()
-  }, [fetchProductos, refreshKey])
-
-  // Handlers
-  const handleNuevoProducto = useCallback(() => {
-    setSelectedProducto(null)
-    setProductoModalMode('create')
-    setShowProductoModal(true)
-  }, [])
-
-  const handleVerProducto = useCallback((p: ProductoForPanel) => {
-    toast.info(`${p.nombre} - Stock: ${p.stockActual}`)
-  }, [])
-
-  const handleEditarProducto = useCallback((p: ProductoForPanel) => {
-    setSelectedProducto(p)
-    setProductoModalMode('edit')
-    setShowProductoModal(true)
-  }, [])
-
-  const handleEliminarProducto = useCallback((p: ProductoForPanel) => {
-    setSelectedProducto(p)
-    setShowDeleteModal(true)
-  }, [])
-
-  const handleConfirmDelete = useCallback(async () => {
-    if (!selectedProducto) return
-
-    try {
-      const result = await deleteProducto(selectedProducto.id)
-
-      if (result.error) {
-        throw new Error(result.error)
+      if (response.ok) {
+        toast.success('Producto eliminado correctamente')
+        setShowDeleteConfirm(false)
+        setSelectedProductoId(null)
+        await refetch()
+      } else {
+        throw new Error('Error al eliminar producto')
       }
-
-      toast.success('Producto eliminado')
-      setShowDeleteModal(false)
-      setSelectedProducto(null)
-      setRefreshKey((k) => k + 1)
     } catch (error) {
-      logger.error('Error eliminando producto', error as Error, { context: 'AlmacenPageClient' })
-      toast.error(error instanceof Error ? error.message : 'Error al eliminar')
+      toast.error('Error al eliminar producto')
+      console.error(error)
     }
-  }, [selectedProducto])
+  }
 
-  const handleRefresh = useCallback(() => setRefreshKey((k) => k + 1), [])
+  const handleNuevaEntrada = () => {
+    // Implementar modal de entrada
+    toast.info('Funcionalidad de entrada en desarrollo')
+  }
 
-  const handleModalClose = useCallback(() => {
-    setShowProductoModal(false)
-    setShowDeleteModal(false)
-    setSelectedProducto(null)
-    setRefreshKey((k) => k + 1)
-  }, [])
+  const handleNuevaSalida = () => {
+    // Implementar modal de salida
+    toast.info('Funcionalidad de salida en desarrollo')
+  }
 
-  const handleExportar = useCallback((formato: 'csv' | 'excel' | 'pdf', tipo: string) => {
-    toast.info(`Exportando ${tipo} en formato ${formato.toUpperCase()}`)
-  }, [])
+  const handleNuevoCorte = () => {
+    setShowCorteModal(true)
+  }
+
+  const handleExportar = async (formato: 'csv' | 'excel' | 'pdf', tipo: string) => {
+    try {
+      const response = await fetch('/api/export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tipo: 'almacen',
+          subtipo: tipo,
+          formato,
+          datos: almacenData,
+        }),
+      })
+
+      if (response.ok) {
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `almacen_${tipo}_${new Date().toISOString()}.${formato === 'excel' ? 'xlsx' : formato}`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+        toast.success(`Exportación ${formato.toUpperCase()} completada`)
+      } else {
+        throw new Error('Error en la exportación')
+      }
+    } catch (error) {
+      toast.error('Error al exportar datos')
+      console.error(error)
+    }
+  }
+
+  // Transformar datos de API al formato esperado por el panel
+  const productos = almacenData?.productos || []
+  const movimientos = almacenData?.movimientos || []
+  const entradas = almacenData?.entradas || []
+  const salidas = almacenData?.salidas || []
+  const cortes = almacenData?.cortes || []
 
   return (
     <>
       <AuroraAlmacenPanelUnified
         productos={productos}
+        movimientos={movimientos}
+        entradas={entradas}
+        salidas={salidas}
+        cortes={cortes}
         onNuevoProducto={handleNuevoProducto}
-        onVerProducto={handleVerProducto}
+        onNuevaEntrada={handleNuevaEntrada}
+        onNuevaSalida={handleNuevaSalida}
+        onNuevoCorte={handleNuevoCorte}
         onEditarProducto={handleEditarProducto}
         onEliminarProducto={handleEliminarProducto}
         onExportar={handleExportar}
-        onRefresh={handleRefresh}
+        onRefresh={refetch}
         loading={loading}
       />
 
+      {/* Modales */}
       <ProductoModal
         isOpen={showProductoModal}
-        onClose={handleModalClose}
-        productoId={selectedProducto?.id}
-        mode={productoModalMode}
+        onClose={() => {
+          setShowProductoModal(false)
+          setSelectedProductoId(null)
+          refetch()
+        }}
+        productoId={selectedProductoId || undefined}
+        mode={modalMode}
+      />
+
+      <CorteAlmacenModal
+        isOpen={showCorteModal}
+        onClose={() => {
+          setShowCorteModal(false)
+          refetch()
+        }}
       />
 
       <ConfirmDeleteModal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
+        isOpen={showDeleteConfirm}
+        onClose={() => {
+          setShowDeleteConfirm(false)
+          setSelectedProductoId(null)
+        }}
         onConfirm={handleConfirmDelete}
         title="Eliminar Producto"
-        message={`¿Eliminar "${selectedProducto?.nombre}"? Esta acción no se puede deshacer.`}
+        message="¿Estás seguro de eliminar este producto? Esta acción no se puede deshacer."
       />
     </>
   )

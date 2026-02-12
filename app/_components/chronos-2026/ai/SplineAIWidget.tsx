@@ -578,7 +578,7 @@ const StatusIndicator = memo(function StatusIndicator({
       initial="hidden"
       animate="visible"
       whileHover={{
-        scale: 1.05,
+        scale: 1.02,
         boxShadow: GLOW_EFFECTS.violet(1.2),
         transition: SPRING_CONFIGS.snappy,
       }}
@@ -849,7 +849,7 @@ const ChatInterface = memo(function ChatInterface({
             <motion.button
               type="submit"
               disabled={!input.trim() || status === 'thinking'}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
               className="group relative overflow-hidden rounded-xl p-4 transition-all disabled:cursor-not-allowed disabled:opacity-40"
               style={{
@@ -1065,7 +1065,7 @@ export const SplineAIWidget = memo(function SplineAIWidget({
             isOpen && 'pointer-events-none opacity-0',
             className,
           )}
-          whileHover={{ scale: 1.15 }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -1284,7 +1284,7 @@ export const SplineAIWidget = memo(function SplineAIWidget({
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.3 }}
-                        whileHover={{ scale: 1.08 }}
+                        whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.95 }}
                         className="group relative overflow-hidden rounded-xl px-5 py-3 backdrop-blur-3xl"
                         style={{
@@ -1411,7 +1411,7 @@ export const SplineAIWidget = memo(function SplineAIWidget({
                         {/* Voice activation toggle */}
                         <motion.button
                           onClick={toggleVoiceActivation}
-                          whileHover={{ scale: 1.05 }}
+                          whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.95 }}
                           className={cn(
                             'group relative overflow-hidden rounded-xl p-2.5 transition-all',
@@ -1438,7 +1438,7 @@ export const SplineAIWidget = memo(function SplineAIWidget({
                             onClick={endVoiceCall}
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            whileHover={{ scale: 1.05 }}
+                            whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.95 }}
                             className="rounded-xl bg-red-500/80 p-2.5 backdrop-blur-xl transition-all hover:bg-red-500"
                             style={{
@@ -1543,7 +1543,7 @@ export const SplineAIWidget = memo(function SplineAIWidget({
   return (
     <motion.div
       className={cn('relative cursor-pointer', className)}
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.02 }}
       onClick={() => onAction?.('toggle-ai')}
     >
       <RGBGlowRing size={100} intensity={0.5} />
@@ -1565,3 +1565,5 @@ export const SplineAIWidget = memo(function SplineAIWidget({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export default SplineAIWidget
+
+

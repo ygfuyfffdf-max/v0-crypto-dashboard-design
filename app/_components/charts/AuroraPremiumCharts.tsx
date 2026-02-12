@@ -163,7 +163,7 @@ export function ChartWrapper({
               <motion.button
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="rounded-lg bg-white/5 p-2 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -608,7 +608,7 @@ export function AuroraBarChart({
                     delay: animated ? i * 0.1 : 0,
                     ease: 'easeOut',
                   }}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.02 }}
                 >
                   {/* Shine effect */}
                   <motion.div
@@ -792,7 +792,7 @@ export function AuroraDonutChart({
                     delay: animated ? i * 0.1 : 0,
                     ease: 'backOut',
                   }}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.02 }}
                 />
               )
             })}

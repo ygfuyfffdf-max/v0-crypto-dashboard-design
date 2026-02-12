@@ -118,7 +118,7 @@ const RateDisplay = memo(function RateDisplay({
             onClick={onRefresh}
             disabled={isLoading}
             className="p-2 rounded-lg bg-white/10 text-white/70 hover:text-white hover:bg-white/20 transition-colors disabled:opacity-50"
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
           >
             <RefreshCw className={cn('h-4 w-4', isLoading && 'animate-spin')} />
@@ -520,7 +520,7 @@ const AlertSettings = memo(function AlertSettings({
         <motion.button
           onClick={handleAdd}
           className="px-3 py-2 rounded-lg bg-violet-500/20 text-violet-400 hover:bg-violet-500/30 transition-colors"
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
         >
           Agregar

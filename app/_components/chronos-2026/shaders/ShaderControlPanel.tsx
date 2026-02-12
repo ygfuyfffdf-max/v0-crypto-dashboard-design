@@ -636,7 +636,7 @@ export function ShaderControlTrigger({ onClick }: ShaderControlTriggerProps) {
   return (
     <motion.button
       onClick={onClick}
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.95 }}
       className="group fixed right-6 bottom-6 z-30 flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-gray-900/80 shadow-lg shadow-violet-500/20 backdrop-blur-xl transition-all hover:border-violet-500/50 hover:shadow-xl hover:shadow-violet-500/30"
     >

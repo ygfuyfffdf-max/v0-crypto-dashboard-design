@@ -1,35 +1,33 @@
-import crypto from "crypto"
 import type { NextConfig } from "next"
 
 // ═══════════════════════════════════════════════════════════════════════════
-// 🚀 CHRONOS - CONFIGURACIÓN NEXT.JS ULTRA OPTIMIZADA
+// CHRONOS INFINITY 2026 - NEXT.JS PRODUCTION-OPTIMIZED CONFIGURATION
 // ═══════════════════════════════════════════════════════════════════════════
 
 const isProd = process.env.NODE_ENV === "production"
 
-const baseConfig: NextConfig = {
+const nextConfig: NextConfig = {
   distDir: ".next",
 
-  // Orígenes permitidos
+  // Allowed dev origins
   allowedDevOrigins: ["localhost", "127.0.0.1"],
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 📝 TYPESCRIPT - Producción: Ignorar errores no críticos en 3D components
+  // TYPESCRIPT - Allow build even with 3D component type issues
   // ═══════════════════════════════════════════════════════════════════════════
   typescript: {
-    // Los errores en componentes 3D premium son de tipado estricto, no afectan runtime
     ignoreBuildErrors: true,
     tsconfigPath: "./tsconfig.json",
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🖼️ IMÁGENES - Optimización máxima
+  // IMAGES - Maximum optimization
   // ═══════════════════════════════════════════════════════════════════════════
   images: {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 60 * 60 * 24 * 365, // 1 año
+    minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
@@ -38,28 +36,30 @@ const baseConfig: NextConfig = {
       { protocol: "https", hostname: "mockend.com" },
       { protocol: "https", hostname: "models.github.ai" },
       { protocol: "https", hostname: "*.vercel.app" },
+      { protocol: "https", hostname: "img.clerk.com" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "images.clerk.dev" },
     ],
   },
 
   reactStrictMode: true,
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // ⚡ SWC COMPILER - OPTIMIZACIONES MÁXIMAS DE PRODUCCIÓN
+  // SWC COMPILER - PRODUCTION OPTIMIZATIONS
   // ═══════════════════════════════════════════════════════════════════════════
   compiler: {
-    // Eliminar console.log en producción
+    // Strip console.log in production (keep error & warn)
     removeConsole: isProd ? { exclude: ["error", "warn"] } : false,
-    // Eliminar propiedades React innecesarias
+    // Remove test properties in production
     reactRemoveProperties: isProd ? { properties: ["^data-testid$", "^data-test$"] } : false,
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🧪 EXPERIMENTAL - TODAS LAS OPTIMIZACIONES HABILITADAS
+  // EXPERIMENTAL - ALL OPTIMIZATIONS ENABLED
   // ═══════════════════════════════════════════════════════════════════════════
   experimental: {
-    // Tree-shaking ultra agresivo para paquetes
+    // Aggressive tree-shaking for large packages
     optimizePackageImports: [
-      // UI Libraries
       "lucide-react",
       "framer-motion",
       "@radix-ui/react-icons",
@@ -80,7 +80,6 @@ const baseConfig: NextConfig = {
       "@radix-ui/react-collapsible",
       "@radix-ui/react-label",
       "@radix-ui/react-radio-group",
-      // 3D Libraries
       "three",
       "@react-three/fiber",
       "@react-three/drei",
@@ -89,13 +88,11 @@ const baseConfig: NextConfig = {
       "maath",
       "@splinetool/react-spline",
       "@splinetool/runtime",
-      // Data Libraries
       "recharts",
       "d3",
       "@tanstack/react-query",
       "@tanstack/react-table",
       "@tanstack/react-virtual",
-      // Utilities
       "date-fns",
       "zod",
       "immer",
@@ -103,43 +100,35 @@ const baseConfig: NextConfig = {
       "clsx",
       "class-variance-authority",
       "tailwind-merge",
-      // AI/API
       "ai",
       "@ai-sdk/openai",
       "@ai-sdk/anthropic",
       "@ai-sdk/google",
-      "@azure-rest/ai-inference",
-      "botid",
-      // Firebase
-      "firebase",
-      // Form
       "react-hook-form",
       "@hookform/resolvers",
-      // Animation
       "@react-spring/web",
       "@react-spring/three",
       "sonner",
       "cmdk",
     ],
-    // Memoria webpack optimizada
+    // Webpack memory optimization
     webpackMemoryOptimizations: true,
-    // CSS optimizado
+    // CSS optimization
     optimizeCss: true,
-    // Server Actions optimizadas
+    // Server Actions configuration
     serverActions: {
       bodySizeLimit: "2mb",
     },
-    // Lazy loading de scripts
+    // Scroll restoration
     scrollRestoration: true,
   },
+
   // ═══════════════════════════════════════════════════════════════════════════
-  // ⚡ TURBOPACK - Configuración para Next.js 16+
+  // TURBOPACK - Configuration for Next.js 16+
   // ═══════════════════════════════════════════════════════════════════════════
   turbopack: {
-    // Especificar el directorio raíz del proyecto para Turbopack
     root: process.cwd(),
     resolveAlias: {
-      // Alias para three.js y postprocessing
       three: "three",
       "three/addons/misc/Timer.js": "three/examples/jsm/misc/Timer.js",
       "three/addons/misc/Timer": "three/examples/jsm/misc/Timer.js",
@@ -147,30 +136,26 @@ const baseConfig: NextConfig = {
       "three/examples/jsm": "three/examples/jsm",
     },
   },
+
   webpack: (config, { isServer }) => {
     const path = require("path")
     const threePath = path.resolve(__dirname, "node_modules/three")
-
-    // Resolver THREE con alias para compatibilidad con postprocessing
     const splinePath = path.resolve(__dirname, "node_modules/@splinetool/react-spline")
 
     config.resolve = {
       ...config.resolve,
       alias: {
         ...config.resolve?.alias,
-        // Alias principal de three
         three$: path.join(threePath, "build/three.module.js"),
-        // Alias para resolver paths de three/addons que postprocessing necesita
         "three/addons/misc/Timer.js": path.join(threePath, "examples/jsm/misc/Timer.js"),
         "three/addons/misc/Timer": path.join(threePath, "examples/jsm/misc/Timer.js"),
         "three/addons": path.join(threePath, "examples/jsm"),
         "three/examples/jsm": path.join(threePath, "examples/jsm"),
-        // Alias para @splinetool/react-spline - resolver problema de exports
         "@splinetool/react-spline": path.join(splinePath, "dist/react-spline.js"),
       },
     }
 
-    // Ignorar warnings de exports deprecados de spline
+    // Suppress spline deprecation warnings
     config.ignoreWarnings = [
       ...(config.ignoreWarnings || []),
       {
@@ -179,14 +164,14 @@ const baseConfig: NextConfig = {
       },
     ]
 
-    // 🎨 GLSL Shader Loader Support
+    // GLSL Shader Loader
     config.module.rules.push({
       test: /\.(glsl|vs|fs|vert|frag|shader)$/,
       exclude: /node_modules/,
       use: ["raw-loader"],
     })
 
-    // 🎮 3D Model Support (GLB, GLTF, FBX)
+    // 3D Model Support
     config.module.rules.push({
       test: /\.(glb|gltf|fbx)$/,
       type: "asset/resource",
@@ -195,195 +180,67 @@ const baseConfig: NextConfig = {
       },
     })
 
-    // Optimizaciones de webpack
-    config.optimization = {
-      ...config.optimization,
-      moduleIds: "deterministic",
-      runtimeChunk: "single",
-      splitChunks: {
-        chunks: "all",
-        cacheGroups: {
-          default: false,
-          vendors: false,
-          framework: {
-            name: "framework",
-            chunks: "all",
-            test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription)[\\/]/,
-            priority: 40,
-            enforce: true,
-          },
-          lib: {
-            test(module: { size: () => number; identifier: () => string }) {
-              return module.size() > 160000 && /node_modules[/\\\\]/.test(module.identifier())
-            },
-            name(module: { identifier: () => string }) {
-              const hash = crypto.createHash("sha1")
-              hash.update(module.identifier())
-              return hash.digest("hex").substring(0, 8)
-            },
-            priority: 30,
-            minChunks: 1,
-            reuseExistingChunk: true,
-          },
-          commons: {
-            name: "commons",
-            minChunks: 2,
-            priority: 20,
-          },
-          shared: {
-            name(_module: unknown, chunks: Array<{ name: string }>) {
-              return (
-                crypto
-                  .createHash("sha1")
-                  .update(
-                    chunks.reduce((acc: string, chunk: { name: string }) => acc + chunk.name, "")
-                  )
-                  .digest("hex") + "_shared"
-              )
-            },
-            priority: 10,
-            minChunks: 2,
-            reuseExistingChunk: true,
-          },
-        },
-      },
-    }
-
-    // Evitar problemas con módulos externos en el servidor
+    // Server-side externals
     if (isServer) {
       config.externals = [...(config.externals || []), "canvas", "jsdom"]
     }
 
     return config
   },
+
   poweredByHeader: false,
   compress: true,
   generateEtags: true,
+
   async headers() {
     return [
       {
         source: "/:path*",
         headers: [
-          {
-            key: "X-DNS-Prefetch-Control",
-            value: "on",
-          },
-          {
-            key: "Strict-Transport-Security",
-            value: "max-age=63072000; includeSubDomains; preload",
-          },
-          {
-            key: "X-Frame-Options",
-            value: "SAMEORIGIN",
-          },
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "X-XSS-Protection",
-            value: "1; mode=block",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "strict-origin-when-cross-origin",
-          },
-          {
-            key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
-          },
+          { key: "X-DNS-Prefetch-Control", value: "on" },
+          { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-XSS-Protection", value: "1; mode=block" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
         ],
       },
-      // Cache headers para assets estáticos (Lighthouse Performance)
       {
         source: "/assets/:path*",
         headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
       },
       {
         source: "/_next/static/:path*",
         headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
       },
       {
         source: "/_next/image/:path*",
         headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
       },
     ]
   },
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // 🔄 REDIRECTS - Rutas legacy a rutas productivas
-  // ═══════════════════════════════════════════════════════════════════════════
   async redirects() {
     return [
-      {
-        source: "/ai-assistant",
-        destination: "/ia",
-        permanent: true,
-      },
-      {
-        source: "/ai-supreme",
-        destination: "/ia",
-        permanent: true,
-      },
-      {
-        source: "/ai-supreme-voice",
-        destination: "/ia",
-        permanent: true,
-      },
-      {
-        source: "/chronos-omega-ai",
-        destination: "/ia",
-        permanent: true,
-      },
-      {
-        source: "/cosmic",
-        destination: "/dashboard",
-        permanent: true,
-      },
-      {
-        source: "/quantum-supreme",
-        destination: "/dashboard",
-        permanent: true,
-      },
-      {
-        source: "/quantum-infinity",
-        destination: "/dashboard",
-        permanent: true,
-      },
-      {
-        source: "/chronos-ultimate",
-        destination: "/dashboard",
-        permanent: true,
-      },
-      {
-        source: "/gen5-demo",
-        destination: "/dashboard",
-        permanent: true,
-      },
-      {
-        source: "/dashboard-demo",
-        destination: "/dashboard",
-        permanent: true,
-      },
+      { source: "/ai-assistant", destination: "/ia", permanent: true },
+      { source: "/ai-supreme", destination: "/ia", permanent: true },
+      { source: "/ai-supreme-voice", destination: "/ia", permanent: true },
+      { source: "/chronos-omega-ai", destination: "/ia", permanent: true },
+      { source: "/cosmic", destination: "/dashboard", permanent: true },
+      { source: "/quantum-supreme", destination: "/dashboard", permanent: true },
+      { source: "/quantum-infinity", destination: "/dashboard", permanent: true },
+      { source: "/chronos-ultimate", destination: "/dashboard", permanent: true },
+      { source: "/gen5-demo", destination: "/dashboard", permanent: true },
+      { source: "/dashboard-demo", destination: "/dashboard", permanent: true },
     ]
   },
 }
 
-// 🔒 Exportar configuración base (BotID deshabilitado temporalmente por error de build)
-export default baseConfig
-// export default withBotId(baseConfig)
+export default nextConfig

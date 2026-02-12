@@ -267,7 +267,7 @@ export function ThemeSelector({ className, layout = 'grid' }: ThemeSelectorProps
                   setTheme(option.id)
                 }
               }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
               className={cn(
                 'flex items-center gap-2 px-3 py-2 rounded-lg transition-all',
@@ -324,7 +324,7 @@ export function ThemeToggle({ className, showLabel = false }: ThemeToggleProps) 
   return (
     <motion.button
       onClick={handleToggle}
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.95 }}
       className={cn(
         'flex items-center gap-2 px-3 py-2 rounded-lg',

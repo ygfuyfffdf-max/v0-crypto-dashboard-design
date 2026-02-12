@@ -186,7 +186,7 @@ export function PremiumBancoCard({
       <div className="relative z-10 grid grid-cols-2 gap-3">
         <motion.div
           className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3"
-          whileHover={{ scale: 1.05, borderColor: 'rgba(16,185,129,0.4)' }}
+          whileHover={{ scale: 1.02, borderColor: 'rgba(16,185,129,0.4)' }}
         >
           <div className="mb-1 flex items-center gap-1 text-xs text-emerald-400/70">
             <ArrowUpRight size={12} />
@@ -199,7 +199,7 @@ export function PremiumBancoCard({
 
         <motion.div
           className="rounded-lg border border-red-500/20 bg-red-500/10 p-3"
-          whileHover={{ scale: 1.05, borderColor: 'rgba(239,68,68,0.4)' }}
+          whileHover={{ scale: 1.02, borderColor: 'rgba(239,68,68,0.4)' }}
         >
           <div className="mb-1 flex items-center gap-1 text-xs text-red-400/70">
             <ArrowDownLeft size={12} />
@@ -233,3 +233,4 @@ export function PremiumBancoCard({
     </motion.div>
   )
 }
+

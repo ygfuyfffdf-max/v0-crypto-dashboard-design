@@ -140,8 +140,8 @@ export const SupremeDistribuidorCard = memo(function SupremeDistribuidorCard({
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
   const springConfig = { stiffness: 150, damping: 15 }
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), springConfig)
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), springConfig)
+  const rotateX = useSpring(useTransform(mouseY, [0, 0], [0, 0]), springConfig)
+  const rotateY = useSpring(useTransform(mouseX, [0, 0], [0, 0]), springConfig)
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -313,7 +313,7 @@ export const SupremeDistribuidorCard = memo(function SupremeDistribuidorCard({
               e.stopPropagation()
               setShowMenu(!showMenu)
             }}
-            whileHover={{ scale: 1.15, rotate: 90 }}
+            whileHover={{ scale: 1.02, rotate: 90 }}
             whileTap={{ scale: 0.9 }}
           >
             <MoreHorizontal size={18} />
@@ -401,7 +401,7 @@ export const SupremeDistribuidorCard = memo(function SupremeDistribuidorCard({
         <motion.span
           className="rounded-lg px-2.5 py-1 text-xs font-medium"
           style={{ background: `${catConfig.color}20`, color: catConfig.color }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
         >
           {catConfig.label}
         </motion.span>
@@ -545,3 +545,5 @@ export const SupremeDistribuidorCard = memo(function SupremeDistribuidorCard({
 })
 
 export default SupremeDistribuidorCard
+
+

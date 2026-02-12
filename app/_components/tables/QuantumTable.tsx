@@ -493,8 +493,9 @@ export function QuantumTable<TData>({
     <motion.div
       className={cn(
         'overflow-hidden rounded-2xl',
-        'border border-white/10 bg-white/5 backdrop-blur-xl',
-        'transition-all duration-300 hover:border-white/15',
+        'border border-white/10 bg-gradient-to-br from-violet-900/20 via-black/60 to-fuchsia-900/20 backdrop-blur-2xl',
+        'shadow-[0_0_30px_-10px_rgba(139,0,255,0.3)]',
+        'transition-all duration-300 hover:border-violet-500/30 hover:shadow-[0_0_50px_-15px_rgba(139,0,255,0.5)]',
         className,
       )}
       initial={{ opacity: 0, y: 20 }}
@@ -503,14 +504,19 @@ export function QuantumTable<TData>({
     >
       {/* Header */}
       {(title || enableSearch) && (
-        <div className="flex flex-col gap-4 border-b border-white/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 border-b border-white/10 bg-white/5 p-4 sm:flex-row sm:items-center sm:justify-between">
           {/* Title section */}
           {title && (
             <div className="flex items-center gap-3">
-              {icon && <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/20 text-violet-400">{icon}</div>}
+              {icon && (
+                <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/20 text-violet-400 overflow-hidden">
+                   <div className="absolute inset-0 bg-violet-500/20 blur-md animate-pulse" />
+                   <div className="relative z-10">{icon}</div>
+                </div>
+              )}
               <div>
-                <h3 className="text-lg font-semibold text-white">{title}</h3>
-                {subtitle && <p className="text-sm text-white/50">{subtitle}</p>}
+                <h3 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-violet-200 to-white">{title}</h3>
+                {subtitle && <p className="text-sm text-violet-200/50">{subtitle}</p>}
               </div>
             </div>
           )}
@@ -587,9 +593,9 @@ export function QuantumTable<TData>({
                     <React.Fragment key={row.id}>
                       <motion.tr
                         className={cn(
-                          'group border-b border-white/5 transition-colors',
+                          'group border-b border-white/10 transition-all duration-200',
                           onRowClick && 'cursor-pointer',
-                          'hover:bg-white/5',
+                          'hover:bg-violet-500/10 hover:shadow-[0_0_15px_-5px_rgba(139,0,255,0.2)] hover:border-violet-500/30',
                         )}
                         onClick={() => onRowClick?.(row.original)}
                         initial={{ opacity: 0, y: 10 }}

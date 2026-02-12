@@ -397,7 +397,7 @@ export function ChronosLogoMini({
   return (
     <motion.div
       className={`relative ${className}`}
-      whileHover={animated ? { scale: 1.05 } : undefined}
+      whileHover={animated ? { scale: 1.02 } : undefined}
       whileTap={animated ? { scale: 0.95 } : undefined}
     >
       <svg
@@ -453,3 +453,4 @@ export function ChronosLogoMini({
 }
 
 export default ChronosLogo
+

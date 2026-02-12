@@ -347,12 +347,21 @@ export const useFlowDistributorStore = create<FlowDistributorStore>()(
         const precioFlete = datos.precioFleteUSD ?? FLETE_DEFAULT_USD
         const precioTotalVenta = datos.cantidad * datos.precioVentaUSD
 
+        // Validar Stock antes de calcular
+        if (get().almacen.stockActual < datos.cantidad) {
+           get().setError(`Stock insuficiente. Disponible: ${get().almacen.stockActual}`)
+           throw new Error('Stock insuficiente')
+        }
+
+        // Calcular Costo Real vía FIFO
+        const { lotesUsados, costoTotalReal } = asignarLotesFIFO(get().ordenesCompra, datos.cantidad)
+
         // Calcular distribución GYA
         const distribucion = calcularDistribucionVenta({
           cantidad: datos.cantidad,
-          precioVentaUSD: datos.precioVentaUSD,
-          precioCompraUSD: datos.precioCompraUSD,
-          precioFleteUSD: precioFlete,
+          precioTotalVenta,
+          costoTotalReal,
+          precioFleteTotal: precioFlete * datos.cantidad,
         })
 
         // Calcular distribución según pago
@@ -381,7 +390,7 @@ export const useFlowDistributorStore = create<FlowDistributorStore>()(
           clienteNombre: datos.clienteNombre,
           cantidad: datos.cantidad,
           precioVentaUSD: datos.precioVentaUSD,
-          precioCompraUSD: datos.precioCompraUSD,
+          precioCompraUSD: costoTotalReal / datos.cantidad, // Costo promedio real de esta venta
           precioFleteUSD: precioFlete,
           precioTotalVenta,
           montoBovedaMonte: distribucion.montoBovedaMonte,
@@ -390,15 +399,10 @@ export const useFlowDistributorStore = create<FlowDistributorStore>()(
           montoPagado: datos.montoPagado,
           montoRestante: precioTotalVenta - datos.montoPagado,
           estadoPago: distribucionPago.estadoPago,
+          origenLotes: lotesUsados,
         }
 
         set((state) => {
-          // Validar stock
-          if (state.almacen.stockActual < datos.cantidad) {
-            state.lastError = `Stock insuficiente. Disponible: ${state.almacen.stockActual}`
-            return
-          }
-
           // Agregar venta
           state.ventas[id] = nuevaVenta
 
@@ -422,14 +426,16 @@ export const useFlowDistributorStore = create<FlowDistributorStore>()(
             }
           }
 
-          // Salida de almacén
+          // Salida de almacén (FIFO)
           const resultadoAlmacen = procesarSalidaAlmacen(
             state.almacen,
+            state.ordenesCompra,
             datos.cantidad,
             datos.precioVentaUSD,
             id,
           )
           state.almacen = resultadoAlmacen.almacenActualizado
+          state.ordenesCompra = resultadoAlmacen.ordenesCompraActualizadas
 
           // ═════════════════════════════════════════════════════════════════════════
           // DISTRIBUCIÓN A 3 BANCOS

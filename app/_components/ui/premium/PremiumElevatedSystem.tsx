@@ -1016,7 +1016,7 @@ const pageVariants = {
   scale: {
     initial: { opacity: 0, scale: 0.95 },
     animate: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 1.05 },
+    exit: { opacity: 0, scale: 1.02 },
   },
   blur: {
     initial: { opacity: 0, filter: 'blur(10px)' },
@@ -1165,3 +1165,4 @@ export function PremiumBadge({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export { PREMIUM_COLORS, SMOOTH_SPRING, SPRING_CONFIG }
+

@@ -104,12 +104,9 @@ const SilverInput = memo(function SilverInput({
         }}
       >
         {Icon && (
-          <Icon
-            className={cn(
-              'w-5 h-5 flex-shrink-0 transition-colors',
-              isFocused ? 'text-white/70' : 'text-white/40'
-            )}
-          />
+          <div className={isFocused ? 'text-white/70' : 'text-white/40'}>
+            {(Icon as any)({ className: 'w-5 h-5 flex-shrink-0 transition-colors' })}
+          </div>
         )}
 
         <input
@@ -221,7 +218,7 @@ const SilverButton = memo(function SilverButton({
         <Loader2 className="w-5 h-5 animate-spin" />
       ) : (
         <>
-          {Icon && <Icon className="w-5 h-5" />}
+          {Icon && (Icon as any)({ className: 'w-5 h-5' })}
           {children}
         </>
       )}

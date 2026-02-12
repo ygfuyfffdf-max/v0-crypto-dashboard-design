@@ -10,8 +10,41 @@ import { RolePermissionsManager } from '@/app/_components/admin/RolePermissionsM
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
+// Tipos compatibles con RolePermissionsManager
+type BancoId = 'boveda_monte' | 'boveda_usa' | 'profit' | 'leftie' | 'azteca' | 'flete_sur' | 'utilidades'
+type Modulo = 'bancos' | 'ventas' | 'clientes' | 'distribuidores' | 'almacen' | 'ordenes' | 'reportes' | 'configuracion' | 'usuarios' | 'auditoria'
+type Accion = 'ver' | 'crear' | 'editar' | 'eliminar' | 'exportar' | 'aprobar' | 'ingreso' | 'gasto' | 'transferir'
+
+interface Permiso {
+  id: string
+  modulo: Modulo
+  accion: Accion
+  activo: boolean
+  restricciones: {
+    bancos: BancoId[]
+    montoMaximo?: number
+    limiteDiario?: number
+    horaInicio?: string
+    horaFin?: string
+    diasPermitidos?: number[]
+    requiereAprobacion: boolean
+  }
+}
+
+interface Rol {
+  id: string
+  nombre: string
+  codigo: string
+  descripcion: string
+  color: string
+  icono: string
+  esAdmin: boolean
+  activo: boolean
+  permisos: Permiso[]
+}
+
 // Mock data - En producción esto vendría de la API
-const INITIAL_ROLES = [
+const INITIAL_ROLES: Rol[] = [
   {
     id: 'admin_supremo',
     nombre: 'Administrador Supremo',
@@ -35,24 +68,24 @@ const INITIAL_ROLES = [
     permisos: [
       {
         id: 'op1',
-        modulo: 'bancos' as const,
-        accion: 'ver' as const,
+        modulo: 'bancos',
+        accion: 'ver',
         activo: true,
-        restricciones: { bancos: [], requiereAprobacion: false },
+        restricciones: { bancos: ['boveda_monte', 'boveda_usa', 'profit', 'leftie', 'azteca', 'flete_sur', 'utilidades'], requiereAprobacion: false },
       },
       {
         id: 'op2',
-        modulo: 'bancos' as const,
-        accion: 'ingreso' as const,
+        modulo: 'bancos',
+        accion: 'ingreso',
         activo: true,
-        restricciones: { bancos: [], montoMaximo: 100000, requiereAprobacion: false },
+        restricciones: { bancos: ['boveda_monte', 'boveda_usa', 'profit', 'leftie', 'azteca', 'flete_sur', 'utilidades'], montoMaximo: 100000, requiereAprobacion: false },
       },
       {
         id: 'op3',
-        modulo: 'bancos' as const,
-        accion: 'gasto' as const,
+        modulo: 'bancos',
+        accion: 'gasto',
         activo: true,
-        restricciones: { bancos: [], montoMaximo: 50000, requiereAprobacion: true },
+        restricciones: { bancos: ['boveda_monte', 'boveda_usa', 'profit', 'leftie', 'azteca', 'flete_sur', 'utilidades'], montoMaximo: 50000, requiereAprobacion: true },
       },
     ],
   },
@@ -68,18 +101,18 @@ const INITIAL_ROLES = [
     permisos: [
       {
         id: 'cp1',
-        modulo: 'bancos' as const,
-        accion: 'ver' as const,
+        modulo: 'bancos',
+        accion: 'ver',
         activo: true,
-        restricciones: { bancos: ['profit' as const], requiereAprobacion: false },
+        restricciones: { bancos: ['profit'], requiereAprobacion: false },
       },
       {
         id: 'cp2',
-        modulo: 'bancos' as const,
-        accion: 'ingreso' as const,
+        modulo: 'bancos',
+        accion: 'ingreso',
         activo: true,
         restricciones: {
-          bancos: ['profit' as const],
+          bancos: ['profit'],
           limiteDiario: 500000,
           montoMaximo: 50000,
           horaInicio: '08:00',
@@ -102,33 +135,33 @@ const INITIAL_ROLES = [
     permisos: [
       {
         id: 'vr1',
-        modulo: 'bancos' as const,
-        accion: 'ver' as const,
+        modulo: 'bancos',
+        accion: 'ver',
         activo: true,
-        restricciones: { bancos: [], requiereAprobacion: false },
+        restricciones: { bancos: ['boveda_monte', 'boveda_usa', 'profit', 'leftie', 'azteca', 'flete_sur', 'utilidades'], requiereAprobacion: false },
       },
       {
         id: 'vr2',
-        modulo: 'reportes' as const,
-        accion: 'ver' as const,
+        modulo: 'reportes',
+        accion: 'ver',
         activo: true,
-        restricciones: { bancos: [], requiereAprobacion: false },
+        restricciones: { bancos: ['boveda_monte', 'boveda_usa', 'profit', 'leftie', 'azteca', 'flete_sur', 'utilidades'], requiereAprobacion: false },
       },
       {
         id: 'vr3',
-        modulo: 'reportes' as const,
-        accion: 'exportar' as const,
+        modulo: 'reportes',
+        accion: 'exportar',
         activo: true,
-        restricciones: { bancos: [], requiereAprobacion: true },
+        restricciones: { bancos: ['boveda_monte', 'boveda_usa', 'profit', 'leftie', 'azteca', 'flete_sur', 'utilidades'], requiereAprobacion: true },
       },
     ],
   },
 ]
 
 export default function RolesPage() {
-  const [roles, setRoles] = useState(INITIAL_ROLES)
+  const [roles, setRoles] = useState<Rol[]>(INITIAL_ROLES)
 
-  const handleSaveRole = useCallback((updatedRole: typeof INITIAL_ROLES[0]) => {
+  const handleSaveRole = useCallback((updatedRole: Rol) => {
     setRoles((prev) => prev.map((r) => (r.id === updatedRole.id ? updatedRole : r)))
     toast.success(`Rol "${updatedRole.nombre}" actualizado exitosamente`)
   }, [])
@@ -138,7 +171,7 @@ export default function RolesPage() {
     toast.success('Rol eliminado exitosamente')
   }, [])
 
-  const handleCreateRole = useCallback((newRole: Omit<typeof INITIAL_ROLES[0], 'id'>) => {
+  const handleCreateRole = useCallback((newRole: Omit<Rol, 'id'>) => {
     const roleWithId = { ...newRole, id: `role_${Date.now()}` }
     setRoles((prev) => [...prev, roleWithId])
     toast.success(`Rol "${newRole.nombre}" creado exitosamente`)

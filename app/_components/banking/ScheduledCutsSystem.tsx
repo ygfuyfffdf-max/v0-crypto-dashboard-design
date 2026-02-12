@@ -112,14 +112,14 @@ const ScheduledCutSchema = z.object({
   diasSemana: z.array(z.number().min(0).max(6)).optional(),
   diaDelMes: z.number().min(1).max(31).optional(),
   bancosIncluidos: z.array(z.string()).min(1, 'Selecciona al menos un banco'),
-  incluirVentas: z.boolean().default(true),
-  incluirGastos: z.boolean().default(true),
-  incluirTransferencias: z.boolean().default(true),
-  incluirAbonos: z.boolean().default(true),
-  formatoReporte: z.enum(['pdf', 'excel', 'csv', 'json']).default('pdf'),
-  enviarPorEmail: z.boolean().default(false),
+  incluirVentas: z.boolean(),
+  incluirGastos: z.boolean(),
+  incluirTransferencias: z.boolean(),
+  incluirAbonos: z.boolean(),
+  formatoReporte: z.enum(['pdf', 'excel', 'csv', 'json']),
+  enviarPorEmail: z.boolean(),
   emailDestino: z.string().email().optional().or(z.literal('')),
-  activo: z.boolean().default(true),
+  activo: z.boolean(),
 })
 
 type ScheduledCutInput = z.infer<typeof ScheduledCutSchema>
@@ -270,7 +270,7 @@ const ScheduleCard = memo(function ScheduleCard({
         <motion.button
           onClick={onEdit}
           className="rounded-lg bg-white/10 p-1.5 text-white/50 hover:text-white hover:bg-white/20 transition-colors"
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
         >
           <Settings className="h-4 w-4" />
@@ -278,7 +278,7 @@ const ScheduleCard = memo(function ScheduleCard({
         <motion.button
           onClick={onDelete}
           className="rounded-lg bg-white/10 p-1.5 text-rose-400/50 hover:text-rose-400 hover:bg-rose-500/20 transition-colors"
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
         >
           <Trash2 className="h-4 w-4" />
@@ -346,7 +346,7 @@ const HistoryItem = memo(function HistoryItem({
       <div className="flex items-center gap-2">
         <span className={cn(
           'px-2 py-1 rounded text-xs font-medium',
-          status.bg_, status.color
+          status.bg, status.color
         )}>
           {status.label}
         </span>
@@ -358,7 +358,7 @@ const HistoryItem = memo(function HistoryItem({
               onDownload()
             }}
             className="rounded-lg bg-violet-500/20 p-2 text-violet-400 hover:bg-violet-500/30 transition-colors"
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
           >
             <Download className="h-4 w-4" />
@@ -412,7 +412,7 @@ function ScheduleModal({ isOpen, onClose, schedule, bancos, onSave }: ScheduleMo
           formatoReporte: schedule.formatoReporte,
           enviarPorEmail: schedule.enviarPorEmail,
           emailDestino: schedule.emailDestino || '',
-          activo: schedule.activo,
+          activo: schedule.activo ?? true,
         }
       : {
           nombre: '',

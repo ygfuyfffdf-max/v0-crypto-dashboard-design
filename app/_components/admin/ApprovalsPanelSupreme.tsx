@@ -38,30 +38,14 @@ import {
   Check,
   X
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Separator } from '@/components/ui/separator'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/app/_components/ui/card'
+import { Button } from '@/app/_components/ui/button'
+import { Badge } from '@/app/_components/ui/badge'
+import { Input } from '@/app/_components/ui/input'
+import { Avatar, AvatarFallback, AvatarImage } from '@/app/_components/ui/avatar'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/_components/ui/tabs'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/app/_components/ui/select'
+// Componentes de UI no disponibles - usando alternativas simples
 import { cn } from '@/lib/utils'
 import {
   workflowService,
@@ -171,7 +155,7 @@ function AprobacionItem({
               <h4 className="font-medium text-white truncate">
                 {instancia.entidadNombre}
               </h4>
-              <Badge className={cn('text-xs', estadoColores[instancia.estado])}>
+              <Badge className={cn('text-xs', estadoColores[instancia.estado].bg, estadoColores[instancia.estado].text)}>
                 {estadoLabels[instancia.estado]}
               </Badge>
             </div>
@@ -320,24 +304,26 @@ function AprobacionItem({
         )}
       </AnimatePresence>
 
-      {/* Dialog de rechazo */}
-      <Dialog open={mostrarRechazo} onOpenChange={setMostrarRechazo}>
-        <DialogContent className="bg-slate-900 border-slate-800">
-          <DialogHeader>
-            <DialogTitle className="text-white">Rechazar Solicitud</DialogTitle>
-            <DialogDescription>
-              Por favor indica el motivo del rechazo. Esta acción no se puede deshacer.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Textarea
-              placeholder="Motivo del rechazo..."
-              value={motivoRechazo}
-              onChange={(e) => setMotivoRechazo(e.target.value)}
-              className="bg-slate-800 border-slate-700 min-h-[100px]"
-            />
-          </div>
-          <DialogFooter>
+      {/* Dialog de rechazo - Reemplazado con div modal simple */}
+      {mostrarRechazo && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="mb-4">
+              <h3 className="text-white text-lg font-semibold mb-2">Rechazar Solicitud</h3>
+              <p className="text-slate-400 text-sm">
+                Por favor indica el motivo del rechazo. Esta acción no se puede deshacer.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <Input
+                placeholder="Motivo del rechazo..."
+                value={motivoRechazo}
+                onChange={(e) => setMotivoRechazo(e.target.value)}
+                className="bg-slate-800 border-slate-700 h-24"
+                type="text"
+              />
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
             <Button
               variant="outline"
               onClick={() => setMostrarRechazo(false)}
@@ -356,10 +342,11 @@ function AprobacionItem({
                 <X className="w-4 h-4 mr-2" />
               )}
               Rechazar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   )
 }
@@ -487,7 +474,7 @@ export default function ApprovalsPanelSupreme({
               </p>
             </div>
           ) : (
-            <ScrollArea className="max-h-[600px]">
+            <div className="max-h-[600px] overflow-y-auto">
               <div className="space-y-3 pr-4">
                 {pendientesFiltrados.map((instancia) => {
                   const miAprobacion = instancia.aprobacionesPendientes.find(
@@ -507,23 +494,25 @@ export default function ApprovalsPanelSupreme({
                   )
                 })}
               </div>
-            </ScrollArea>
+            </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Dialog de detalle */}
-      <Dialog open={!!detalleWorkflow} onOpenChange={() => setDetalleWorkflow(null)}>
-        <DialogContent className="bg-slate-900 border-slate-800 max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <FileText className="w-5 h-5 text-violet-400" />
-              {detalleWorkflow?.entidadNombre}
-            </DialogTitle>
-            <DialogDescription>
-              {detalleWorkflow?.definicionNombre} • {detalleWorkflow?.modulo}
-            </DialogDescription>
-          </DialogHeader>
+      {/* Dialog de detalle - Reemplazado con div modal simple */}
+      {!!detalleWorkflow && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-auto">
+            <div className="p-6">
+              <div className="mb-4">
+                <h3 className="text-white text-lg font-semibold flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-violet-400" />
+                  {detalleWorkflow?.entidadNombre}
+                </h3>
+                <p className="text-slate-400 text-sm">
+                  {detalleWorkflow?.definicionNombre} • {detalleWorkflow?.modulo}
+                </p>
+              </div>
 
           {detalleWorkflow && (
             <div className="space-y-4">
@@ -535,7 +524,7 @@ export default function ApprovalsPanelSupreme({
                 </div>
                 <div className="bg-slate-800/50 rounded-lg p-3">
                   <p className="text-xs text-slate-500">Estado</p>
-                  <Badge className={estadoColores[detalleWorkflow.estado]}>
+                  <Badge className={cn(estadoColores[detalleWorkflow.estado].bg, estadoColores[detalleWorkflow.estado].text)}>
                     {estadoLabels[detalleWorkflow.estado]}
                   </Badge>
                 </div>
@@ -602,17 +591,19 @@ export default function ApprovalsPanelSupreme({
             </div>
           )}
 
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDetalleWorkflow(null)}
-              className="border-slate-700"
-            >
-              Cerrar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-800">
+                <Button
+                  variant="outline"
+                  onClick={() => setDetalleWorkflow(null)}
+                  className="border-slate-700"
+                >
+                  Cerrar
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

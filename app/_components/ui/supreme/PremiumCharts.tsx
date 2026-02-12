@@ -90,7 +90,7 @@ export const PremiumBarChart: React.FC<PremiumBarChartProps> = ({
                     initial={animate ? { height: 0, opacity: 0 } : {}}
                     animate={{ height: `${percentage}%`, opacity: 1 }}
                     whileHover={{
-                      scale: 1.05,
+                      scale: 1.02,
                       boxShadow: `0 0 30px ${color}60`,
                     }}
                     transition={{
@@ -429,3 +429,4 @@ export const PremiumDonutChart: React.FC<PremiumDonutChartProps> = ({
     </GlassCard>
   )
 }
+

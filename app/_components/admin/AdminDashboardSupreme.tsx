@@ -17,7 +17,7 @@
 
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Activity,
@@ -165,6 +165,35 @@ const MetricaCard = ({ metrica }: { metrica: MetricaDashboard }) => {
     : '0'
 
   const IconoMetrica = metrica.icono
+  
+  // Mapeo de colores para Tailwind CSS
+  const colorClasses = {
+    slate: {
+      bg: 'from-slate-500/20 to-slate-600/20',
+      text: 'text-slate-400'
+    },
+    emerald: {
+      bg: 'from-emerald-500/20 to-emerald-600/20',
+      text: 'text-emerald-400'
+    },
+    blue: {
+      bg: 'from-blue-500/20 to-blue-600/20',
+      text: 'text-blue-400'
+    },
+    violet: {
+      bg: 'from-violet-500/20 to-violet-600/20',
+      text: 'text-violet-400'
+    }
+  }
+  
+  const colorClass = colorClasses[metrica.color as keyof typeof colorClasses] || colorClasses.slate
+  
+  // Componente de icono con clase dinámica
+  const IconoConClase = () => {
+    const className = cn("w-6 h-6", colorClass.text)
+    const IconComponent = IconoMetrica as React.ComponentType<{ className?: string }>
+    return <IconComponent className={className} />
+  }
 
   return (
     <motion.div
@@ -210,10 +239,10 @@ const MetricaCard = ({ metrica }: { metrica: MetricaDashboard }) => {
               </div>
             </div>
             <div className={cn(
-              "p-3 rounded-xl",
-              `bg-gradient-to-br from-${metrica.color}-500/20 to-${metrica.color}-600/20`
+              "p-3 rounded-xl bg-gradient-to-br",
+              colorClass.bg
             )}>
-              <IconoMetrica className={cn("w-6 h-6", `text-${metrica.color}-400`)} />
+              <IconoConClase />
             </div>
           </div>
         </CardContent>
@@ -359,9 +388,9 @@ const AuditLogItem = ({ entrada, expandido, onToggle }: {
       >
         <div className={cn(
           "p-2 rounded-lg",
-          `bg-${coloresAccion[entrada.accion]?.split('-')[1]}-500/10`
+          coloresAccion[entrada.accion]?.replace('text-', 'bg-').replace('400', '500/10')
         )}>
-          <Icono className={cn("w-5 h-5", coloresAccion[entrada.accion])} />
+          {React.createElement(Icono, { className: cn("w-5 h-5", coloresAccion[entrada.accion] as string) })}
         </div>
 
         <div className="flex-1 min-w-0">
@@ -515,7 +544,7 @@ const AlertaItem = ({ alerta, onAtender }: {
       )}
     >
       <div className="flex items-start gap-3">
-        <Icono className="w-5 h-5 mt-0.5" />
+        {React.createElement(Icono, { className: "w-5 h-5 mt-0.5" })}
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <p className="font-medium">{alerta.titulo}</p>

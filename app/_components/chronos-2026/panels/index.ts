@@ -83,7 +83,8 @@ export { AuroraGastosYAbonosPanelUnified } from './AuroraGastosYAbonosPanelUnifi
 export { AuroraMovimientosPanel } from './AuroraMovimientosPanel'
 
 // 💰 Panel de Ventas
-export { AuroraVentasPanelUnified, type Venta } from './AuroraVentasPanelUnified'
+export { default as AuroraVentasPanelUnified } from './AuroraVentasPanelUnified'
+export type { Venta } from '@/database/schema'
 
 // 📜 Timeline Virtualizado de Ventas (FIX SCROLL ISSUE)
 export { VentasVirtualizedTimeline } from './VentasVirtualizedTimeline'

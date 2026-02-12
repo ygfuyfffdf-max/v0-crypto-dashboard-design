@@ -94,7 +94,7 @@ const Tooltip = dynamic(() => import('recharts').then((mod) => mod.Tooltip), { s
 // TYPES
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
-type BancoId =
+export type BancoId =
   | 'boveda_monte'
   | 'boveda_usa'
   | 'profit'
@@ -103,8 +103,8 @@ type BancoId =
   | 'flete_sur'
   | 'utilidades'
 
-type PeriodoFiltro = 'hoy' | 'semana' | 'mes' | 'trimestre' | 'año' | 'personalizado'
-type CategoriaTransaccion =
+export type PeriodoFiltro = 'hoy' | 'semana' | 'mes' | 'trimestre' | 'año' | 'personalizado'
+export type CategoriaTransaccion =
   | 'ventas'
   | 'pagos_distribuidores'
   | 'gastos_operativos'
@@ -116,7 +116,7 @@ type CategoriaTransaccion =
   | 'ajustes'
   | 'otros'
 
-interface MetricaBanco {
+export interface MetricaBanco {
   titulo: string
   valor: number
   valorAnterior?: number
@@ -127,7 +127,7 @@ interface MetricaBanco {
   descripcion?: string
 }
 
-interface FlujoTemporal {
+export interface FlujoTemporal {
   fecha: string
   ingresos: number
   gastos: number
@@ -135,7 +135,7 @@ interface FlujoTemporal {
   balance: number
 }
 
-interface DesglosePorCategoria {
+export interface DesglosePorCategoria {
   categoria: CategoriaTransaccion
   monto: number
   porcentaje: number
@@ -143,7 +143,7 @@ interface DesglosePorCategoria {
   color: string
 }
 
-interface MovimientoResumen {
+export interface MovimientoResumen {
   id: string
   tipo: 'ingreso' | 'gasto' | 'transferencia_entrada' | 'transferencia_salida' | 'corte'
   monto: number
@@ -157,7 +157,7 @@ interface MovimientoResumen {
   referencia?: string
 }
 
-interface BancoDashboardProps {
+export interface BancoDashboardProps {
   bancoId: BancoId
   nombreBanco: string
   colorBanco: string

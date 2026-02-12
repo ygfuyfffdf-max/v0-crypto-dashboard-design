@@ -203,7 +203,7 @@ const AIActionOrb = memo(function AIActionOrb({ state, onClick }: AIActionOrbPro
         'transition-all duration-300'
       )}
       onClick={onClick}
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.95 }}
       animate={{
         boxShadow:
@@ -413,7 +413,7 @@ const SuggestionChips = memo(function SuggestionChips({
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: index * 0.05 }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
         >
           {suggestion}
@@ -480,10 +480,12 @@ export function VoiceAIAssistant({
 
       recognitionRef.current.onresult = (event) => {
         const last = event.results.length - 1
-        const transcript = event.results[last][0].transcript
+        if (event.results[last] && event.results[last][0]) {
+          const transcript = event.results[last][0].transcript
 
-        if (event.results[last].isFinal) {
-          handleUserInput(transcript)
+          if (event.results[last].isFinal) {
+            handleUserInput(transcript)
+          }
         }
       }
 
@@ -822,7 +824,7 @@ export function VoiceAIAssistant({
                       ? 'bg-emerald-500/20 text-emerald-400'
                       : 'bg-white/10 text-white/70 hover:bg-white/20'
                   )}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   {state === 'listening' ? (

@@ -15,6 +15,9 @@
  */
 
 import { logger } from '@/app/lib/utils/logger'
+import { generateText } from 'ai'
+import { openai } from '@ai-sdk/openai'
+import { vapiClient } from './vapi-client'
 import type { BusinessContext, ChronosInsight, NexBotEmotion } from '../nexus/types'
 import type {
   AgenticAIMode,
@@ -368,6 +371,90 @@ export class AgenticAIEngine {
       context: 'AgenticAIEngine',
       data: { from: previousMode, to: mode },
     })
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // 📞 AUTONOMOUS CAPABILITIES (SUPREME TIER)
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Ejecuta una llamada autónoma a un cliente usando Vapi.ai
+   */
+  async executeAutonomousCall(
+    client: { id: string; name: string; phone: string }, 
+    purpose: 'collection' | 'sales' | 'support'
+  ): Promise<{ success: boolean; duration: number; transcript: string; sentiment: string }> {
+    logger.info('[AgenticAI] Initiating autonomous call via Vapi', {
+      context: 'AgenticAIEngine',
+      data: { client: client.name, purpose },
+    })
+
+    try {
+      // Configuración dinámica del asistente según propósito
+      const assistantId = purpose === 'collection' 
+        ? 'asst_collection_premium' 
+        : 'asst_sales_closer'
+
+      const callId = await vapiClient.startOutboundCall({
+        phoneNumberId: 'phone_premium_001',
+        customerNumber: client.phone,
+        assistantId,
+        customerName: client.name,
+        reason: purpose
+      })
+
+      if (!callId) {
+         throw new Error('Failed to initiate call')
+      }
+
+      return {
+        success: true,
+        duration: 0,
+        transcript: "Llamada iniciada en cola de Vapi...",
+        sentiment: "neutral"
+      }
+
+    } catch (error) {
+      logger.error('Fallo en llamada autónoma', { context: 'AgenticAIEngine', error })
+      return { success: false, duration: 0, transcript: "", sentiment: "error" }
+    }
+  }
+
+  /**
+   * Procesa decisiones de negocio complejas usando OpenAI GPT-4o
+   */
+  async processBusinessDecision(
+    context: BusinessContext
+  ): Promise<{ decision: string; confidence: number; reasoning: string[] }> {
+    logger.info('[AgenticAI] Processing quantum business decision via OpenAI', { context: 'AgenticAIEngine' })
+
+    try {
+      const { text } = await generateText({
+        model: openai('gpt-4o'),
+        prompt: `Analyze the following business context and provide a strategic decision:
+        Context: ${JSON.stringify(context)}
+        
+        Output format: JSON with decision (string), confidence (0-100), reasoning (array of strings).`
+      })
+      
+      try {
+        const result = JSON.parse(text.replace(/```json/g, '').replace(/```/g, ''))
+        return result
+      } catch (e) {
+         return {
+            decision: 'MANUAL_REVIEW',
+            confidence: 50,
+            reasoning: [text]
+         }
+      }
+    } catch (error) {
+      logger.error('Fallo en decisión AI', { context: 'AgenticAIEngine', error })
+      return {
+        decision: 'MANUAL_REVIEW',
+        confidence: 0,
+        reasoning: ['Error en motor AI', 'Requiere intervención humana']
+      }
+    }
   }
 
   // ─────────────────────────────────────────────────────────────────────────────

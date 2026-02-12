@@ -58,6 +58,9 @@ export class ZeroForceVoice {
   private state: ZeroState = 'idle'
   private wakeWordDetector: MediaRecorder | null = null
   private audioContext: AudioContext | null = null
+  private analyser: AnalyserNode | null = null
+  private microphoneStream: MediaStream | null = null
+  private dataArray: Uint8Array | null = null
   private isWakeWordActive = false
   private currentEmotion: ZeroEmotion = 'professional'
 
@@ -84,6 +87,9 @@ export class ZeroForceVoice {
   private initializeAudioContext() {
     try {
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
+      this.analyser = this.audioContext.createAnalyser()
+      this.analyser.fftSize = 256
+      this.dataArray = new Uint8Array(this.analyser.frequencyBinCount)
       logger.info('🔊 AudioContext inicializado para Zero Force', { context: 'ZeroVoice' })
     } catch (error) {
       logger.error('❌ Error inicializando AudioContext', error as Error, { context: 'ZeroVoice' })
@@ -343,6 +349,19 @@ export class ZeroForceVoice {
 
     oscillator.start(this.audioContext.currentTime)
     oscillator.stop(this.audioContext.currentTime + 0.3)
+  }
+
+  getAudioLevel(): number {
+    if (!this.analyser || !this.dataArray) return 0
+    this.analyser.getByteFrequencyData(this.dataArray)
+    
+    // Calcular promedio
+    let sum = 0
+    for (let i = 0; i < this.dataArray.length; i++) {
+      sum += this.dataArray[i]
+    }
+    // Normalizar a 0-1
+    return (sum / this.dataArray.length) / 255
   }
 
   // ═════════════════════════════════════════════════════════════

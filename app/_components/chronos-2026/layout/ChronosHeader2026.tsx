@@ -1,8 +1,9 @@
 /**
  * 🧭 CHRONOS HEADER 2026 - NAVEGACIÓN PREMIUM KOCMOC
  * ═══════════════════════════════════════════════════════════════════════════
- * Header con navegación, user menu, theme switcher y logo orbital animado
+ * Header con navegación organizada por Dropdowns, user menu, theme switcher y logo orbital animado
  * ✅ SUPREME INTEGRATION: Sound effects + SoundButton wrappers
+ * ✅ DROPDOWN NAVIGATION: Estructura jerárquica para evitar sidebar
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -24,7 +25,6 @@ import {
   Package,
   Search,
   Settings,
-  Shield,
   ShoppingCart,
   Truck,
   User,
@@ -32,6 +32,10 @@ import {
   Wallet,
   X,
   BarChart3,
+  Layers,
+  Database,
+  Activity,
+  Zap,
 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import React, { useEffect, useRef, useState } from "react"
@@ -54,6 +58,11 @@ export type PanelId =
   | "reportes"
   | "configuracion"
   | "showcase"
+  // Group IDs (not navigation targets necessarily, but used for keys)
+  | "finanzas"
+  | "comercial"
+  | "inventario"
+  | "sistema"
 
 export type ThemeStyle = "modern" | "retro" | "genz" | "minimal"
 
@@ -62,6 +71,7 @@ export interface NavItem {
   label: string
   icon: React.ComponentType<{ className?: string }>
   badge?: number
+  children?: NavItem[]
 }
 
 export interface ChronosHeader2026Props {
@@ -88,22 +98,49 @@ export interface ChronosHeader2026Props {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// NAV ITEMS
+// NAV ITEMS STRUCTURE
 // ═══════════════════════════════════════════════════════════════════════════
 
 const navItems: NavItem[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "bancos", label: "Bancos", icon: Wallet, badge: 3 },
-  { id: "ventas", label: "Ventas", icon: ShoppingCart, badge: 3 },
-  { id: "ordenes", label: "Órdenes", icon: ClipboardList },
-  { id: "clientes", label: "Clientes", icon: Users },
-  { id: "almacen", label: "Almacén", icon: Package, badge: 2 },
-  { id: "distribuidores", label: "Distribuidores", icon: Truck },
-  { id: "gastosAbonos", label: "Gastos/Abonos", icon: CreditCard },
-  { id: "movimientos", label: "Movimientos", icon: ArrowUpDown },
-  { id: "reportes", label: "Reportes", icon: BarChart3 },
-  { id: "configuracion", label: "Config", icon: Settings },
-  { id: "showcase", label: "Showcase", icon: Film },
+  {
+    id: "finanzas",
+    label: "Finanzas",
+    icon: Wallet,
+    children: [
+      { id: "bancos", label: "Bancos", icon: Database, badge: 3 },
+      { id: "gastosAbonos", label: "Gastos y Abonos", icon: CreditCard },
+      { id: "movimientos", label: "Movimientos", icon: ArrowUpDown },
+    ],
+  },
+  {
+    id: "comercial",
+    label: "Comercial",
+    icon: ShoppingCart,
+    children: [
+      { id: "ventas", label: "Ventas", icon: ShoppingCart, badge: 3 },
+      { id: "ordenes", label: "Órdenes", icon: ClipboardList },
+      { id: "clientes", label: "Clientes", icon: Users },
+      { id: "distribuidores", label: "Distribuidores", icon: Truck },
+    ],
+  },
+  {
+    id: "inventario",
+    label: "Inventario",
+    icon: Package,
+    children: [
+      { id: "almacen", label: "Almacén General", icon: Layers, badge: 2 },
+    ],
+  },
+  {
+    id: "sistema",
+    label: "Sistema",
+    icon: Settings,
+    children: [
+      { id: "reportes", label: "Analítica", icon: BarChart3 },
+      { id: "configuracion", label: "Configuración", icon: Settings },
+    ],
+  },
 ]
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -223,7 +260,7 @@ const themeStyles: { id: ThemeStyle; label: string; colors: string }[] = [
 ]
 
 // ═══════════════════════════════════════════════════════════════════════════
-// NAV ITEM COMPONENT
+// NAV ITEM COMPONENTS
 // ═══════════════════════════════════════════════════════════════════════════
 
 function NavItemButton({
@@ -246,7 +283,7 @@ function NavItemButton({
   return (
     <motion.button
       onClick={handleClick}
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.95 }}
       aria-label={`Ir a ${item.label}`}
       aria-current={isActive ? "page" : undefined}
@@ -255,8 +292,8 @@ function NavItemButton({
       }`}
     >
       <Icon className="h-4 w-4" aria-hidden="true" />
-      <span className="hidden lg:inline">{item.label}</span>
-      <span className="sr-only lg:hidden">{item.label}</span>
+      <span className="hidden xl:inline">{item.label}</span>
+      <span className="sr-only xl:hidden">{item.label}</span>
 
       {/* Badge */}
       {item.badge && item.badge > 0 && (
@@ -277,8 +314,108 @@ function NavItemButton({
   )
 }
 
+function NavDropdown({
+  item,
+  activePanel,
+  onPanelChange,
+}: {
+  item: NavItem
+  activePanel: PanelId
+  onPanelChange: (panel: PanelId) => void
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+  const { play, config } = useSoundEffects()
+  const Icon = item.icon
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Check if any child is active to highlight the parent
+  const isChildActive = item.children?.some((child) => child.id === activePanel)
+
+  // Close on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <motion.button
+        onClick={() => {
+          if (config.enabled) play("click")
+          setIsOpen(!isOpen)
+        }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.95 }}
+        className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
+          isOpen || isChildActive
+            ? "bg-white/10 text-white"
+            : "text-white/60 hover:bg-white/5 hover:text-white"
+        }`}
+      >
+        <Icon className="h-4 w-4" />
+        <span className="hidden xl:inline">{item.label}</span>
+        <ChevronDown
+          className={`h-3 w-3 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        />
+        
+        {/* Active indicator for parent */}
+        {isChildActive && (
+          <motion.div
+            layoutId="activeNavGroup"
+            className="absolute inset-0 rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-rose-500/10"
+            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+          />
+        )}
+      </motion.button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="absolute top-full left-0 z-50 mt-2 w-56 min-w-max overflow-hidden rounded-xl border border-white/10 bg-[#0a0a0f]/95 p-2 shadow-2xl backdrop-blur-xl"
+          >
+            <div className="flex flex-col gap-1">
+              {item.children?.map((child) => (
+                <button
+                  key={child.id}
+                  onClick={() => {
+                    if (config.enabled) play("click")
+                    onPanelChange(child.id)
+                    setIsOpen(false)
+                  }}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
+                    activePanel === child.id
+                      ? "bg-violet-500/20 text-white"
+                      : "text-white/70 hover:bg-white/5 hover:text-white"
+                  }`}
+                >
+                  <child.icon className="h-4 w-4 opacity-70" />
+                  <span>{child.label}</span>
+                  {child.badge && child.badge > 0 && (
+                    <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
+                      {child.badge}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
-// MOBILE NAV — Dropdown menu (no sidebar)
+// MOBILE NAV — Accordion style
 // ═══════════════════════════════════════════════════════════════════════════
 
 function MobileNav({
@@ -292,6 +429,8 @@ function MobileNav({
   activePanel: PanelId
   onPanelChange: (panel: PanelId) => void
 }) {
+  const [expandedGroup, setExpandedGroup] = useState<string | null>(null)
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -329,29 +468,85 @@ function MobileNav({
               </button>
             </div>
 
-            <div className="grid max-h-[60vh] grid-cols-2 gap-2 overflow-y-auto p-3">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    onPanelChange(item.id)
-                    onClose()
-                  }}
-                  className={`flex items-center gap-2 rounded-xl px-3 py-3 text-left transition-all ${
-                    activePanel === item.id
-                      ? "border border-violet-500/30 bg-violet-500/20 text-white"
-                      : "border border-transparent text-white/60 hover:bg-white/5 hover:text-white"
-                  }`}
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span className="text-sm">{item.label}</span>
-                  {item.badge && item.badge > 0 && (
-                    <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                      {item.badge}
-                    </span>
-                  )}
-                </button>
-              ))}
+            <div className="flex max-h-[60vh] flex-col gap-2 overflow-y-auto p-3">
+              {navItems.map((item) => {
+                if (item.children) {
+                  const isExpanded = expandedGroup === item.id
+                  const isChildActive = item.children.some((c) => c.id === activePanel)
+
+                  return (
+                    <div key={item.id} className="overflow-hidden rounded-xl bg-white/5">
+                      <button
+                        onClick={() => setExpandedGroup(isExpanded ? null : item.id)}
+                        className={`flex w-full items-center justify-between p-3 text-left ${
+                          isChildActive ? "text-white" : "text-white/80"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <item.icon className="h-4 w-4" />
+                          <span className="text-sm font-medium">{item.label}</span>
+                        </div>
+                        <ChevronDown
+                          className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                        />
+                      </button>
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ height: 0 }}
+                            animate={{ height: "auto" }}
+                            exit={{ height: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="flex flex-col gap-1 border-t border-white/5 p-2">
+                              {item.children.map((child) => (
+                                <button
+                                  key={child.id}
+                                  onClick={() => {
+                                    onPanelChange(child.id)
+                                    onClose()
+                                  }}
+                                  className={`flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-all ${
+                                    activePanel === child.id
+                                      ? "bg-violet-500/20 text-white"
+                                      : "text-white/60 hover:bg-white/5 hover:text-white"
+                                  }`}
+                                >
+                                  <child.icon className="h-4 w-4" />
+                                  <span>{child.label}</span>
+                                  {child.badge && child.badge > 0 && (
+                                    <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                                      {child.badge}
+                                    </span>
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )
+                }
+
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      onPanelChange(item.id)
+                      onClose()
+                    }}
+                    className={`flex items-center gap-2 rounded-xl px-3 py-3 text-left transition-all ${
+                      activePanel === item.id
+                        ? "border border-violet-500/30 bg-violet-500/20 text-white"
+                        : "border border-transparent text-white/60 hover:bg-white/5 hover:text-white"
+                    }`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span className="text-sm">{item.label}</span>
+                  </button>
+                )
+              })}
             </div>
           </motion.div>
         </>
@@ -589,16 +784,25 @@ export function ChronosHeader2026({
             </div>
           </div>
 
-          {/* Navigation */}
+          {/* Navigation - NOW WITH DROPDOWNS */}
           <nav className="hidden flex-1 items-center gap-1 lg:flex">
-            {navItems.map((item) => (
-              <NavItemButton
-                key={item.id}
-                item={item}
-                isActive={activePanel === item.id}
-                onClick={() => onPanelChange(item.id)}
-              />
-            ))}
+            {navItems.map((item) =>
+              item.children ? (
+                <NavDropdown
+                  key={item.id}
+                  item={item}
+                  activePanel={activePanel}
+                  onPanelChange={onPanelChange}
+                />
+              ) : (
+                <NavItemButton
+                  key={item.id}
+                  item={item}
+                  isActive={activePanel === item.id}
+                  onClick={() => onPanelChange(item.id)}
+                />
+              )
+            )}
           </nav>
 
           {/* Right section */}

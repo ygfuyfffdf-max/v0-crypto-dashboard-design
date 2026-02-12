@@ -72,24 +72,20 @@ import {
   X,
   Zap,
 } from 'lucide-react'
-import dynamic from 'next/dynamic'
-
-// Lazy load charts
-const ResponsiveContainer = dynamic(
-  () => import('recharts').then((mod) => mod.ResponsiveContainer),
-  { ssr: false }
-)
-const AreaChartRecharts = dynamic(() => import('recharts').then((mod) => mod.AreaChart), { ssr: false })
-const Area = dynamic(() => import('recharts').then((mod) => mod.Area), { ssr: false })
-const BarChartRecharts = dynamic(() => import('recharts').then((mod) => mod.BarChart), { ssr: false })
-const Bar = dynamic(() => import('recharts').then((mod) => mod.Bar), { ssr: false })
-const XAxis = dynamic(() => import('recharts').then((mod) => mod.XAxis), { ssr: false })
-const YAxis = dynamic(() => import('recharts').then((mod) => mod.YAxis), { ssr: false })
-const CartesianGrid = dynamic(() => import('recharts').then((mod) => mod.CartesianGrid), { ssr: false })
-const Tooltip = dynamic(() => import('recharts').then((mod) => mod.Tooltip), { ssr: false })
-const Cell = dynamic(() => import('recharts').then((mod) => mod.Cell), { ssr: false })
-const PieChartRecharts = dynamic(() => import('recharts').then((mod) => mod.PieChart), { ssr: false })
-const Pie = dynamic(() => import('recharts').then((mod) => mod.Pie), { ssr: false })
+import {
+  ResponsiveContainer,
+  AreaChart as AreaChartRecharts,
+  Area,
+  BarChart as BarChartRecharts,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Cell,
+  PieChart as PieChartRecharts,
+  Pie
+} from 'recharts'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -276,11 +272,23 @@ const StatCard = memo(function StatCard({
   icono: React.ComponentType<{ className?: string }>
   color: string
 }) {
+  // Mapeo de colores a clases de Tailwind
+  const colorClasses = {
+    '#3b82f6': 'bg-blue-500/20 text-blue-400', // azul
+    '#10b981': 'bg-emerald-500/20 text-emerald-400', // verde
+    '#f59e0b': 'bg-amber-500/20 text-amber-400', // ámbar
+    '#ef4444': 'bg-red-500/20 text-red-400', // rojo
+    '#8b5cf6': 'bg-violet-500/20 text-violet-400', // violeta
+    '#ec4899': 'bg-pink-500/20 text-pink-400', // rosa
+  }[color] || 'bg-slate-500/20 text-slate-400'
+
+  const [bgClass, textClass] = colorClasses.split(' ')
+
   return (
     <div className="p-4 rounded-xl border border-white/10 bg-white/5">
       <div className="flex items-start justify-between mb-2">
-        <div className="p-2 rounded-lg" style={{ backgroundColor: `${color}20` }}>
-          <Icon className="h-5 w-5" style={{ color }} />
+        <div className={`p-2 rounded-lg ${bgClass}`}>
+          <Icon className={`h-5 w-5 ${textClass}`} />
         </div>
         {cambio !== undefined && (
           <span
@@ -398,10 +406,37 @@ const ActivityEntry = memo(function ActivityEntry({
     >
       {/* Icon */}
       <div
-        className="p-2 rounded-lg shrink-0"
-        style={{ backgroundColor: `${accionConfig.color}20` }}
+        className={cn(
+          'p-2 rounded-lg shrink-0',
+          {
+            '#3b82f6': 'bg-blue-500/20',
+            '#10b981': 'bg-emerald-500/20',
+            '#ef4444': 'bg-red-500/20',
+            '#8b5cf6': 'bg-violet-500/20',
+            '#06b6d4': 'bg-cyan-500/20',
+            '#22c55e': 'bg-green-500/20',
+            '#64748b': 'bg-slate-500/20',
+            '#f59e0b': 'bg-amber-500/20',
+            '#dc2626': 'bg-red-600/20',
+            '#ec4899': 'bg-pink-500/20',
+          }[accionConfig.color] || 'bg-slate-500/20'
+        )}
       >
-        <Icon className="h-5 w-5" style={{ color: accionConfig.color }} />
+        <Icon className={cn(
+          'h-5 w-5',
+          {
+            '#3b82f6': 'text-blue-400',
+            '#10b981': 'text-emerald-400',
+            '#ef4444': 'text-red-400',
+            '#8b5cf6': 'text-violet-400',
+            '#06b6d4': 'text-cyan-400',
+            '#22c55e': 'text-green-400',
+            '#64748b': 'text-slate-400',
+            '#f59e0b': 'text-amber-400',
+            '#dc2626': 'text-red-500',
+            '#ec4899': 'text-pink-400',
+          }[accionConfig.color] || 'text-slate-400'
+        )} />
       </div>
 
       {/* Info */}

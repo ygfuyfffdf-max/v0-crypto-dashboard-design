@@ -114,7 +114,7 @@ const pageVariants = {
     },
     exit: {
       opacity: 0,
-      scale: 1.05,
+      scale: 1.02,
       y: -20,
       transition: {
         duration: 0.35,
@@ -214,7 +214,7 @@ const pageVariants = {
     exit: {
       opacity: 0,
       clipPath: "circle(0% at 50% 50%)",
-      scale: 1.05,
+      scale: 1.02,
       transition: {
         duration: 0.6,
         ease: [0.4, 0, 1, 1],
@@ -546,3 +546,4 @@ export function CountUp({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export default PageTransitionWrapper
+

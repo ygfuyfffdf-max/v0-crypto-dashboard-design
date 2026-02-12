@@ -1137,7 +1137,7 @@ export function AuroraMovimientosPanel({
                 loading ? 'Actualizando movimientos...' : 'Actualizar lista de movimientos'
               }
               className="rounded-xl border border-white/10 bg-white/5 p-3 text-white/60 transition-colors hover:text-white"
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
             >
               <RefreshCw size={20} className={loading ? 'animate-spin' : ''} aria-hidden="true" />

@@ -231,6 +231,7 @@ export const distribuidores = sqliteTable(
     eficienciaRotacion: text('eficiencia_rotacion').default('normal'),
     roiPromedio: real('roi_promedio'),
     gananciaNetaPromedio: real('ganancia_neta_promedio'),
+    volumenProveedor: real('volumen_proveedor'),
     scoreRotacion: integer('score_rotacion').default(50),
   },
   (table) => [

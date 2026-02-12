@@ -68,7 +68,7 @@ export function ThemeCustomizationUI() {
                 background: theme.color === option.value ? `${option.color}20` : 'rgba(255,255,255,0.05)',
                 border: `2px solid ${theme.color === option.value ? option.color : 'rgba(255,255,255,0.1)'}`,
               }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
             >
               {/* Animated glow */}
@@ -117,7 +117,7 @@ export function ThemeCustomizationUI() {
                 background: theme.mode === option.value ? 'rgba(6, 182, 212, 0.2)' : 'rgba(255,255,255,0.05)',
                 borderColor: theme.mode === option.value ? '#06B6D4' : 'rgba(255,255,255,0.1)',
               }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
             >
               {option.icon}
@@ -144,7 +144,7 @@ export function ThemeCustomizationUI() {
                 background: theme.fontSize === size ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.05)',
                 borderColor: theme.fontSize === size ? '#10B981' : 'rgba(255,255,255,0.1)',
               }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
             >
               <span
@@ -179,7 +179,7 @@ export function ThemeCustomizationUI() {
                 borderColor: theme.borderRadius === radius ? '#EC4899' : 'rgba(255,255,255,0.1)',
                 borderRadius: radius === 'none' ? '0' : radius === 'sm' ? '4px' : radius === 'md' ? '8px' : radius === 'lg' ? '12px' : '9999px',
               }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
             >
               <div

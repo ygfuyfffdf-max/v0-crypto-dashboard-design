@@ -262,11 +262,11 @@ const OrbCore: FC<OrbCoreProps> = memo(function OrbCore({ mood, pulse, intensity
 
   // Animation loop
   useFrame((state) => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime
-      materialRef.current.uniforms.uPulse.value = pulse
-      materialRef.current.uniforms.uMood.value = mood
-      materialRef.current.uniforms.uIntensity.value = intensity
+    if (materialRef.current && materialRef.current.uniforms) {
+      if (materialRef.current.uniforms.uTime) materialRef.current.uniforms.uTime.value = state.clock.elapsedTime
+      if (materialRef.current.uniforms.uPulse) materialRef.current.uniforms.uPulse.value = pulse
+      if (materialRef.current.uniforms.uMood) materialRef.current.uniforms.uMood.value = mood
+      if (materialRef.current.uniforms.uIntensity) materialRef.current.uniforms.uIntensity.value = intensity
     }
 
     if (meshRef.current) {
@@ -339,9 +339,9 @@ const ParticleField: FC<ParticleFieldProps> = memo(function ParticleField({ coun
 
       // Orbital movement
       const angle = time * 0.1 + i * 0.0001
-      const x = positionAttr.array[i3]
-      const y = positionAttr.array[i3 + 1]
-      const z = positionAttr.array[i3 + 2]
+      const x = positionAttr.array[i3] || 0
+      const y = positionAttr.array[i3 + 1] || 0
+      const z = positionAttr.array[i3 + 2] || 0
 
       const newX = x * Math.cos(angle * 0.01) - z * Math.sin(angle * 0.01)
       const newZ = x * Math.sin(angle * 0.01) + z * Math.cos(angle * 0.01)
@@ -371,8 +371,9 @@ const ParticleField: FC<ParticleFieldProps> = memo(function ParticleField({ coun
           count={count}
           array={positions}
           itemSize={3}
+          args={[positions, 3]}
         />
-        <bufferAttribute attach="attributes-color" count={count} array={colors} itemSize={3} />
+        <bufferAttribute attach="attributes-color" count={count} array={colors} itemSize={3} args={[colors, 3]} />
       </bufferGeometry>
       <pointsMaterial
         size={0.02}
@@ -507,9 +508,9 @@ const EnhancedOrbFondoVivo: FC<EnhancedOrbProps> = memo(function EnhancedOrbFond
   className = "",
 }) {
   // Use mood hook si no hay override
-  const { mood: hookMood, pulse: hookPulse } = useMood()
+  const { mood: hookMood } = useMood()
   const mood = moodOverride ?? hookMood
-  const pulse = pulseOverride
+  const pulse = pulseOverride ?? 0.5
 
   return (
     <motion.div

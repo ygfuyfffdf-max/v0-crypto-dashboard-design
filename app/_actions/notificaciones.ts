@@ -302,7 +302,7 @@ export async function marcarComoLeida(
       ...notificacionesState[index],
       leida: true,
       leidaAt: new Date(),
-    }
+    } as Notificacion
     
     return { success: true }
   } catch (error) {
@@ -347,7 +347,7 @@ export async function descartarNotificacion(
     notificacionesState[index] = {
       ...notificacionesState[index],
       descartada: true,
-    }
+    } as Notificacion
     
     return { success: true }
   } catch (error) {
@@ -500,8 +500,8 @@ export async function aprobarSolicitud(
     
     const aprobacion = aprobacionesState[index]
     
-    if (aprobacion.estado !== 'pendiente') {
-      return { success: false, error: 'Esta solicitud ya fue procesada' }
+    if (!aprobacion || aprobacion.estado !== 'pendiente') {
+      return { success: false, error: 'Esta solicitud ya fue procesada o no existe' }
     }
     
     const actualizada: AprobacionPendiente = {
@@ -566,8 +566,8 @@ export async function rechazarSolicitud(
     
     const aprobacion = aprobacionesState[index]
     
-    if (aprobacion.estado !== 'pendiente') {
-      return { success: false, error: 'Esta solicitud ya fue procesada' }
+    if (!aprobacion || aprobacion.estado !== 'pendiente') {
+      return { success: false, error: 'Esta solicitud ya fue procesada o no existe' }
     }
     
     const actualizada: AprobacionPendiente = {
@@ -629,6 +629,10 @@ export async function cancelarSolicitud(
     }
     
     const aprobacion = aprobacionesState[index]
+    
+    if (!aprobacion) {
+      return { success: false, error: 'Solicitud no encontrada' }
+    }
     
     if (aprobacion.solicitanteId !== usuarioId) {
       return { success: false, error: 'Solo el solicitante puede cancelar' }

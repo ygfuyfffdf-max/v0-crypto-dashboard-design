@@ -8,9 +8,54 @@
 import { logger } from '@/app/lib/utils/logger'
 
 /**
- * Roles disponibles en el sistema
+ * Roles disponibles en el sistema (Extended for Quantum System)
  */
-export type Role = 'admin' | 'operator' | 'viewer'
+export type Role = 
+  | 'admin' 
+  | 'operator' 
+  | 'viewer'
+  // Executive Roles
+  | 'ceo'
+  | 'cfo'
+  | 'financial_director'
+  | 'financial_manager'
+  // Operational Roles
+  | 'sales_manager'
+  | 'regional_manager'
+  | 'accountant'
+  // Technical Roles
+  | 'analyst'
+  | 'developer'
+  | 'tester'
+  | 'data_scientist'
+  | 'ai_engineer'
+  | 'auditor'
+
+/**
+ * 🌌 QUANTUM PERMISSION CONTEXT
+ * Contexto multidimensional para evaluación de permisos
+ */
+export interface QuantumContext {
+  time?: Date
+  location?: {
+    ip?: string
+    country?: string
+    networkType?: 'internal' | 'vpn' | 'public'
+    coordinates?: { lat: number; lng: number }
+  }
+  device?: {
+    id?: string
+    type?: 'desktop' | 'mobile' | 'tablet'
+    isManaged?: boolean
+    biometricVerified?: boolean
+    trustScore?: number
+  }
+  session?: {
+    mfaVerified?: boolean
+    duration?: number
+    riskScore?: number
+  }
+}
 
 /**
  * Permisos granulares del sistema
@@ -199,6 +244,167 @@ export const rolePermissions: Record<Role, Permission[]> = {
     // Settings
     'settings.view',
   ],
+
+  // ════════════════════════════════════════════════════════════════════════════════════════
+  // 👔 EXECUTIVE ROLES (QUANTUM TIER)
+  // ════════════════════════════════════════════════════════════════════════════════════════
+  
+  ceo: [
+    // Access to EVERYTHING except low-level system admin
+    'ventas.read', 'ventas.export',
+    'clientes.read', 'clientes.export',
+    'distribuidores.read',
+    'ordenes.read', 'ordenes.export',
+    'bancos.read', 'bancos.export',
+    'almacen.read', 'almacen.export',
+    'reportes.view', 'reportes.create', 'reportes.export', 'reportes.schedule',
+    'ia.use', 'ia.analyze', 'ia.predict',
+    'settings.view', 'audit.view', 'audit.export'
+  ],
+
+  cfo: [
+    // Financial Focus
+    'bancos.read', 'bancos.transfer', 'bancos.ingreso', 'bancos.gasto', 'bancos.export',
+    'ordenes.read', 'ordenes.create', 'ordenes.update', 'ordenes.export',
+    'ventas.read', 'ventas.export',
+    'reportes.view', 'reportes.create', 'reportes.export',
+    'ia.use', 'ia.analyze', 'ia.predict',
+    'audit.view'
+  ],
+
+  financial_director: [
+    'bancos.read', 'bancos.ingreso', 'bancos.gasto', 'bancos.export',
+    'ordenes.read', 'ordenes.export',
+    'reportes.view', 'reportes.create',
+    'audit.view'
+  ],
+
+  financial_manager: [
+    'bancos.read', 'bancos.ingreso', 'bancos.gasto',
+    'ordenes.read',
+    'reportes.view'
+  ],
+
+  // ════════════════════════════════════════════════════════════════════════════════════════
+  // 🏢 OPERATIONAL ROLES
+  // ════════════════════════════════════════════════════════════════════════════════════════
+
+  sales_manager: [
+    'ventas.create', 'ventas.read', 'ventas.update', 'ventas.delete', 'ventas.export',
+    'clientes.create', 'clientes.read', 'clientes.update', 'clientes.export', 'clientes.manage_credit',
+    'reportes.view'
+  ],
+
+  regional_manager: [
+    'ventas.read', 'ventas.export',
+    'clientes.read',
+    'reportes.view'
+  ],
+
+  accountant: [
+    'ventas.read', 'ventas.export',
+    'ordenes.read', 'ordenes.export',
+    'bancos.read', 'bancos.export',
+    'reportes.view', 'reportes.create', 'reportes.export'
+  ],
+
+  // ════════════════════════════════════════════════════════════════════════════════════════
+  // 🛠️ TECHNICAL & SPECIALIST ROLES
+  // ════════════════════════════════════════════════════════════════════════════════════════
+
+  analyst: [
+    'ventas.read', 'clientes.read', 'almacen.read', 'bancos.read',
+    'reportes.view', 'reportes.create', 'reportes.export',
+    'ia.use', 'ia.analyze'
+  ],
+
+  data_scientist: [
+    'reportes.view', 'reportes.create', 'reportes.export',
+    'ia.use', 'ia.analyze', 'ia.predict',
+    'almacen.read', 'ventas.read'
+  ],
+
+  ai_engineer: [
+    'ia.use', 'ia.analyze', 'ia.predict',
+    'settings.view', 'system.backup'
+  ],
+
+  developer: [
+    'settings.view', 'settings.edit',
+    'system.backup', 'system.restore',
+    'audit.view'
+  ],
+
+  tester: [
+    'ventas.read', 'clientes.read', 'almacen.read',
+    'settings.view'
+  ],
+
+  auditor: [
+    'audit.view', 'audit.export',
+    'ventas.read', 'clientes.read', 'bancos.read', 'ordenes.read', 'almacen.read', 'distribuidores.read',
+    'settings.view'
+  ]
+}
+
+/**
+ * 🔐 QUANTUM PERMISSION EVALUATOR
+ * Evalúa permisos basándose en contexto, no solo en rol.
+ */
+export function evaluateQuantumPermission(
+  role: Role, 
+  permission: Permission, 
+  context?: QuantumContext
+): { allowed: boolean; reason?: string; riskScore?: number } {
+  // 1. Check basic RBAC first
+  if (!hasPermission(role, permission)) {
+    return { allowed: false, reason: 'Role does not have basic permission', riskScore: 0 }
+  }
+
+  // 2. Quantum Context Evaluation (Advanced ABAC)
+  if (context) {
+    // 2.1 TIME DIMENSION: Temporal Restrictions
+    if (context.time) {
+      const hour = context.time.getHours()
+      const isWorkHours = hour >= 8 && hour <= 20
+      // Operators only work during work hours unless emergency override
+      if (role === 'operator' && !isWorkHours) {
+         return { allowed: false, reason: 'Access denied outside operating hours (Temporal Lock)', riskScore: 0.8 }
+      }
+    }
+
+    // 2.2 SPACE DIMENSION: Geo-Fencing
+    if (context.location?.country) {
+       const allowedCountries = ['MX', 'US', 'CA'] // Example configuration
+       if (!allowedCountries.includes(context.location.country)) {
+         return { allowed: false, reason: `Access denied from restricted region: ${context.location.country}`, riskScore: 0.95 }
+       }
+    }
+
+    // 2.3 BEHAVIOR DIMENSION: Risk Scoring
+    // Critical actions require low risk score
+    if (permission.includes('delete') || permission.includes('transfer') || permission.includes('system')) {
+      if (context.session?.riskScore && context.session.riskScore > 0.6) {
+        return { allowed: false, reason: 'Behavioral risk score too high for critical action', riskScore: context.session.riskScore }
+      }
+      
+      // Biometric/Device Trust requirement for financial movements
+      if (permission.includes('bancos')) {
+         if (context.device?.trustScore && context.device.trustScore < 0.7) {
+            return { allowed: false, reason: 'Device trust score insufficient for financial operation', riskScore: 0.7 }
+         }
+      }
+    }
+    
+    // 2.4 NETWORK DIMENSION
+    if (role === 'admin' && context.location?.networkType === 'public') {
+       // Admins should prefer VPN or Internal
+       // We allow it but flag it with higher risk
+       return { allowed: true, reason: 'Admin access from public network monitored', riskScore: 0.4 }
+    }
+  }
+
+  return { allowed: true, riskScore: 0.1 }
 }
 
 /**

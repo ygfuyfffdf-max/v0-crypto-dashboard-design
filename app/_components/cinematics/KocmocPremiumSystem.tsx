@@ -19,6 +19,7 @@
 import { cn } from '@/app/_lib/utils'
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'motion/react'
 import { memo, useEffect, useRef, useState, useCallback } from 'react'
+import { useKocmocSound } from '@/app/hooks/useKocmocSound'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // 🎨 PALETA DE COLORES - SILVER SPACE
@@ -416,11 +417,36 @@ export const KocmocLogoPremium = memo(function KocmocLogoPremium({
       // ═══ TEXTO KOCMOC ═══
       if (showText && progress > 0.7) {
         const textProgress = Math.min(1, (progress - 0.7) / 0.3)
-        ctx.font = `600 ${14 * scale}px system-ui, -apple-system, sans-serif`
+        
+        // Font settings
+        ctx.font = `300 ${16 * scale}px "Inter", "SF Pro Display", -apple-system, sans-serif`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'top'
-        ctx.fillStyle = `rgba(192, 192, 192, ${0.5 * textProgress})`
-        ctx.fillText('КОСМОС', cx, size - 25 * scale)
+        
+        // Letter spacing
+        const letterSpacing = 8 * scale
+        const text = 'KOCMOC'
+        const totalWidth = ctx.measureText(text).width + (text.length - 1) * letterSpacing
+        let startX = cx - totalWidth / 2
+
+        // Draw each letter with fade-in
+        for (let i = 0; i < text.length; i++) {
+          const letter = text[i]
+          const letterProgress = Math.max(0, Math.min(1, (textProgress - i * 0.1) / 0.5))
+          
+          if (letterProgress > 0) {
+            ctx.fillStyle = `rgba(255, 255, 255, ${0.9 * letterProgress})`
+            ctx.fillText(letter, startX, size - 40 * scale)
+            
+            // Subtle glow per letter
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.5)'
+            ctx.shadowBlur = 10 * letterProgress
+            ctx.fillText(letter, startX, size - 40 * scale)
+            ctx.shadowBlur = 0
+          }
+          
+          startX += ctx.measureText(letter).width + letterSpacing
+        }
       }
 
       animationRef.current = requestAnimationFrame(animate)
@@ -495,6 +521,8 @@ export const LightningEffect = memo(function LightningEffect({
   )
 })
 
+import { SilverSpaceThreeBackground } from './SilverSpaceThreeBackground'
+
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // 🎬 CINEMATIC OPENING - SILVER SPACE
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -503,30 +531,51 @@ interface SilverSpaceCinematicProps {
   onComplete?: () => void
   duration?: number
   showChronos?: boolean
+  useWebGL?: boolean
 }
 
 export const SilverSpaceCinematic = memo(function SilverSpaceCinematic({
   onComplete,
   duration = 6000,
   showChronos = true,
+  useWebGL = true,
 }: SilverSpaceCinematicProps) {
   const [phase, setPhase] = useState<'void' | 'particles' | 'logo' | 'text' | 'complete'>('void')
   const [visible, setVisible] = useState(true)
+  const { playDrone, playLogoForming, playTextReveal, playComplete } = useKocmocSound()
 
   useEffect(() => {
+    // Start drone ambience
+    const stopDrone = playDrone()
+
     const timers = [
-      setTimeout(() => setPhase('particles'), 300),
-      setTimeout(() => setPhase('logo'), 800),
-      setTimeout(() => setPhase('text'), 3500),
-      setTimeout(() => setPhase('complete'), 5000),
+      setTimeout(() => {
+        setPhase('particles')
+      }, 300),
+      setTimeout(() => {
+        setPhase('logo')
+        playLogoForming()
+      }, 800),
+      setTimeout(() => {
+        setPhase('text')
+        playTextReveal()
+      }, 3500),
+      setTimeout(() => {
+        setPhase('complete')
+        playComplete()
+      }, 5000),
       setTimeout(() => {
         setVisible(false)
+        stopDrone?.()
         onComplete?.()
       }, duration),
     ]
 
-    return () => timers.forEach(t => clearTimeout(t))
-  }, [duration, onComplete])
+    return () => {
+      timers.forEach(t => clearTimeout(t))
+      stopDrone?.()
+    }
+  }, [duration, onComplete, playDrone, playLogoForming, playTextReveal, playComplete])
 
   if (!visible) return null
 
@@ -538,28 +587,36 @@ export const SilverSpaceCinematic = memo(function SilverSpaceCinematic({
       exit={{ opacity: 0 }}
       transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
     >
-      {/* Partículas de fondo */}
+      {/* Fondo: WebGL o Canvas */}
       {phase !== 'void' && (
-        <SilverDustBackground
-          particleCount={200}
-          interactive={false}
-          intensity="high"
-          className="z-0"
-        />
+        useWebGL ? (
+          <SilverSpaceThreeBackground 
+            className="z-0" 
+            intensity="high" 
+          />
+        ) : (
+          <SilverDustBackground
+            particleCount={300}
+            interactive={false}
+            intensity="high"
+            className="z-0"
+          />
+        )
       )}
 
       {/* Logo KOCMOC */}
       <motion.div
         className="relative z-10"
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={{ opacity: 0, scale: 0.8, filter: 'blur(10px)' }}
         animate={{
           opacity: phase !== 'void' ? 1 : 0,
           scale: phase !== 'void' ? 1 : 0.8,
+          filter: phase !== 'void' ? 'blur(0px)' : 'blur(10px)',
         }}
-        transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 2.5, ease: [0.16, 1, 0.3, 1] }}
       >
         <KocmocLogoPremium
-          size={350}
+          size={400}
           animated={true}
           showText={true}
           animationPhase={phase === 'logo' ? 'forming' : phase === 'text' || phase === 'complete' ? 'complete' : 'hidden'}
@@ -569,42 +626,64 @@ export const SilverSpaceCinematic = memo(function SilverSpaceCinematic({
       {/* Texto CHRONOS */}
       {showChronos && (
         <motion.div
-          className="relative z-10 mt-12"
+          className="relative z-10 mt-12 overflow-hidden"
           initial={{ opacity: 0, y: 40 }}
           animate={{
             opacity: phase === 'text' || phase === 'complete' ? 1 : 0,
             y: phase === 'text' || phase === 'complete' ? 0 : 40,
           }}
-          transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
         >
           <div
-            className="text-5xl md:text-7xl font-light tracking-[0.4em]"
+            className="text-5xl md:text-7xl font-light tracking-[0.5em] relative"
             style={{
               color: SILVER_SPACE_COLORS.silverLight,
-              textShadow: `0 0 60px ${SILVER_SPACE_COLORS.silverGlow}`,
+              textShadow: `0 0 80px ${SILVER_SPACE_COLORS.silverGlow}, 0 0 30px rgba(255,255,255,0.3)`,
+              fontFamily: '"SF Pro Display", "Inter", sans-serif',
             }}
           >
-            ΧΡΟΝΟΣ
+            <span className="relative z-10">ΧΡΟΝΟΣ</span>
+            
+            {/* Shimmer effect over text */}
+            <motion.div 
+              className="absolute inset-0 z-20 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"
+              initial={{ x: '-100%' }}
+              animate={{ x: '200%' }}
+              transition={{ repeat: Infinity, duration: 3, ease: "linear", delay: 1 }}
+            />
           </div>
+          
+          <motion.div 
+            className="text-xs md:text-sm tracking-[0.8em] text-center mt-4 text-white/40 uppercase"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: phase === 'complete' ? 1 : 0 }}
+            transition={{ delay: 0.5, duration: 1.5 }}
+          >
+            Supreme Intelligence System
+          </motion.div>
         </motion.div>
       )}
 
       {/* Efecto de lightning */}
-      <LightningEffect active={phase !== 'void'} intensity={0.08} />
+      <LightningEffect active={phase !== 'void'} intensity={0.12} />
 
       {/* Progress bar minimalista */}
       <motion.div
-        className="absolute bottom-12 left-1/2 -translate-x-1/2 h-[2px] w-48 overflow-hidden rounded-full"
-        style={{ background: 'rgba(192, 192, 192, 0.1)' }}
+        className="absolute bottom-12 left-1/2 -translate-x-1/2 h-[1px] w-64 overflow-hidden"
+        style={{ background: 'rgba(255, 255, 255, 0.05)' }}
       >
         <motion.div
-          className="h-full rounded-full"
-          style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)' }}
+          className="h-full w-full"
+          style={{ 
+            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent)',
+            boxShadow: '0 0 20px rgba(255,255,255,0.5)'
+          }}
           initial={{ x: '-100%' }}
           animate={{ x: '100%' }}
           transition={{
             duration: duration / 1000,
             ease: 'linear',
+            repeat: 0
           }}
         />
       </motion.div>

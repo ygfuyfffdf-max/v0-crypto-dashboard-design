@@ -116,14 +116,14 @@ const CreateUserSchema = z.object({
   password: z.string().min(8, 'Mínimo 8 caracteres'),
   nombre: z.string().min(2, 'Nombre requerido'),
   rolId: z.string().optional(),
-  bancosPermitidos: z.array(z.string()).default([]),
+  bancosPermitidos: z.array(z.string()),
   limiteMontoOperacion: z.number().positive().optional(),
   limiteDiario: z.number().positive().optional(),
-  requiereAprobacion: z.boolean().default(false),
+  requiereAprobacion: z.boolean(),
   montoRequiereAprobacion: z.number().positive().optional(),
   horaInicioAcceso: z.string().optional(),
   horaFinAcceso: z.string().optional(),
-  diasPermitidos: z.array(z.number()).optional(),
+  diasPermitidos: z.array(z.number()),
 })
 
 type CreateUserInput = z.infer<typeof CreateUserSchema>

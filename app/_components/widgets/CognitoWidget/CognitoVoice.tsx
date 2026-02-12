@@ -183,7 +183,7 @@ export function VoiceButton({
         style={{
           boxShadow: isListening ? `0 0 30px ${STATE_COLORS.listening.glow}` : 'none',
         }}
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.95 }}
       >
         {/* Pulso cuando está escuchando */}
@@ -213,7 +213,7 @@ export function VoiceButton({
           'flex items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20',
           sizeClasses[size],
         )}
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.95 }}
       >
         {isMuted ? (
@@ -226,8 +226,10 @@ export function VoiceButton({
   )
 }
 
+import { getZeroForce, ZeroForceVoice } from '@/app/_lib/ai/zero-force-voice'
+
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
-// 🎧 USE VOICE — Hook para manejo de voz
+// 🎧 USE VOICE — Hook para manejo de voz (POWERED BY ZERO FORCE)
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 interface UseVoiceOptions {
@@ -244,109 +246,76 @@ export function useVoice(options: UseVoiceOptions = {}) {
   const [audioLevel, setAudioLevel] = useState(0)
   const [frequencies, setFrequencies] = useState<number[]>([])
 
-  const recognitionRef = useRef<SpeechRecognition | null>(null)
-  const synthRef = useRef<SpeechSynthesis | null>(null)
-  const analyserRef = useRef<AnalyserNode | null>(null)
-  const audioContextRef = useRef<AudioContext | null>(null)
+  const zeroForceRef = useRef<ZeroForceVoice | null>(null)
+  const animationRef = useRef<number>(0)
 
-  // Inicializar Speech Recognition
+  // Inicializar Zero Force
   useEffect(() => {
     if (typeof window === 'undefined') return
+    
+    zeroForceRef.current = getZeroForce({
+      language: config?.language || 'es-MX',
+      // Mapear configuración de voz si es necesario
+    })
 
-    const SpeechRecognition =
-      window.SpeechRecognition ||
-      (window as unknown as { webkitSpeechRecognition?: typeof SpeechRecognition })
-        .webkitSpeechRecognition
+    return () => {
+      // No destruimos la instancia singleton, pero limpiamos listeners si los hubiera
+      if (animationRef.current) cancelAnimationFrame(animationRef.current)
+    }
+  }, [config])
 
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition()
-      recognition.lang = config?.language || 'es-MX'
-      recognition.continuous = false
-      recognition.interimResults = true
-
-      recognition.onresult = (event) => {
-        const current = event.resultIndex
-        const result = event.results[current]
-        const text = result[0].transcript
-
-        setTranscript(text)
-
-        if (result.isFinal) {
-          onTranscript?.(text)
-          setIsListening(false)
-        }
+  // Loop de visualización de audio
+  useEffect(() => {
+    const updateAudioLevel = () => {
+      if (zeroForceRef.current) {
+        const level = zeroForceRef.current.getAudioLevel()
+        setAudioLevel(level)
+        // Simular frecuencias basadas en el nivel (ya que ZeroForce devuelve solo nivel promedio por ahora)
+        // O idealmente expandir ZeroForce para devolver dataArray
+        const simulatedFreqs = Array(16).fill(0).map(() => level * Math.random())
+        setFrequencies(simulatedFreqs)
       }
-
-      recognition.onerror = (event) => {
-        onError?.(event.error)
-        setIsListening(false)
-      }
-
-      recognition.onend = () => {
-        setIsListening(false)
-      }
-
-      recognitionRef.current = recognition
+      animationRef.current = requestAnimationFrame(updateAudioLevel)
     }
 
-    synthRef.current = window.speechSynthesis
-  }, [config?.language, onTranscript, onError])
+    if (isListening || isSpeaking) {
+      updateAudioLevel()
+    } else {
+      setAudioLevel(0)
+      setFrequencies([])
+      if (animationRef.current) cancelAnimationFrame(animationRef.current)
+    }
+
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current)
+    }
+  }, [isListening, isSpeaking])
 
   // Iniciar escucha
-  const startListening = useCallback(() => {
-    if (recognitionRef.current && !isListening) {
+  const startListening = useCallback(async () => {
+    if (zeroForceRef.current && !isListening) {
       setTranscript('')
       setIsListening(true)
 
       try {
-        recognitionRef.current.start()
-
-        // Iniciar análisis de audio
-        if (!audioContextRef.current) {
-          audioContextRef.current = new AudioContext()
-        }
-
-        navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-          const source = audioContextRef.current!.createMediaStreamSource(stream)
-          const analyser = audioContextRef.current!.createAnalyser()
-          analyser.fftSize = 64
-          source.connect(analyser)
-          analyserRef.current = analyser
-
-          const dataArray = new Uint8Array(analyser.frequencyBinCount)
-
-          const updateLevel = () => {
-            if (!isListening) return
-
-            analyser.getByteFrequencyData(dataArray)
-            const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length
-            setAudioLevel(average / 255)
-
-            // Normalizar frecuencias para visualización
-            const normalized = Array.from(dataArray.slice(0, 16)).map((v) => v / 255)
-            setFrequencies(normalized)
-
-            requestAnimationFrame(updateLevel)
-          }
-
-          updateLevel()
-        })
+        const text = await zeroForceRef.current.startListening()
+        setTranscript(text)
+        onTranscript?.(text)
       } catch (error) {
-        onError?.('No se pudo iniciar el reconocimiento de voz')
+        console.error('Zero Force Error:', error)
+        onError?.('Error en reconocimiento de voz')
+      } finally {
         setIsListening(false)
       }
     }
-  }, [isListening, onError])
+  }, [isListening, onTranscript, onError])
 
-  // Detener escucha
+  // Detener escucha (ZeroForce maneja esto internamente al detectar silencio o fin, 
+  // pero podemos forzar stop si fuera necesario implementando stopListening en ZeroForce)
   const stopListening = useCallback(() => {
-    if (recognitionRef.current && isListening) {
-      recognitionRef.current.stop()
-      setIsListening(false)
-      setAudioLevel(0)
-      setFrequencies([])
-    }
-  }, [isListening])
+    // Por ahora solo actualizamos estado local, ZeroForce es one-shot command por diseño actual
+    setIsListening(false)
+  }, [])
 
   // Toggle escucha
   const toggleListening = useCallback(() => {
@@ -359,31 +328,19 @@ export function useVoice(options: UseVoiceOptions = {}) {
 
   // Hablar texto
   const speak = useCallback(
-    (text: string) => {
-      if (synthRef.current) {
-        // Cancelar cualquier habla anterior
-        synthRef.current.cancel()
-
-        const utterance = new SpeechSynthesisUtterance(text)
-        utterance.lang = config?.language || 'es-MX'
-        utterance.rate = config?.speed || 1
-        utterance.pitch = config?.pitch || 1
-        utterance.volume = config?.volume || 0.8
-
-        // Seleccionar voz si está especificada
-        if (config?.voice) {
-          const voices = synthRef.current.getVoices()
-          const selectedVoice = voices.find((v) => v.name.includes(config.voice!))
-          if (selectedVoice) {
-            utterance.voice = selectedVoice
-          }
+    async (text: string) => {
+      if (zeroForceRef.current) {
+        setIsSpeaking(true)
+        try {
+          await zeroForceRef.current.speak(text, {
+            speed: config?.speed,
+            // Mapear otras opciones
+          })
+        } catch (error) {
+          console.error('TTS Error:', error)
+        } finally {
+          setIsSpeaking(false)
         }
-
-        utterance.onstart = () => setIsSpeaking(true)
-        utterance.onend = () => setIsSpeaking(false)
-        utterance.onerror = () => setIsSpeaking(false)
-
-        synthRef.current.speak(utterance)
       }
     },
     [config],
@@ -391,10 +348,8 @@ export function useVoice(options: UseVoiceOptions = {}) {
 
   // Detener habla
   const stopSpeaking = useCallback(() => {
-    if (synthRef.current) {
-      synthRef.current.cancel()
-      setIsSpeaking(false)
-    }
+    // Implementar si ZeroForce soporta cancelación de audio
+    setIsSpeaking(false)
   }, [])
 
   return {

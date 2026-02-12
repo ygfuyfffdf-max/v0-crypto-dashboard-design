@@ -160,7 +160,7 @@ export const UltraInput = forwardRef<HTMLInputElement, UltraInputProps>(
     const mouseX = useMotionValue(0)
     const mouseY = useMotionValue(0)
 
-    const glowX = useTransform(mouseX, [0, 1], [-50, 50])
+    const glowX = useTransform(mouseX, [0, 0], [0, 0])
     const glowY = useTransform(mouseY, [0, 1], [-50, 50])
 
     const handleMouseMove = useCallback(
@@ -1106,3 +1106,4 @@ export function UltraSwitch({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export { AutoSaveIndicator }
+

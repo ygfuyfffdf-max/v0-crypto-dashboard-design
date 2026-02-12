@@ -271,7 +271,7 @@ export function EnhancedModalButton({
         VARIANT_CLASSES[variant],
         className,
       )}
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.95 }}
       {...props}
     >

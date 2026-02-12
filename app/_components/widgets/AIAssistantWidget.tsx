@@ -522,7 +522,7 @@ export function AIAssistantWidget({
               `,
               border: `2px solid ${currentColor.primary}30`,
             }}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleActivate}
           >
@@ -561,7 +561,7 @@ export function AIAssistantWidget({
             background: `linear-gradient(135deg, ${currentColor.primary}, ${currentColor.primary}80)`,
             boxShadow: `0 10px 40px ${currentColor.glow}`,
           }}
-          whileHover={{ scale: 1.05, boxShadow: `0 15px 50px ${currentColor.glow}` }}
+          whileHover={{ scale: 1.02, boxShadow: `0 15px 50px ${currentColor.glow}` }}
           whileTap={{ scale: 0.95 }}
         >
           {/* Shimmer effect */}
@@ -608,7 +608,7 @@ export function AIAssistantWidget({
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   {suggestion}
@@ -633,3 +633,4 @@ export function AIAssistantWidget({
 }
 
 export default AIAssistantWidget
+

@@ -13,7 +13,7 @@
 'use client'
 
 import { logger } from '@/app/lib/utils/logger'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
 // ═══════════════════════════════════════════════════════════════
@@ -65,6 +65,7 @@ export function useBancosData(): DataHookResult<
     queryKey: ['bancos'],
     queryFn: () => fetchJSON<unknown[]>('/api/bancos'),
     staleTime: 30000, // 30 segundos
+    placeholderData: keepPreviousData,
   })
 
   return {
@@ -197,6 +198,7 @@ export function useAlmacenData(): DataHookResult<AlmacenDataResult> {
       }
     },
     staleTime: 30000,
+    placeholderData: keepPreviousData,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   })
@@ -234,6 +236,7 @@ export function useClientesData(): DataHookResult<
     queryKey: ['clientes'],
     queryFn: () => fetchJSON<unknown[]>('/api/clientes'),
     staleTime: 30000,
+    placeholderData: keepPreviousData,
   })
 
   return {
@@ -275,6 +278,7 @@ export function useDistribuidoresData(): DataHookResult<
     queryKey: ['distribuidores'],
     queryFn: () => fetchJSON<unknown[]>('/api/distribuidores'),
     staleTime: 30000,
+    placeholderData: keepPreviousData,
   })
 
   return {
@@ -317,6 +321,7 @@ export function useVentasData(): DataHookResult<
     queryKey: ['ventas'],
     queryFn: () => fetchJSON<unknown[]>('/api/ventas'),
     staleTime: 30000,
+    placeholderData: keepPreviousData,
   })
 
   return {
@@ -361,6 +366,7 @@ export function useOrdenesCompraData(): DataHookResult<
     queryKey: ['ordenesCompra'],
     queryFn: () => fetchJSON<unknown[]>('/api/ordenes'),
     staleTime: 30000,
+    placeholderData: keepPreviousData,
   })
 
   return {
@@ -403,6 +409,7 @@ export function useMovimientosData(): DataHookResult<
     queryKey: ['movimientos'],
     queryFn: () => fetchJSON<unknown[]>('/api/movimientos'),
     staleTime: 30000,
+    placeholderData: keepPreviousData,
   })
 
   return {

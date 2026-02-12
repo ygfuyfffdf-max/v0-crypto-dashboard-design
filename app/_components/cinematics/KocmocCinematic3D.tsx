@@ -35,6 +35,7 @@ export function KocmocCinematic3D({
         onComplete={handleComplete}
         duration={duration}
         showChronos={true}
+        useWebGL={true}
       />
     </AnimatePresence>
   )

@@ -228,7 +228,7 @@ function CinematicLogo() {
             rotate: [0, 5, -5, 0],
           }}
           transition={{ duration: 3, repeat: Infinity }}
-          whileHover={{ scale: 1.05, rotate: 10 }}
+          whileHover={{ scale: 1.02, rotate: 10 }}
         >
           {/* Efecto de escaneo */}
           <motion.div
@@ -601,3 +601,4 @@ export default function ChronosOpeningCinematic() {
     </div>
   )
 }
+

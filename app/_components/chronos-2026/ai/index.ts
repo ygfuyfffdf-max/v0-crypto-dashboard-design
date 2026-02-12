@@ -106,3 +106,6 @@ export {
   PremiumToggle,
   PremiumTooltip,
 } from "./MicroInteractions"
+
+// 🚀 Supreme AI Unified Widget - Widget Unificado Supremo
+export { SupremeAIUnifiedWidget } from "./SupremeAIUnifiedWidget"

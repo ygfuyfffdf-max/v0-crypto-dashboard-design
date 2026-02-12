@@ -503,10 +503,10 @@ export const ProceduralSDF = memo(function ProceduralSDF({
 
   useFrame((state) => {
     if (materialRef.current && materialRef.current.uniforms) {
-      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime
-      materialRef.current.uniforms.uCameraPosition.value.copy(camera.position)
-      materialRef.current.uniforms.uCameraMatrix.value.copy(camera.matrixWorld)
-      materialRef.current.uniforms.uResolution.value.set(viewportSize.width, viewportSize.height)
+      if (materialRef.current.uniforms.uTime) materialRef.current.uniforms.uTime.value = state.clock.elapsedTime
+      if (materialRef.current.uniforms.uCameraPosition) materialRef.current.uniforms.uCameraPosition.value.copy(camera.position)
+      if (materialRef.current.uniforms.uCameraMatrix) materialRef.current.uniforms.uCameraMatrix.value.copy(camera.matrixWorld)
+      if (materialRef.current.uniforms.uResolution) materialRef.current.uniforms.uResolution.value.set(viewportSize.width, viewportSize.height)
     }
   })
 

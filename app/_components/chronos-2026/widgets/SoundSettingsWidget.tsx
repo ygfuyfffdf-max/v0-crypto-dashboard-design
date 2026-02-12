@@ -130,7 +130,7 @@ function SoundPreview({ className }: SoundPreviewProps) {
           <motion.button
             key={sound.id}
             onClick={() => play(sound.id)}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white/70 hover:text-white text-xs transition-colors"
           >

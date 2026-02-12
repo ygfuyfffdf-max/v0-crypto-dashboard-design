@@ -227,7 +227,7 @@ export const QuickActionsWidget: React.FC<QuickActionsWidgetProps> = ({
           'transition-shadow hover:shadow-xl hover:shadow-indigo-500/30',
         )}
         onClick={() => setIsOpen(!isOpen)}
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.95 }}
         animate={{ rotate: isOpen ? 45 : 0 }}
       >

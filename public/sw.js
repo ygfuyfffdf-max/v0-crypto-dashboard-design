@@ -1,286 +1,525 @@
-// ═══════════════════════════════════════════════════════════════════════════
-// 🚀 CHRONOS 2026 — SERVICE WORKER OPTIMIZADO
-// ═══════════════════════════════════════════════════════════════════════════
-// PWA Service Worker con estrategias avanzadas de caching
-// Basado en Workbox patterns pero implementado manualmente
-// ═══════════════════════════════════════════════════════════════════════════
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════════════════════════
+ * 🔧 CHRONOS SERVICE WORKER — SUPREME ELEVATION 2026
+ * ═══════════════════════════════════════════════════════════════════════════════════════════════════
+ *
+ * Service Worker avanzado para notificaciones push, caché offline,
+ * sincronización en background y funcionalidad PWA.
+ *
+ * @version 1.0.0 - SUPREME ELEVATION
+ * ═══════════════════════════════════════════════════════════════════════════════════════════════════
+ */
 
-const CACHE_NAME = "chronos-v2.0.0"
-const RUNTIME_CACHE = "chronos-runtime"
-const IMAGE_CACHE = "chronos-images"
-const STATIC_CACHE = "chronos-static"
+const CACHE_NAME = 'chronos-v1'
+const RUNTIME_CACHE = 'chronos-runtime'
+const API_CACHE = 'chronos-api'
 
-// Assets críticos para precache en install
-const PRECACHE_ASSETS = ["/", "/manifest.json", "/favicon.ico", "/offline.html"]
+// Assets a precachear
+const PRECACHE_ASSETS = [
+  '/',
+  '/offline',
+  '/manifest.json',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
+  '/icons/badge-72x72.png'
+]
 
-// ═══════════════════════════════════════════════════════════════════════════
-// INSTALL - Precache de assets críticos
-// ═══════════════════════════════════════════════════════════════════════════
+// Rutas de API que deben ser cacheadas
+const API_ROUTES = [
+  '/api/dashboard',
+  '/api/ventas',
+  '/api/almacen',
+  '/api/clientes',
+  '/api/bancos'
+]
 
-self.addEventListener("install", (event) => {
-  console.log("[SW] Installing service worker...")
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// INSTALACIÓN Y ACTIVACIÓN
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
+self.addEventListener('install', (event) => {
+  console.log('[ServiceWorker] Instalando...')
+  
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
+    caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log("[SW] Precaching critical assets")
+        console.log('[ServiceWorker] Precacheando assets')
         return cache.addAll(PRECACHE_ASSETS)
       })
-      .catch((error) => {
-        console.error("[SW] Precache failed:", error)
+      .then(() => {
+        console.log('[ServiceWorker] Precache completado')
+        return self.skipWaiting()
       })
   )
-
-  // Activar inmediatamente sin esperar
-  self.skipWaiting()
 })
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ACTIVATE - Limpiar caches antiguos
-// ═══════════════════════════════════════════════════════════════════════════
-
-self.addEventListener("activate", (event) => {
-  console.log("[SW] Activating service worker...")
-
+self.addEventListener('activate', (event) => {
+  console.log('[ServiceWorker] Activando...')
+  
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          // Eliminar caches que no sean los actuales
-          const currentCaches = [CACHE_NAME, RUNTIME_CACHE, IMAGE_CACHE, STATIC_CACHE]
-          if (!currentCaches.includes(cacheName)) {
-            console.log("[SW] Deleting old cache:", cacheName)
+          if (cacheName !== CACHE_NAME && 
+              cacheName !== RUNTIME_CACHE && 
+              cacheName !== API_CACHE) {
+            console.log('[ServiceWorker] Eliminando cache antiguo:', cacheName)
             return caches.delete(cacheName)
           }
         })
       )
+    }).then(() => {
+      console.log('[ServiceWorker] Activado correctamente')
+      return self.clients.claim()
     })
   )
-
-  // Tomar control de todas las páginas inmediatamente
-  self.clients.claim()
 })
 
-// ═══════════════════════════════════════════════════════════════════════════
-// FETCH - Estrategias de caching
-// ═══════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// INTERCEPTACIÓN DE REQUESTS
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
-self.addEventListener("fetch", (event) => {
+self.addEventListener('fetch', (event) => {
   const { request } = event
   const url = new URL(request.url)
 
-  // Solo cachear requests del mismo origen
-  if (!request.url.startsWith(self.location.origin)) {
+  // Ignorar requests no-GET
+  if (request.method !== 'GET') {
     return
   }
 
-  // Estrategia por tipo de recurso
-  if (request.url.includes("/api/") || request.url.includes("firestore")) {
-    // API: Network First (datos siempre frescos)
-    event.respondWith(networkFirst(request, RUNTIME_CACHE))
-  } else if (request.destination === "image") {
-    // Imágenes: Cache First (optimización)
-    event.respondWith(cacheFirst(request, IMAGE_CACHE))
-  } else if (request.url.includes("/_next/static/")) {
-    // Assets estáticos de Next.js: Cache First (inmutables)
-    event.respondWith(cacheFirst(request, STATIC_CACHE))
-  } else if (request.mode === "navigate") {
-    // Navegación: Network First con fallback offline
-    event.respondWith(navigationHandler(request))
-  } else {
-    // Otros recursos: Stale While Revalidate
-    event.respondWith(staleWhileRevalidate(request, RUNTIME_CACHE))
+  // Manejar requests de API
+  if (API_ROUTES.some(route => url.pathname.startsWith(route))) {
+    event.respondWith(handleAPIRequest(request))
+    return
   }
+
+  // Manejar assets estáticos
+  if (request.destination === 'image' || 
+      request.destination === 'script' || 
+      request.destination === 'style' ||
+      url.pathname.includes('/icons/')) {
+    event.respondWith(handleAssetRequest(request))
+    return
+  }
+
+  // Manejar páginas HTML
+  if (request.mode === 'navigate' || 
+      request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(handlePageRequest(request))
+    return
+  }
+
+  // Default: network first
+  event.respondWith(handleDefaultRequest(request))
 })
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ESTRATEGIA: Network First
-// ═══════════════════════════════════════════════════════════════════════════
-// Prioriza red, usa cache como fallback
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// MANEJADORES DE REQUESTS
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
-async function networkFirst(request, cacheName) {
+async function handleAPIRequest(request) {
   try {
-    const networkResponse = await fetch(request)
-
-    // Solo cachear respuestas exitosas
-    if (networkResponse.ok) {
-      const cache = await caches.open(cacheName)
-      cache.put(request, networkResponse.clone())
+    const response = await fetch(request)
+    
+    // Cachear respuestas exitosas
+    if (response.ok) {
+      const cache = await caches.open(API_CACHE)
+      cache.put(request, response.clone())
     }
-
-    return networkResponse
+    
+    return response
   } catch (error) {
-    console.log("[SW] Network failed, falling back to cache:", request.url)
+    console.log('[ServiceWorker] Falló request API, intentando cache:', request.url)
+    
     const cachedResponse = await caches.match(request)
-
     if (cachedResponse) {
       return cachedResponse
     }
-
-    // Si no hay cache, retornar error offline
-    return new Response(JSON.stringify({ error: "Offline", message: "No hay conexión" }), {
-      status: 503,
-      headers: { "Content-Type": "application/json" },
-    })
+    
+    // Retornar respuesta offline para APIs
+    return new Response(
+      JSON.stringify({ 
+        error: 'Offline',
+        message: 'Sin conexión a internet. Algunos datos pueden estar desactualizados.'
+      }),
+      {
+        headers: { 'Content-Type': 'application/json' },
+        status: 503
+      }
+    )
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ESTRATEGIA: Cache First
-// ═══════════════════════════════════════════════════════════════════════════
-// Prioriza cache, usa red como fallback
-
-async function cacheFirst(request, cacheName) {
-  const cachedResponse = await caches.match(request)
-
+async function handleAssetRequest(request) {
+  const cache = await caches.open(RUNTIME_CACHE)
+  const cachedResponse = await cache.match(request)
+  
   if (cachedResponse) {
     return cachedResponse
   }
-
+  
   try {
-    const networkResponse = await fetch(request)
-
-    if (networkResponse.ok) {
-      const cache = await caches.open(cacheName)
-      cache.put(request, networkResponse.clone())
+    const response = await fetch(request)
+    
+    if (response.ok) {
+      cache.put(request, response.clone())
     }
-
-    return networkResponse
+    
+    return response
   } catch (error) {
-    console.error("[SW] Cache and network failed:", request.url)
-    return new Response("Resource not available", { status: 503 })
+    console.log('[ServiceWorker] Asset no disponible offline:', request.url)
+    
+    // Retornar placeholder para imágenes
+    if (request.destination === 'image') {
+      return new Response(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#f0f0f0"/><text x="50" y="50" text-anchor="middle" dy=".3em" fill="#999">Offline</text></svg>',
+        {
+          headers: { 'Content-Type': 'image/svg+xml' },
+          status: 200
+        }
+      )
+    }
+    
+    throw error
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ESTRATEGIA: Stale While Revalidate
-// ═══════════════════════════════════════════════════════════════════════════
-// Retorna cache inmediatamente, actualiza en background
-
-async function staleWhileRevalidate(request, cacheName) {
-  const cachedResponse = await caches.match(request)
-
-  const fetchPromise = fetch(request)
-    .then((networkResponse) => {
-      if (networkResponse.ok) {
-        const cache = caches.open(cacheName)
-        cache.then((c) => c.put(request, networkResponse.clone()))
-      }
-      return networkResponse
-    })
-    .catch(() => null)
-
-  // Retornar cache si existe, sino esperar red
-  return cachedResponse || fetchPromise || new Response("Not available", { status: 503 })
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// HANDLER: Navegación con fallback offline
-// ═══════════════════════════════════════════════════════════════════════════
-
-async function navigationHandler(request) {
+async function handlePageRequest(request) {
   try {
-    const networkResponse = await fetch(request)
-
-    if (networkResponse.ok) {
+    const response = await fetch(request)
+    
+    if (response.ok) {
       const cache = await caches.open(RUNTIME_CACHE)
-      cache.put(request, networkResponse.clone())
+      cache.put(request, response.clone())
     }
-
-    return networkResponse
+    
+    return response
   } catch (error) {
-    console.log("[SW] Navigation failed, showing offline page")
-
-    // Intentar cargar desde cache
-    const cachedResponse = await caches.match(request)
+    console.log('[ServiceWorker] Página no disponible offline, mostrando offline page')
+    
+    const cachedResponse = await caches.match('/offline')
     if (cachedResponse) {
       return cachedResponse
     }
-
-    // Fallback a página offline
-    const offlinePage = await caches.match("/offline.html")
-    if (offlinePage) {
-      return offlinePage
-    }
-
-    // Último fallback
+    
+    // Retornar página offline básica
     return new Response(
-      `<!DOCTYPE html>
-      <html lang="es">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Sin conexión - Chronos</title>
-          <style>
-            body {
-              font-family: system-ui, -apple-system, sans-serif;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              min-height: 100vh;
-              margin: 0;
-              background: #000;
-              color: #fff;
-              text-align: center;
-              padding: 20px;
-            }
-            .offline-container {
-              max-width: 400px;
-            }
-            h1 { color: #8B5CF6; font-size: 2.5rem; margin-bottom: 1rem; }
-            p { color: #a1a1aa; line-height: 1.6; }
-            button {
-              margin-top: 2rem;
-              padding: 12px 24px;
-              background: #8B5CF6;
-              color: white;
-              border: none;
-              border-radius: 8px;
-              font-size: 1rem;
-              cursor: pointer;
-            }
-            button:hover { background: #7C3AED; }
-          </style>
-        </head>
-        <body>
-          <div class="offline-container">
-            <h1>📵</h1>
-            <h1>Sin conexión</h1>
-            <p>No hay conexión a internet. Por favor, verifica tu conexión y vuelve a intentar.</p>
-            <button onclick="window.location.reload()">Reintentar</button>
-          </div>
-        </body>
-      </html>`,
+      `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>CHRONOS - Sin Conexión</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+          }
+          .container {
+            padding: 2rem;
+            max-width: 400px;
+          }
+          .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+          }
+          h1 {
+            margin: 0 0 1rem 0;
+            font-size: 2rem;
+          }
+          p {
+            margin: 0 0 2rem 0;
+            opacity: 0.8;
+          }
+          .retry-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+          }
+          .retry-btn:hover {
+            background: rgba(255,255,255,0.3);
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="icon">📡</div>
+          <h1>Sin Conexión</h1>
+          <p>Parece que has perdido tu conexión a internet. Algunas funciones pueden estar limitadas.</p>
+          <button class="retry-btn" onclick="window.location.reload()">Reintentar</button>
+        </div>
+      </body>
+      </html>
+      `,
       {
-        status: 503,
-        headers: { "Content-Type": "text/html" },
+        headers: { 'Content-Type': 'text/html' },
+        status: 200
       }
     )
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// MESSAGE HANDLER - Comandos del cliente
-// ═══════════════════════════════════════════════════════════════════════════
+async function handleDefaultRequest(request) {
+  try {
+    const response = await fetch(request)
+    return response
+  } catch (error) {
+    console.log('[ServiceWorker] Request falló:', request.url)
+    throw error
+  }
+}
 
-self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
-    self.skipWaiting()
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// SISTEMA DE NOTIFICACIONES PUSH
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+self.addEventListener('push', (event) => {
+  console.log('[ServiceWorker] Evento push recibido')
+  
+  if (!event.data) {
+    console.log('[ServiceWorker] No hay datos en el evento push')
+    return
   }
 
-  if (event.data && event.data.type === "CLEAR_CACHE") {
+  const data = event.data.json()
+  const { title, body, icon, badge, tag, requireInteraction, actions, data: notificationData } = data
+
+  const options = {
+    body: body || 'Nueva notificación de CHRONOS',
+    icon: icon || '/icons/icon-192x192.png',
+    badge: badge || '/icons/badge-72x72.png',
+    tag: tag || 'chronos-notification',
+    requireInteraction: requireInteraction || false,
+    data: notificationData || {},
+    actions: actions || [],
+    vibrate: [200, 100, 200]
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(title || 'CHRONOS', options)
+  )
+})
+
+self.addEventListener('notificationclick', (event) => {
+  console.log('[ServiceWorker] Notificación clickeada')
+  
+  event.notification.close()
+
+  const notificationData = event.notification.data
+  const action = event.action
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // Buscar ventana existente
+        for (const client of clientList) {
+          if (client.url.includes(self.location.origin) && 'focus' in client) {
+            client.focus()
+            // Enviar mensaje a la ventana
+            client.postMessage({
+              type: 'NOTIFICATION_CLICKED',
+              notification: notificationData,
+              action: action
+            })
+            return
+          }
+        }
+
+        // Abrir nueva ventana si no existe
+        if (clients.openWindow) {
+          const url = notificationData.url || '/'
+          return clients.openWindow(url)
+        }
+      })
+  )
+})
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// SINCRONIZACIÓN EN BACKGROUND
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+self.addEventListener('sync', (event) => {
+  console.log('[ServiceWorker] Evento sync:', event.tag)
+  
+  if (event.tag === 'sync-data') {
+    event.waitUntil(syncData())
+  } else if (event.tag === 'sync-notifications') {
+    event.waitUntil(syncNotifications())
+  }
+})
+
+async function syncData() {
+  try {
+    console.log('[ServiceWorker] Sincronizando datos pendientes...')
+    
+    // Obtener datos pendientes del IndexedDB o localStorage
+    const pendingData = await getPendingData()
+    
+    if (pendingData.length === 0) {
+      console.log('[ServiceWorker] No hay datos pendientes para sincronizar')
+      return
+    }
+
+    // Sincronizar cada item
+    for (const item of pendingData) {
+      try {
+        await syncItem(item)
+        await removePendingItem(item.id)
+        console.log('[ServiceWorker] Item sincronizado:', item.id)
+      } catch (error) {
+        console.error('[ServiceWorker] Error sincronizando item:', item.id, error)
+        // Mantener el item para reintentar más tarde
+      }
+    }
+    
+    console.log('[ServiceWorker] Sincronización completada')
+  } catch (error) {
+    console.error('[ServiceWorker] Error en sincronización:', error)
+  }
+}
+
+async function syncNotifications() {
+  try {
+    console.log('[ServiceWorker] Sincronizando notificaciones pendientes...')
+    
+    // Obtener notificaciones pendientes
+    const pendingNotifications = await getPendingNotifications()
+    
+    if (pendingNotifications.length === 0) {
+      console.log('[ServiceWorker] No hay notificaciones pendientes')
+      return
+    }
+
+    // Enviar cada notificación
+    for (const notification of pendingNotifications) {
+      try {
+        await sendNotificationToServer(notification)
+        await removePendingNotification(notification.id)
+        console.log('[ServiceWorker] Notificación sincronizada:', notification.id)
+      } catch (error) {
+        console.error('[ServiceWorker] Error sincronizando notificación:', notification.id, error)
+      }
+    }
+    
+    console.log('[ServiceWorker] Notificaciones sincronizadas')
+  } catch (error) {
+    console.error('[ServiceWorker] Error sincronizando notificaciones:', error)
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// FUNCIONES AUXILIARES
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+async function getPendingData() {
+  // En producción, esto leería de IndexedDB
+  return []
+}
+
+async function getPendingNotifications() {
+  // En producción, esto leería de IndexedDB
+  return []
+}
+
+async function removePendingItem(id) {
+  // En producción, esto eliminaría de IndexedDB
+  console.log('[ServiceWorker] Removiendo item pendiente:', id)
+}
+
+async function removePendingNotification(id) {
+  // En producción, esto eliminaría de IndexedDB
+  console.log('[ServiceWorker] Removiendo notificación pendiente:', id)
+}
+
+async function syncItem(item) {
+  // En producción, esto enviaría los datos al servidor
+  console.log('[ServiceWorker] Sincronizando item:', item)
+}
+
+async function sendNotificationToServer(notification) {
+  // En producción, esto enviaría la notificación al servidor
+  console.log('[ServiceWorker] Enviando notificación al servidor:', notification)
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// MENSAJES ENTRE SERVICE WORKER Y LA APP
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+self.addEventListener('message', (event) => {
+  console.log('[ServiceWorker] Mensaje recibido:', event.data)
+  
+  if (event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting()
+  } else if (event.data.type === 'SHOW_NOTIFICATION') {
+    const { notification } = event.data
     event.waitUntil(
-      caches
-        .keys()
-        .then((cacheNames) => {
-          return Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)))
-        })
-        .then(() => {
-          console.log("[SW] All caches cleared")
+      self.registration.showNotification(notification.title, {
+        body: notification.body,
+        icon: notification.icon || '/icons/icon-192x192.png',
+        badge: notification.badge || '/icons/badge-72x72.png',
+        tag: notification.tag || notification.id,
+        data: notification.data || {},
+        actions: notification.actions || [],
+        requireInteraction: notification.requireInteraction || false,
+        vibrate: notification.vibrate || [200, 100, 200]
+      })
+    )
+  } else if (event.data.type === 'GET_NOTIFICATIONS') {
+    event.waitUntil(
+      self.registration.getNotifications()
+        .then(notifications => {
+          event.ports[0].postMessage({
+            type: 'NOTIFICATIONS_LIST',
+            notifications: notifications.map(n => ({
+              title: n.title,
+              body: n.body,
+              tag: n.tag,
+              data: n.data
+            }))
+          })
         })
     )
   }
 })
 
-console.log("[SW] Service Worker loaded successfully")
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+// ACTUALIZACIONES DEL SERVICE WORKER
+// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+
+self.addEventListener('updatefound', () => {
+  console.log('[ServiceWorker] Nueva versión disponible')
+  
+  const newWorker = self.registration.installing
+  
+  newWorker.addEventListener('statechange', () => {
+    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+      console.log('[ServiceWorker] Nueva versión instalada')
+      
+      // Notificar a la app sobre la nueva versión
+      clients.matchAll({ type: 'window', includeUncontrolled: true })
+        .then(clientList => {
+          clientList.forEach(client => {
+            client.postMessage({
+              type: 'NEW_VERSION_AVAILABLE'
+            })
+          })
+        })
+    }
+  })
+})
+
+console.log('[ServiceWorker] CHRONOS Service Worker cargado exitosamente')

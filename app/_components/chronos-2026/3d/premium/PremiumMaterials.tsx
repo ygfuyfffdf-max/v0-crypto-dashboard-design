@@ -217,7 +217,7 @@ export function useIridescentMaterial({
   ])
 
   useFrame((state) => {
-    if (materialRef.current && materialRef.current.uniforms) {
+    if (materialRef.current && materialRef.current.uniforms && materialRef.current.uniforms.uTime) {
       materialRef.current.uniforms.uTime.value = state.clock.elapsedTime
     }
   })
@@ -385,7 +385,7 @@ export function useGlassMaterial({
   }, [color, ior, thickness, roughness, transmission, absorptionColor])
 
   useFrame((state) => {
-    if (materialRef.current && materialRef.current.uniforms) {
+    if (materialRef.current && materialRef.current.uniforms && materialRef.current.uniforms.uTime) {
       materialRef.current.uniforms.uTime.value = state.clock.elapsedTime
     }
   })
@@ -543,7 +543,7 @@ export function useHolographicMaterial({
   }, [color1, color2, color3, scanlineSpeed, scanlineCount, glitchIntensity, alpha])
 
   useFrame((state) => {
-    if (materialRef.current && materialRef.current.uniforms) {
+    if (materialRef.current && materialRef.current.uniforms && materialRef.current.uniforms.uTime) {
       materialRef.current.uniforms.uTime.value = state.clock.elapsedTime
     }
   })
@@ -737,7 +737,7 @@ export function useLiquidMetalMaterial({
   }, [color, metalness, roughness, envColor, noiseScale, noiseStrength])
 
   useFrame((state) => {
-    if (materialRef.current && materialRef.current.uniforms) {
+    if (materialRef.current && materialRef.current.uniforms && materialRef.current.uniforms.uTime) {
       materialRef.current.uniforms.uTime.value = state.clock.elapsedTime
     }
   })

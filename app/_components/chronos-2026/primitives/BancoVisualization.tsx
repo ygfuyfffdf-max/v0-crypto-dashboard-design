@@ -397,7 +397,7 @@ export const RadialBankChart: React.FC<RadialBankChartProps> = ({
               onMouseEnter={() => setHoveredId(item.id)}
               onMouseLeave={() => setHoveredId(null)}
               onClick={() => onSectorClick?.(item.id)}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
             >
               <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} />
               <span className="text-sm text-white">{item.nombre}</span>

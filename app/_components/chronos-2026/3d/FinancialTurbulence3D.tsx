@@ -372,7 +372,7 @@ export function BankOrb3DAdvanced({
       className={`relative cursor-pointer ${className}`}
       style={{ width: size, height: size + 60 }}
       onClick={onClick}
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
       <FinancialTurbulence3D

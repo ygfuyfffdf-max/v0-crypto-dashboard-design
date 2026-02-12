@@ -177,8 +177,8 @@ export const PremiumCard = forwardRef<HTMLDivElement, PremiumCardProps>(
     const mouseX = useMotionValue(0)
     const mouseY = useMotionValue(0)
 
-    const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [2, -2]), PREMIUM_SPRINGS.gentle)
-    const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-2, 2]), PREMIUM_SPRINGS.gentle)
+    const rotateX = useSpring(useTransform(mouseY, [0, 0], [0, 0]), PREMIUM_SPRINGS.gentle)
+    const rotateY = useSpring(useTransform(mouseX, [0, 0], [0, 0]), PREMIUM_SPRINGS.gentle)
 
     const handleMouseMove = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
@@ -764,3 +764,4 @@ export function AuroraBackground({ className, intensity = 'subtle' }: AuroraBack
 }
 
 // Todos los componentes y constantes ya están exportados individualmente arriba
+

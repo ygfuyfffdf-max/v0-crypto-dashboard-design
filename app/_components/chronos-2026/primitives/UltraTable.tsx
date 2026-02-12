@@ -491,7 +491,7 @@ export function ActionsCell({ actions }: { actions: ActionItem[] }) {
     <div ref={containerRef} className="relative">
       <motion.button
         onClick={() => setOpen(!open)}
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.95 }}
         className={cn(
           'rounded-lg p-1.5 transition-colors',
@@ -1110,7 +1110,7 @@ export function UltraTable<T = Record<string, unknown>>({
               <motion.button
                 onClick={() => setPage(0)}
                 disabled={page === 0}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
                 className="rounded-lg p-2 text-white/60 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
               >
@@ -1121,7 +1121,7 @@ export function UltraTable<T = Record<string, unknown>>({
               <motion.button
                 onClick={() => setPage(Math.max(0, page - 1))}
                 disabled={page === 0}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
                 className="rounded-lg p-2 text-white/60 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
               >
@@ -1146,7 +1146,7 @@ export function UltraTable<T = Record<string, unknown>>({
                     <motion.button
                       key={pageNum}
                       onClick={() => setPage(pageNum)}
-                      whileHover={{ scale: 1.05 }}
+                      whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.95 }}
                       className={cn(
                         'h-8 w-8 rounded-lg text-sm font-medium transition-all',
@@ -1165,7 +1165,7 @@ export function UltraTable<T = Record<string, unknown>>({
               <motion.button
                 onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
                 disabled={page >= totalPages - 1}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
                 className="rounded-lg p-2 text-white/60 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
               >
@@ -1176,7 +1176,7 @@ export function UltraTable<T = Record<string, unknown>>({
               <motion.button
                 onClick={() => setPage(totalPages - 1)}
                 disabled={page >= totalPages - 1}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
                 className="rounded-lg p-2 text-white/60 transition-all hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
               >

@@ -107,15 +107,14 @@ export function CognitoFloatingButton({
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                       />
-                      <span className="text-sm text-white/50">Cargando Aura AI...</span>
+                      <span className="text-sm text-white/50">Iniciando Sistema Zero...</span>
                     </div>
                   </div>
                 }
               >
-                <AuraAIWidget
+                <CognitoWidget
                   className="h-full w-full"
-                  onClose={() => setOpen(false)}
-                  initialScreen="voice"
+                  onToggleCollapse={() => setOpen(false)}
                   initialMode="chat"
                   showMetrics={true}
                   enableVoice={true}
@@ -200,7 +199,7 @@ export function CognitoFloatingButton({
               ? 'none'
               : `0 8px 32px ${colors.glow}, 0 0 0 1px rgba(139, 92, 246, 0.2)`,
           }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
         >
           {/* Pulse rings cuando no está abierto */}

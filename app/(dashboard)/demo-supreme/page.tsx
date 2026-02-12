@@ -34,7 +34,7 @@ import {
   usePinchZoom,
   useSwipe,
 } from '@/app/lib/gestures/advanced-gestures'
-import { Cpu, Fingerprint, Headphones, Info, Palette, Sparkles, Volume2, Zap } from 'lucide-react'
+import { Cpu, Fingerprint, Headphones, Info, Palette, Sparkles, Volume2, X, Zap } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -88,42 +88,40 @@ export default function SupremeIntegrationDemoPage() {
   const swipeHandlers = useSwipe({
     onSwipeLeft: () => {
       toast.info('👈 Swipe Left detectado')
-      play('swoosh')
+      play('whoosh')
     },
     onSwipeRight: () => {
       toast.info('👉 Swipe Right detectado')
-      play('swoosh')
+      play('whoosh')
     },
     onSwipeUp: () => {
       toast.info('👆 Swipe Up detectado')
-      play('swoosh')
+      play('whoosh')
     },
     onSwipeDown: () => {
       toast.info('👇 Swipe Down detectado')
-      play('swoosh')
+      play('whoosh')
     },
   })
 
   const [scale, setScale] = useState(1)
   const pinchHandlers = usePinchZoom({
     onPinch: (newScale) => {
-      setScale(newScale)
-      if (newScale > 1.5) {
-        toast.success(`🔍 Zoom: ${(newScale * 100).toFixed(0)}%`)
+      setScale(newScale.scale)
+      if (newScale.scale > 1.5) {
+        toast.success(`🔍 Zoom: ${(newScale.scale * 100).toFixed(0)}%`)
       }
     },
-    minScale: 0.5,
-    maxScale: 3,
   })
 
-  const longPressHandlers = useLongPress(
-    () => {
+  const longPressHandlers = useLongPress({
+    onLongPress: () => {
       toast.success('⏳ Long Press detectado (600ms)')
       play('success')
       navigator.vibrate?.([50, 100, 50])
     },
-    { delay: 600 },
-  )
+    longPressDelay: 600,
+  })
 
   const doubleTapHandlers = useDoubleTap(
     () => {
@@ -131,7 +129,7 @@ export default function SupremeIntegrationDemoPage() {
       play('pop')
       navigator.vibrate?.([10, 50, 10])
     },
-    { delay: 300 },
+    { doubleTapDelay: 300 }
   )
 
   return (
@@ -154,7 +152,7 @@ export default function SupremeIntegrationDemoPage() {
               </div>
               <div className="flex items-center gap-4">
                 <ThemeToggle />
-                <SoundButton soundType="click" className="rounded-full">
+                <SoundButton clickSound="click" className="rounded-full">
                   <Headphones className="h-5 w-5" />
                 </SoundButton>
               </div>
@@ -171,7 +169,7 @@ export default function SupremeIntegrationDemoPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <SoundCard soundType="hover">
+              <SoundCard hoverSound="hover">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
                   <div className="mb-2 flex items-center gap-2">
                     <Palette className="h-5 w-5 text-violet-400" />
@@ -188,7 +186,7 @@ export default function SupremeIntegrationDemoPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <SoundCard soundType="hover">
+              <SoundCard hoverSound="hover">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
                   <div className="mb-2 flex items-center gap-2">
                     <Volume2 className="h-5 w-5 text-indigo-400" />
@@ -205,7 +203,7 @@ export default function SupremeIntegrationDemoPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <SoundCard soundType="hover">
+              <SoundCard hoverSound="hover">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
                   <div className="mb-2 flex items-center gap-2">
                     <Fingerprint className="h-5 w-5 text-fuchsia-400" />
@@ -222,7 +220,7 @@ export default function SupremeIntegrationDemoPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <SoundCard soundType="hover">
+              <SoundCard hoverSound="hover">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
                   <div className="mb-2 flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-emerald-400" />
@@ -271,12 +269,18 @@ export default function SupremeIntegrationDemoPage() {
                   onSwipeLeft={() => {
                     const newIndex = (index + 1) % demoBancos.length
                     setCurrentBancoIndex(newIndex)
-                    toast.info(`Navegando a ${demoBancos[newIndex].nombre}`)
+                    const nextBanco = demoBancos[newIndex]
+                    if (nextBanco) {
+                      toast.info(`Navegando a ${nextBanco.nombre}`)
+                    }
                   }}
                   onSwipeRight={() => {
                     const newIndex = (index - 1 + demoBancos.length) % demoBancos.length
                     setCurrentBancoIndex(newIndex)
-                    toast.info(`Navegando a ${demoBancos[newIndex].nombre}`)
+                    const nextBanco = demoBancos[newIndex]
+                    if (nextBanco) {
+                      toast.info(`Navegando a ${nextBanco.nombre}`)
+                    }
                   }}
                 />
               ))}
@@ -330,7 +334,7 @@ export default function SupremeIntegrationDemoPage() {
             className="flex flex-wrap justify-center gap-4"
           >
             <SoundButton
-              soundType="click"
+              clickSound="click"
               onClick={() => setShowModal(true)}
               className="rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-3 font-medium hover:from-violet-500 hover:to-indigo-500"
             >
@@ -339,7 +343,7 @@ export default function SupremeIntegrationDemoPage() {
             </SoundButton>
 
             <SoundButton
-              soundType="swoosh"
+              clickSound="whoosh"
               onClick={() => setShowThemeUI(true)}
               className="rounded-xl bg-gradient-to-r from-fuchsia-600 to-pink-600 px-6 py-3 font-medium hover:from-fuchsia-500 hover:to-pink-500"
             >
@@ -398,7 +402,7 @@ export default function SupremeIntegrationDemoPage() {
             <div className="relative max-w-4xl">
               <button
                 onClick={() => {
-                  play('swoosh')
+                  play('whoosh')
                   setShowThemeUI(false)
                 }}
                 className="absolute -top-4 -right-4 rounded-full bg-white/10 p-2 hover:bg-white/20"

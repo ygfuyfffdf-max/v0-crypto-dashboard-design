@@ -1,356 +1,381 @@
+// 🎯 ULTRA PREMIUM SHOWCASE - CHRONOS INFINITY
+// Componente de exhibición premium con efectos 3D y glassmorphism
+
 'use client'
 
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// 🎨 SHOWCASE ULTRA PREMIUM COMPONENTS - CHRONOS 2026
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// Página de demostración de todos los componentes ultra-premium
-// con animaciones cinematográficas y efectos avanzados
-// ═══════════════════════════════════════════════════════════════════════════════════════
+import React, { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { cn } from '@/lib/utils'
+import { 
+  Sparkles, 
+  Crown, 
+  Gem, 
+  Star, 
+  Zap, 
+  Rocket,
+  Trophy,
+  Award,
+  Diamond,
+  CrownIcon
+} from 'lucide-react'
 
-import { motion } from 'motion/react'
-import { Heart, Lock, Mail, Rocket, Sparkles, Star, User, Zap } from 'lucide-react'
-import { useState } from 'react'
-import {
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  UltraPremiumButton,
-  UltraPremiumCard,
-  UltraPremiumInput,
-  UltraPremiumTextarea,
-} from './index'
+interface ShowcaseItem {
+  id: string
+  title: string
+  description: string
+  icon: React.ComponentType<any>
+  color: string
+  gradient: string
+  premiumLevel: 'gold' | 'platinum' | 'diamond' | 'supreme'
+}
 
-// ═══════════════════════════════════════════════════════════════════════════════════════
-// COMPONENT
-// ═══════════════════════════════════════════════════════════════════════════════════════
+interface UltraPremiumShowcaseProps {
+  className?: string
+  items?: ShowcaseItem[]
+  title?: string
+  subtitle?: string
+  showParticles?: boolean
+  autoRotate?: boolean
+  rotationSpeed?: number
+  theme?: 'light' | 'dark' | 'auto'
+}
 
-export function UltraPremiumShowcase() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [message, setMessage] = useState('')
-  const [showSuccess, setShowSuccess] = useState(false)
-
-  const handleSubmit = () => {
-    setShowSuccess(true)
-    setTimeout(() => setShowSuccess(false), 3000)
+const defaultItems: ShowcaseItem[] = [
+  {
+    id: '1',
+    title: 'Quantum AI Engine',
+    description: 'Motor de IA cuántica con procesamiento hiper-dimensional',
+    icon: Brain,
+    color: 'text-purple-400',
+    gradient: 'from-purple-500 to-pink-500',
+    premiumLevel: 'supreme'
+  },
+  {
+    id: '2', 
+    title: 'Glassmorphism Supreme',
+    description: 'Efectos de cristal líquido con 30px de desenfoque',
+    icon: Gem,
+    color: 'text-cyan-400',
+    gradient: 'from-cyan-500 to-blue-500',
+    premiumLevel: 'diamond'
+  },
+  {
+    id: '3',
+    title: 'Zero Force Voice',
+    description: 'Comandos de voz con latencia <200ms y emociones adaptativas',
+    icon: Zap,
+    color: 'text-yellow-400',
+    gradient: 'from-yellow-500 to-orange-500',
+    premiumLevel: 'platinum'
+  },
+  {
+    id: '4',
+    title: 'Performance Suprema',
+    description: 'Renderizado <16ms con optimización de hardware acelerado',
+    icon: Rocket,
+    color: 'text-green-400',
+    gradient: 'from-green-500 to-emerald-500',
+    premiumLevel: 'gold'
   }
+]
+
+export function UltraPremiumShowcase({
+  className,
+  items = defaultItems,
+  title = "Características Supremas",
+  subtitle = "Tecnología de vanguardia que redefine los estándares",
+  showParticles = true,
+  autoRotate = true,
+  rotationSpeed = 0.5,
+  theme = 'auto'
+}: UltraPremiumShowcaseProps) {
+  const [selectedItem, setSelectedItem] = useState<string | null>(null)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [rotation, setRotation] = useState(0)
+
+  // Auto-detección de tema
+  const currentTheme = theme === 'auto' 
+    ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : theme
+
+  // Efecto de rotación automática
+  useEffect(() => {
+    if (!autoRotate) return
+
+    const interval = setInterval(() => {
+      setRotation(prev => prev + rotationSpeed)
+    }, 50)
+
+    return () => clearInterval(interval)
+  }, [autoRotate, rotationSpeed])
+
+  // Seguimiento del mouse para efectos 3D
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect()
+        const centerX = rect.left + rect.width / 2
+        const centerY = rect.top + rect.height / 2
+        
+        setMousePosition({
+          x: (e.clientX - centerX) / rect.width,
+          y: (e.clientY - centerY) / rect.height
+        })
+      }
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
+
+  // Generar partículas flotantes
+  const particles = showParticles ? Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 4 + 1,
+    speed: Math.random() * 2 + 1,
+    delay: Math.random() * 5
+  })) : []
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gray-950">
-      {/* ═══════════════════ ANIMATED BACKGROUND ═══════════════════ */}
-      <div className="absolute inset-0 -z-10">
-        {/* Nebula Blobs */}
-        <div className="animate-nebula-swirl absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-gradient-to-r from-violet-500/20 via-fuchsia-500/20 to-indigo-500/20 blur-3xl" />
-        <div className="animate-nebula-swirl animation-delay-2000 absolute -bottom-40 -right-40 h-[600px] w-[600px] rounded-full bg-gradient-to-r from-indigo-500/20 via-violet-500/20 to-pink-500/20 blur-3xl" />
+    <div 
+      ref={containerRef}
+      className={cn(
+        'relative w-full min-h-[600px]',
+        'overflow-hidden',
+        currentTheme === 'dark' ? 'bg-gray-900' : 'bg-gray-50',
+        className
+      )}
+    >
+      {/* Partículas de fondo */}
+      {showParticles && (
+        <div className="absolute inset-0 pointer-events-none">
+          {particles.map(particle => (
+            <motion.div
+              key={particle.id}
+              className={cn(
+                'absolute rounded-full',
+                'bg-gradient-to-r from-purple-400 to-pink-400',
+                'opacity-30'
+              )}
+              style={{
+                left: `${particle.x}%`,
+                top: `${particle.y}%`,
+                width: particle.size,
+                height: particle.size
+              }}
+              animate={{
+                y: [-20, -100],
+                opacity: [0.3, 0, 0.3]
+              }}
+              transition={{
+                duration: particle.speed + 5,
+                repeat: Infinity,
+                delay: particle.delay,
+                ease: 'linear'
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Header Premium */}
+      <div className="relative z-10 text-center mb-12">
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, type: 'spring' }}
+          className="flex items-center justify-center gap-3 mb-4"
+        >
+          <Crown className="w-8 h-8 text-yellow-400" />
+          <h1 className={cn(
+            'text-4xl md:text-6xl font-bold',
+            'bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-400',
+            'bg-clip-text text-transparent'
+          )}>
+            {title}
+          </h1>
+          <Crown className="w-8 h-8 text-yellow-400" />
+        </motion.div>
+        
+        <motion.p
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.2, type: 'spring' }}
+          className={cn(
+            'text-lg md:text-xl',
+            currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+          )}
+        >
+          {subtitle}
+        </motion.p>
       </div>
 
-      {/* ═══════════════════ CONTENT ═══════════════════ */}
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-16">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
-        >
-          <h1 className="mb-4 text-6xl font-bold text-white">
-            <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-indigo-400 bg-clip-text text-transparent animate-gradient">
-              Ultra Premium Components
-            </span>
-          </h1>
-          <p className="text-xl text-gray-400">
-            Componentes cinematográficos de nivel enterprise con animaciones avanzadas
-          </p>
-        </motion.div>
-
-        {/* ═══════════════════ BUTTONS SECTION ═══════════════════ */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-          className="mb-16"
-        >
-          <h2 className="mb-8 text-3xl font-bold text-white">Botones Premium</h2>
-
-          <div className="grid gap-8 md:grid-cols-2">
-            {/* Botones Variantes */}
-            <UltraPremiumCard>
-              <CardHeader>
-                <CardTitle>Variantes de Botones</CardTitle>
-                <CardDescription>
-                  Diferentes estilos con ripple effect y shimmer
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col gap-4">
-                  <UltraPremiumButton variant="primary" icon={Sparkles} size="lg">
-                    Primary Button
-                  </UltraPremiumButton>
-
-                  <UltraPremiumButton variant="secondary" icon={Rocket}>
-                    Secondary Button
-                  </UltraPremiumButton>
-
-                  <UltraPremiumButton variant="danger" icon={Zap}>
-                    Danger Button
-                  </UltraPremiumButton>
-
-                  <UltraPremiumButton variant="gold" icon={Star}>
-                    Gold Button
-                  </UltraPremiumButton>
-
-                  <UltraPremiumButton variant="success" icon={Heart}>
-                    Success Button
-                  </UltraPremiumButton>
-
-                  <UltraPremiumButton variant="ghost">Ghost Button</UltraPremiumButton>
-                </div>
-              </CardContent>
-            </UltraPremiumCard>
-
-            {/* Botones con Efectos Especiales */}
-            <UltraPremiumCard variant="neon" hover="glow">
-              <CardHeader>
-                <CardTitle>Efectos Especiales</CardTitle>
-                <CardDescription>Energy pulse y chromatic aberration</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col gap-4">
-                  <UltraPremiumButton
-                    variant="primary"
-                    energyPulse
-                    icon={Zap}
-                    size="lg"
-                  >
-                    Energy Pulse Active
-                  </UltraPremiumButton>
-
-                  <UltraPremiumButton variant="secondary" chromatic icon={Sparkles}>
-                    Chromatic Aberration
-                  </UltraPremiumButton>
-
-                  <UltraPremiumButton
-                    variant="primary"
-                    loading
-                    icon={Rocket}
-                  >
-                    Loading State
-                  </UltraPremiumButton>
-
-                  <UltraPremiumButton
-                    variant="gold"
-                    shimmer={false}
-                    ripple={false}
-                  >
-                    Without Effects
-                  </UltraPremiumButton>
-
-                  <UltraPremiumButton
-                    variant="danger"
-                    size="xl"
-                    icon={Heart}
-                    iconPosition="right"
-                  >
-                    Icon Right Large
-                  </UltraPremiumButton>
-
-                  <UltraPremiumButton variant="primary" size="sm">
-                    Small Size
-                  </UltraPremiumButton>
-                </div>
-              </CardContent>
-            </UltraPremiumCard>
-          </div>
-        </motion.section>
-
-        {/* ═══════════════════ CARDS SECTION ═══════════════════ */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="mb-16"
-        >
-          <h2 className="mb-8 text-3xl font-bold text-white">Cards Premium</h2>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {/* Card Default */}
-            <UltraPremiumCard variant="default" hover="lift">
-              <CardHeader>
-                <CardTitle>Default Card</CardTitle>
-                <CardDescription>Con hover lift effect</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-300">
-                  Card con glassmorphism y animación de elevación al pasar el cursor.
-                </p>
-              </CardContent>
-            </UltraPremiumCard>
-
-            {/* Card Glassmorphic */}
-            <UltraPremiumCard variant="glassmorphic" hover="glow">
-              <CardHeader>
-                <CardTitle>Glassmorphic</CardTitle>
-                <CardDescription>Con glow effect</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-300">
-                  Glassmorphism GEN5 con aurora background y scan line.
-                </p>
-              </CardContent>
-            </UltraPremiumCard>
-
-            {/* Card Neon */}
-            <UltraPremiumCard variant="neon" hover="scale" energyBorder>
-              <CardHeader>
-                <CardTitle>Neon Card</CardTitle>
-                <CardDescription>Con energy border</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-300">
-                  Card con borde de energía pulsante y efecto neón.
-                </p>
-              </CardContent>
-            </UltraPremiumCard>
-          </div>
-
-          {/* Card con Parallax */}
-          <div className="mt-6">
-            <UltraPremiumCard
-              variant="holographic"
-              hover="lift"
-              parallax
-              chromatic
-              className="p-8"
+      {/* Grid de Características */}
+      <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto px-4">
+        {items.map((item, index) => {
+          const IconComponent = item.icon
+          const isSelected = selectedItem === item.id
+          
+          return (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 100, rotateY: 90 }}
+              animate={{ 
+                opacity: 1, 
+                y: 0, 
+                rotateY: 0,
+                rotateZ: autoRotate ? rotation + index * 5 : 0
+              }}
+              transition={{ 
+                duration: 0.8, 
+                delay: index * 0.1,
+                type: 'spring',
+                stiffness: 100
+              }}
+              whileHover={{ 
+                scale: 1.05, 
+                rotateY: 10,
+                rotateZ: 0
+              }}
+              onClick={() => setSelectedItem(isSelected ? null : item.id)}
+              className={cn(
+                'relative p-6 rounded-3xl',
+                'backdrop-blur-xl',
+                'border border-white/20',
+                'cursor-pointer',
+                'transition-all duration-300',
+                isSelected 
+                  ? 'bg-white/20 shadow-2xl shadow-purple-500/30' 
+                  : 'bg-white/5 hover:bg-white/10',
+                currentTheme === 'dark' ? 'shadow-2xl' : 'shadow-xl'
+              )}
+              style={{
+                transform: `perspective(1000px) rotateY(${mousePosition.x * 10}deg) rotateX(${-mousePosition.y * 10}deg)`
+              }}
             >
-              <div className="text-center">
-                <Sparkles className="mx-auto mb-4 h-12 w-12 text-violet-400" />
-                <h3 className="mb-2 text-3xl font-bold text-white">
-                  Card con Parallax 3D
-                </h3>
-                <p className="mb-6 text-gray-400">
-                  Efecto de flotación parallax + chromatic aberration al hover
-                </p>
-                <UltraPremiumButton variant="primary" icon={Star} size="lg">
-                  Explorar Más
-                </UltraPremiumButton>
+              {/* Icono Premium */}
+              <div className={cn(
+                'w-16 h-16 rounded-2xl',
+                'flex items-center justify-center',
+                'mb-4',
+                'bg-gradient-to-br ' + item.gradient,
+                'shadow-lg'
+              )}>
+                <IconComponent className="w-8 h-8 text-white" />
               </div>
-            </UltraPremiumCard>
-          </div>
-        </motion.section>
 
-        {/* ═══════════════════ INPUTS SECTION ═══════════════════ */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.6 }}
-          className="mb-16"
-        >
-          <h2 className="mb-8 text-3xl font-bold text-white">Inputs Premium</h2>
-
-          <UltraPremiumCard className="p-8">
-            <div className="mx-auto max-w-2xl space-y-6">
-              <h3 className="mb-6 text-2xl font-bold text-white">
-                Formulario de Registro
+              {/* Título */}
+              <h3 className={cn(
+                'text-xl font-bold mb-2',
+                currentTheme === 'dark' ? 'text-white' : 'text-gray-800'
+              )}>
+                {item.title}
               </h3>
 
-              {/* Input con Float Label */}
-              <UltraPremiumInput
-                label="Nombre de Usuario"
-                placeholder="johndoe"
-                icon={User}
-                iconPosition="left"
-                variant="glass"
-              />
+              {/* Descripción */}
+              <p className={cn(
+                'text-sm leading-relaxed',
+                currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              )}>
+                {item.description}
+              </p>
 
-              {/* Input Email */}
-              <UltraPremiumInput
-                label="Correo Electrónico"
-                type="email"
-                placeholder="correo@ejemplo.com"
-                icon={Mail}
-                iconPosition="left"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                success={email.includes('@') && email.includes('.')}
-                variant="glass"
-              />
-
-              {/* Input Password */}
-              <UltraPremiumInput
-                label="Contraseña"
-                type="password"
-                placeholder="••••••••"
-                icon={Lock}
-                iconPosition="left"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                error={password && password.length < 8 ? 'Mínimo 8 caracteres' : ''}
-                variant="glass"
-              />
-
-              {/* Input con variante Neon */}
-              <UltraPremiumInput
-                label="Código de Invitación"
-                placeholder="CHRONOS-2026"
-                variant="neon"
-              />
-
-              {/* Textarea */}
-              <UltraPremiumTextarea
-                label="Mensaje"
-                placeholder="Escribe tu mensaje aquí..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                rows={5}
-                variant="glass"
-              />
-
-              {/* Submit Button */}
-              <div className="flex gap-4 pt-4">
-                <UltraPremiumButton
-                  variant="primary"
-                  size="lg"
-                  icon={Sparkles}
-                  className="flex-1"
-                  onClick={handleSubmit}
-                >
-                  Registrarse
-                </UltraPremiumButton>
-
-                <UltraPremiumButton variant="secondary" size="lg">
-                  Cancelar
-                </UltraPremiumButton>
+              {/* Badge de Nivel Premium */}
+              <div className="mt-4 flex items-center gap-2">
+                <div className={cn(
+                  'px-3 py-1 rounded-full text-xs font-medium',
+                  item.premiumLevel === 'supreme' && 'bg-gradient-to-r from-purple-500 to-pink-500 text-white',
+                  item.premiumLevel === 'diamond' && 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white',
+                  item.premiumLevel === 'platinum' && 'bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800',
+                  item.premiumLevel === 'gold' && 'bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-800'
+                )}>
+                  {item.premiumLevel.toUpperCase()}
+                </div>
+                
+                {isSelected && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="flex items-center gap-1 text-green-400"
+                  >
+                    <Star className="w-4 h-4" />
+                    <span className="text-xs font-medium">ACTIVO</span>
+                  </motion.div>
+                )}
               </div>
 
-              {/* Success Message */}
-              {showSuccess && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  className="rounded-xl border border-green-500/30 bg-green-500/10 p-4 text-center text-green-400"
-                >
-                  ✓ ¡Registro exitoso! Bienvenido a CHRONOS 2026
-                </motion.div>
-              )}
-            </div>
-          </UltraPremiumCard>
-        </motion.section>
-
-        {/* ═══════════════════ FOOTER ═══════════════════ */}
-        <motion.footer
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          className="mt-16 text-center text-gray-500"
-        >
-          <p>
-            CHRONOS Ultra Premium Components 2026 · Diseñado con{' '}
-            <Heart className="inline h-4 w-4 text-pink-500" /> por el equipo CHRONOS
-          </p>
-        </motion.footer>
+              {/* Efecto de Brillo */}
+              <motion.div
+                className="absolute inset-0 rounded-3xl"
+                animate={{
+                  opacity: isSelected ? [0.1, 0.3, 0.1] : 0
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity
+                }}
+                style={{
+                  background: 'linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent)',
+                  backgroundSize: '200% 200%'
+                }}
+              />
+            </motion.div>
+          )
+        })}
       </div>
+
+      {/* Panel de Detalles Expandido */}
+      <AnimatePresence>
+        {selectedItem && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="relative z-20 mt-12 max-w-4xl mx-auto px-4"
+          >
+            <div className={cn(
+              'backdrop-blur-xl',
+              'border border-white/20',
+              'rounded-3xl p-8',
+              'bg-white/10'
+            )}>
+              <div className="text-center">
+                <Trophy className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
+                <h2 className="text-3xl font-bold text-white mb-4">
+                  Característica Premium Activada
+                </h2>
+                <p className="text-lg text-gray-300">
+                  Esta funcionalidad está ahora operativa con toda su potencia premium.
+                  Experimenta el poder absoluto de CHRONOS INFINITY.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Footer Premium */}
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1, duration: 1 }}
+        className="relative z-10 text-center mt-16"
+      >
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <Diamond className="w-6 h-6 text-purple-400" />
+          <span className="text-purple-400 font-medium">CHRONOS INFINITY 2026</span>
+          <Diamond className="w-6 h-6 text-purple-400" />
+        </div>
+        <p className={cn(
+          'text-sm',
+          currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+        )}>
+          Tecnología de vanguardia que redefine los límites de la innovación
+        </p>
+      </motion.div>
     </div>
   )
 }

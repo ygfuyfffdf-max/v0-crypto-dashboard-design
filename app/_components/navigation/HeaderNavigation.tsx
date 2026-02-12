@@ -410,7 +410,7 @@ function NotificationBell({ count = 0, onClick }: NotificationBellProps) {
         'border border-white/10 bg-white/5',
         'transition-all hover:bg-white/10',
       )}
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.95 }}
     >
       <motion.div
@@ -587,7 +587,7 @@ export function HeaderNavigation({
                   'border border-white/10 bg-white/5',
                   'transition-all hover:bg-white/10',
                 )}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
               >
                 {isMobileMenuOpen ? (

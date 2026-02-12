@@ -70,6 +70,17 @@ import {
   AuroraStatWidget,
 } from "../../ui/AuroraGlassSystem"
 
+// 🍎 iOS PREMIUM SYSTEM 2026 — Sistema de UI sin efectos 3D problemáticos
+import {
+  iOSScrollContainer,
+  iOSSection,
+  iOSGrid,
+  iOSMetricCardPremium,
+  iOSInfoCard,
+  iOSLoading,
+  iOSEmptyState,
+} from "../../ui/ios"
+
 // Ultra Premium Components 2026
 
 // Aurora Charts - Lazy Loaded for performance
@@ -142,56 +153,27 @@ interface AuroraDashboardUnifiedProps {
 
 function ModuleQuickCard({ module, onNavigate }: { module: ModuleCard; onNavigate?: () => void }) {
   const [isHovered, setIsHovered] = useState(false)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const cardRef = useRef<HTMLDivElement>(null)
 
   // Resolver icono desde nombre
   const icon = MODULE_ICONS[module.iconName] || <Layers size={24} />
 
-  // Premium spring animations
+  // Clean spring animations — SIN efectos 3D/tilt problemáticos
   const cardSpring = useSpring({
-    transform: isHovered ? "translateY(-8px) scale(1.03)" : "translateY(0px) scale(1)",
+    transform: isHovered ? "translateY(-4px)" : "translateY(0px)",
     boxShadow: isHovered
-      ? `0 25px 60px ${module.color}35, 0 0 120px ${module.color}20, inset 0 1px 2px rgba(255,255,255,0.15)`
-      : "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.06)",
-    config: { tension: 300, friction: 25 },
+      ? `0 16px 40px ${module.color}25, inset 0 1px 2px rgba(255,255,255,0.1)`
+      : "0 4px 20px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.04)",
+    config: { tension: 400, friction: 30 },
   })
 
   const glowSpring = useSpring({
-    opacity: isHovered ? 1 : 0,
-    scale: isHovered ? 1 : 0.8,
-    config: { tension: 200, friction: 20 },
+    opacity: isHovered ? 0.6 : 0,
+    config: { tension: 300, friction: 25 },
   })
 
-  // Mouse tracking for premium cursor following effect
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!cardRef.current) return
-    const rect = cardRef.current.getBoundingClientRect()
-    setMousePosition({
-      x: ((e.clientX - rect.left) / rect.width) * 100,
-      y: ((e.clientY - rect.top) / rect.height) * 100,
-    })
-  }, [])
-
-  useEffect(() => {
-    if (isHovered && cardRef.current) {
-      gsap.to(cardRef.current, {
-        rotateX: 2,
-        rotateY: -2,
-        z: 50,
-        duration: 0.6,
-        ease: "power3.out",
-      })
-    } else if (cardRef.current) {
-      gsap.to(cardRef.current, {
-        rotateX: 0,
-        rotateY: 0,
-        z: 0,
-        duration: 0.6,
-        ease: "power3.out",
-      })
-    }
-  }, [isHovered])
+  // REMOVIDO: Mouse tracking y efectos 3D/tilt con cursor
+  // Los efectos de rotateX, rotateY, z con GSAP causaban interacción tediosa
 
   return (
     <animated.div
@@ -200,196 +182,90 @@ function ModuleQuickCard({ module, onNavigate }: { module: ModuleCard; onNavigat
       tabIndex={0}
       aria-label={`Ir a ${module.nombre}: ${module.descripcion}`}
       className={cn(
-        "group relative cursor-pointer overflow-hidden rounded-3xl p-6",
-        "transition-spring hover-elevate will-change-transform",
-        "glass-premium-tier-1 border border-white/[0.08]",
-        "hover:border-white/[0.20]",
-        "focus-premium",
-        "before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/[0.08] before:to-transparent before:opacity-50",
-        "after:absolute after:inset-[-1px] after:rounded-3xl after:bg-gradient-to-r after:from-transparent after:via-white/10 after:to-transparent",
-        "after:opacity-0 after:transition-opacity after:duration-700 hover:after:opacity-100"
+        "group relative cursor-pointer overflow-hidden rounded-2xl p-5",
+        "transition-all duration-200",
+        "bg-white/[0.04] backdrop-blur-xl",
+        "border border-white/[0.08]",
+        "hover:border-white/[0.14] hover:bg-white/[0.06]",
+        "focus:outline-none focus:ring-2 focus:ring-violet-500/40"
       )}
-      style={{
-        ...cardSpring,
-        transformStyle: "preserve-3d",
-      }}
+      style={cardSpring}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onMouseMove={handleMouseMove}
       onClick={onNavigate}
       onKeyDown={(e) => e.key === "Enter" && onNavigate?.()}
     >
-      {/* Mouse tracking gradient */}
+      {/* Simple glow gradient — Sin tracking de cursor */}
       <animated.div
-        className="pointer-events-none absolute inset-0 rounded-3xl"
+        className="pointer-events-none absolute inset-0 rounded-2xl"
         style={{
           ...glowSpring,
-          background: `radial-gradient(600px circle at ${mousePosition.x}% ${mousePosition.y}%, ${module.color}25, transparent 60%)`,
+          background: `radial-gradient(circle at 50% 30%, ${module.color}20, transparent 70%)`,
         }}
       />
 
-      {/* Floating particles */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={i}
-            className="animate-float absolute h-1 w-1 rounded-full opacity-30"
-            style={{
-              background: module.color,
-              left: `${15 + i * 12}%`,
-              top: `${20 + i * 8}%`,
-              animationDelay: `${i * 0.3}s`,
-              animationDuration: `${3 + i * 0.5}s`,
-            }}
-          />
-        ))}
-      </div>
+      {/* Shimmer line superior - efecto elegante */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-      {/* Aurora background effect */}
-      <div className="absolute inset-0 rounded-3xl opacity-0 transition-opacity duration-700 group-hover:opacity-30">
-        <div
-          className="animate-aurora-shift absolute inset-0"
-          style={{
-            background: `conic-gradient(from 0deg, ${module.color}20, transparent 50%, ${module.color}15, transparent)`,
-            filter: "blur(20px)",
-          }}
-        />
-      </div>
-
-      {/* Scan line effect */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-        <div className="animate-scan-line absolute h-[2px] w-full bg-white/10" />
-      </div>
-
-      {/* Holographic shimmer */}
-      <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
-
-      {/* Background gradient */}
+      {/* Background gradient sutil */}
       <motion.div
-        className="will-change-opacity absolute inset-0 opacity-0"
-        animate={{ opacity: isHovered ? 0.1 : 0 }}
+        className="absolute inset-0 opacity-0 rounded-2xl"
+        animate={{ opacity: isHovered ? 0.08 : 0 }}
         style={{ background: `linear-gradient(135deg, ${module.color}, transparent)` }}
       />
 
       {/* Header */}
-      <div className="relative z-10 mb-4 flex items-start justify-between">
+      <div className="relative z-10 mb-3 flex items-start justify-between">
         <motion.div
-          className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl text-white will-change-transform"
+          className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl text-white"
           style={{
             background: `linear-gradient(135deg, ${module.color}, ${module.color}CC)`,
-            boxShadow: `0 8px 25px ${module.color}40, inset 0 1px 1px rgba(255,255,255,0.2)`,
+            boxShadow: `0 4px 16px ${module.color}30`,
           }}
           animate={{
-            rotate: isHovered ? [0, -3, 3, 0] : 0,
-            scale: isHovered ? 1.1 : 1,
+            scale: isHovered ? 1.05 : 1,
           }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
         >
-          {/* Icon crystallization effect */}
-          <div className="absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100">
-            <div
-              className="animate-crystallize absolute inset-0"
-              style={{
-                background: `linear-gradient(45deg, transparent 30%, ${module.color}40 50%, transparent 70%)`,
-              }}
-            />
-          </div>
-
-          <motion.span
-            aria-hidden="true"
-            className="relative z-10"
-            animate={{
-              rotateY: isHovered ? 180 : 0,
-            }}
-            transition={{ duration: 0.8, ease: "backOut" }}
-          >
+          <span className="relative z-10">
             {icon}
-          </motion.span>
+          </span>
         </motion.div>
 
-        <motion.div
-          animate={{
-            x: isHovered ? 6 : 0,
-            rotate: isHovered ? 15 : 0,
-          }}
-          transition={{ duration: 0.5, ease: "backOut" }}
-        >
-          <ChevronRight
-            size={20}
-            className="text-white/40 transition-colors duration-300 group-hover:text-white/70"
-            aria-hidden="true"
-          />
-        </motion.div>
+        <ChevronRight
+          size={18}
+          className="text-white/30 transition-colors duration-200 group-hover:text-white/60"
+          aria-hidden="true"
+        />
       </div>
 
-      {/* Name & Description */}
-      <div className="relative z-10 mb-4">
-        <motion.p
-          className="bg-gradient-to-r from-white via-violet-100 to-white bg-clip-text text-base font-bold text-transparent"
-          animate={{
-            backgroundPosition: isHovered ? ["0% 50%", "100% 50%", "0% 50%"] : "0% 50%",
-          }}
-          transition={{ duration: 2, ease: "linear", repeat: isHovered ? Infinity : 0 }}
-          style={{
-            backgroundSize: "200% 200%",
-          }}
-        >
+      {/* Name & Description - Simplificado */}
+      <div className="relative z-10 mb-3">
+        <p className="text-base font-semibold text-white">
           {module.nombre}
-        </motion.p>
-        <motion.p
-          className="mt-1 text-sm text-white/50 transition-colors duration-500 group-hover:text-white/70"
-          animate={{
-            scale: isHovered ? [1, 1.02, 1] : 1,
-          }}
-          transition={{ duration: 2, ease: "easeInOut", repeat: isHovered ? Infinity : 0 }}
-        >
+        </p>
+        <p className="mt-1 text-sm text-white/50 group-hover:text-white/65 transition-colors duration-200">
           {module.descripcion}
-        </motion.p>
+        </p>
       </div>
 
-      {/* Stats */}
-      <div className="relative z-10 flex justify-between">
+      {/* Stats - Simplificados */}
+      <div className="relative z-10 flex justify-between gap-2">
         {module.stats.map((stat, i) => (
-          <motion.div
+          <div
             key={i}
-            className="group/stat relative"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1, duration: 0.4 }}
+            className="flex-1 rounded-lg bg-white/[0.03] p-2"
           >
-            {/* Stat glow effect */}
-            <div
-              className="absolute inset-0 rounded-lg opacity-0 transition-opacity duration-500 group-hover:opacity-30"
-              style={{
-                background: `radial-gradient(circle, ${module.color}20, transparent 70%)`,
-                filter: "blur(8px)",
-              }}
-            />
-
-            <div className="group/stat-hover:bg-white/[0.05] relative rounded-lg bg-white/[0.02] p-2 transition-all duration-300">
-              <span className="block text-xs text-white/50 transition-colors duration-300 group-hover/stat:text-white/70">
-                {stat.label}
-              </span>
-              <motion.p
-                className="mt-0.5 text-sm font-bold"
-                style={{ color: module.color }}
-                animate={{
-                  textShadow: isHovered
-                    ? `0 0 10px ${module.color}60, 0 0 20px ${module.color}30`
-                    : `0 0 0px ${module.color}00`,
-                }}
-                transition={{ duration: 0.5 }}
-              >
-                {stat.value}
-              </motion.p>
-
-              {/* Micro sparkle */}
-              <div
-                className="absolute top-1 right-1 h-1 w-1 animate-pulse rounded-full opacity-0 group-hover/stat:opacity-100"
-                style={{ backgroundColor: module.color }}
-              />
-            </div>
-          </motion.div>
+            <span className="block text-xs text-white/45">
+              {stat.label}
+            </span>
+            <p
+              className="mt-0.5 text-sm font-semibold"
+              style={{ color: module.color }}
+            >
+              {stat.value}
+            </p>
+          </div>
         ))}
       </div>
     </animated.div>
@@ -525,7 +401,7 @@ export function AuroraDashboardUnified({ onNavigate, className }: AuroraDashboar
               <motion.button
                 aria-label="Notificaciones (3 sin leer)"
                 className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-3 text-white/60 backdrop-blur-sm transition-all duration-300 hover:border-violet-500/30 hover:bg-white/10 hover:text-white hover:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Bell size={20} aria-hidden="true" className="relative z-10" />
@@ -543,7 +419,7 @@ export function AuroraDashboardUnified({ onNavigate, className }: AuroraDashboar
               <motion.button
                 aria-label="Configuración"
                 className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-3 text-white/60 backdrop-blur-sm transition-all duration-300 hover:border-cyan-500/30 hover:bg-white/10 hover:text-white hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]"
-                whileHover={{ scale: 1.05, rotate: 90 }}
+                whileHover={{ scale: 1.02, rotate: 90 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
@@ -555,7 +431,7 @@ export function AuroraDashboardUnified({ onNavigate, className }: AuroraDashboar
                 onClick={refetch}
                 aria-label={loading ? "Actualizando datos..." : "Actualizar datos"}
                 className="group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-3 text-white/60 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/30 hover:bg-white/10 hover:text-white hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]"
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <RefreshCw
@@ -639,6 +515,59 @@ export function AuroraDashboardUnified({ onNavigate, className }: AuroraDashboar
             className="border-violet-500/20 bg-violet-500/5"
           />
         </div>
+
+        {/* ═══════════════════════════════════════════════════════════════════════════════════════════
+         * 🍎 iOS PREMIUM METRICS — SIN EFECTOS 3D PROBLEMÁTICOS
+         * Cards limpias estilo iOS 18+ con glassmorphism Gen6
+         * ═══════════════════════════════════════════════════════════════════════════════════════════ */}
+        <iOSSection title="Métricas Rápidas" description="Vista limpia estilo iOS">
+          <iOSGrid cols={4} gap="md">
+            <iOSMetricCardPremium
+              title="Capital Total"
+              value={`$${(stats.capitalTotal / 1000).toFixed(0)}K`}
+              icon={Wallet}
+              iconColor="#8B5CF6"
+              trend={{
+                value: stats.cambioCapital,
+                direction: stats.cambioCapital >= 0 ? 'up' : 'down',
+              }}
+              variant="default"
+            />
+            <iOSMetricCardPremium
+              title="Ventas del Mes"
+              value={`$${(stats.ventasMes / 1000).toFixed(0)}K`}
+              icon={ShoppingCart}
+              iconColor="#10B981"
+              trend={{
+                value: stats.cambioVentas,
+                direction: stats.cambioVentas >= 0 ? 'up' : 'down',
+              }}
+              variant="default"
+            />
+            <iOSMetricCardPremium
+              title="Clientes Activos"
+              value={String(stats.clientesActivos)}
+              icon={Users}
+              iconColor="#06B6D4"
+              trend={{
+                value: stats.cambioClientes,
+                direction: stats.cambioClientes >= 0 ? 'up' : 'down',
+              }}
+              variant="default"
+            />
+            <iOSMetricCardPremium
+              title="Ganancia Neta"
+              value={`$${((stats.gananciaNeta ?? 0) / 1000).toFixed(1)}K`}
+              icon={Zap}
+              iconColor="#FBBF24"
+              trend={{
+                value: 15.8,
+                direction: 'up',
+              }}
+              variant="featured"
+            />
+          </iOSGrid>
+        </iOSSection>
 
         {/* 📊 Advanced Analytics - Sankey & Heatmap */}
         <div className="stagger-item mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -812,3 +741,4 @@ export function AuroraDashboardUnified({ onNavigate, className }: AuroraDashboar
 
 // Default export
 export default AuroraDashboardUnified
+

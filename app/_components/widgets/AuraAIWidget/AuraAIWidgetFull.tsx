@@ -612,7 +612,7 @@ function VoiceScreen({
         <motion.button
           onClick={onToggleMute}
           className="flex h-11 w-11 items-center justify-center rounded-full bg-white/5 text-white/60 backdrop-blur-sm transition-colors hover:bg-white/10 hover:text-white"
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
         >
           {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
@@ -631,7 +631,7 @@ function VoiceScreen({
               ? '0 0 50px rgba(34, 211, 238, 0.5), 0 0 80px rgba(139, 92, 246, 0.3)'
               : '0 0 35px rgba(139, 92, 246, 0.4), 0 0 60px rgba(236, 72, 153, 0.2)',
           }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
           animate={{ scale: isListening ? [1, 1.05, 1] : 1 }}
           transition={{ scale: { duration: 1, repeat: isListening ? Infinity : 0, ease: 'easeInOut' } }}
@@ -658,7 +658,7 @@ function VoiceScreen({
         <motion.button
           onClick={onSwitchToChat}
           className="flex h-11 w-11 items-center justify-center rounded-full bg-white/5 text-white/60 backdrop-blur-sm transition-colors hover:bg-white/10 hover:text-white"
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
         >
           <MessageCircle className="h-5 w-5" />
@@ -898,7 +898,7 @@ function ChatScreen({
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Send className="h-4 w-4" />
@@ -1133,7 +1133,7 @@ export function AuraAIWidget({
         <div className="flex items-center gap-3">
           <motion.button
             className="flex h-9 w-9 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/5 hover:text-white"
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
           >
             <Menu className="h-5 w-5" />
@@ -1170,7 +1170,7 @@ export function AuraAIWidget({
 
           <motion.button
             className="flex h-9 w-9 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/5 hover:text-white"
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
           >
             <Settings className="h-4 w-4" />
@@ -1178,7 +1178,7 @@ export function AuraAIWidget({
 
           <motion.button
             className="flex h-9 w-9 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/5 hover:text-white"
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
           >
             <MoreVertical className="h-4 w-4" />
@@ -1188,7 +1188,7 @@ export function AuraAIWidget({
             <motion.button
               onClick={onClose}
               className="flex h-9 w-9 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/5 hover:text-white"
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
             >
               <X className="h-4 w-4" />

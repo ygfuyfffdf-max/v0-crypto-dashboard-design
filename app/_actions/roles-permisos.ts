@@ -326,14 +326,14 @@ export async function actualizarRol(
       return { success: false, error: 'No se pueden modificar roles del sistema' }
     }
     
-    const rolActualizado: Rol = {
+    const rolActualizado = {
       ...rolAnterior,
       ...input,
       id, // Mantener ID
       esSistema: false, // No permitir cambiar esto
       modificadoPor: usuarioId,
       modificadoAt: new Date(),
-    }
+    } as Rol
     
     rolesState[index] = rolActualizado
     
@@ -376,6 +376,10 @@ export async function eliminarRol(
     }
     
     const rol = rolesState[index]
+    
+    if (!rol) {
+      return { success: false, error: 'Rol no encontrado' }
+    }
     
     if (rol.esSistema) {
       return { success: false, error: 'No se pueden eliminar roles del sistema' }

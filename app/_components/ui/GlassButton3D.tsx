@@ -226,12 +226,10 @@ export const GlassButton3D = forwardRef<HTMLButtonElement, GlassButton3DProps>(
           boxShadow: glow ? `0 0 25px ${styles.glow}, 0 8px 32px rgba(0, 0, 0, 0.3)` : undefined,
         }}
         whileHover={{
-          scale: 1.02,
-          y: -2,
+          scale: 1.01,
         }}
         whileTap={{
           scale: 0.98,
-          y: 0,
         }}
         {...props}
       >
@@ -324,8 +322,8 @@ export const GlassIconButton = forwardRef<HTMLButtonElement, GlassIconButtonProp
           backdropFilter: 'blur(20px)',
           boxShadow: glow ? `0 0 20px ${styles.glow}` : undefined,
         }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.96 }}
         title={tooltip}
         {...props}
       >
@@ -399,8 +397,8 @@ export function GlassFAB({
         backdropFilter: 'blur(20px)',
         boxShadow: `0 0 30px ${styles.glow}, 0 10px 40px rgba(0, 0, 0, 0.4)`,
       }}
-      whileHover={{ scale: 1.05, y: -3 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       {...props}
     >
       <Icon size={20} />
