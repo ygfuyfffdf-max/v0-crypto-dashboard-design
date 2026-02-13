@@ -3,8 +3,10 @@
 import { useRef, useMemo, memo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Points, PointMaterial, Cloud, Float, Stars, Sparkles } from '@react-three/drei'
-import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocessing'
+import { Bloom, Vignette, Noise } from '@react-three/postprocessing'
 import * as THREE from 'three'
+import { WebGLErrorBoundary } from '@/app/_components/chronos-2026/3d/WebGLErrorBoundary'
+import { SafeEffectComposer } from '@/app/_components/chronos-2026/3d/effects/SafeEffectComposer'
 import { SILVER_SPACE_COLORS } from './KocmocPremiumSystem'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -107,12 +109,13 @@ export const SilverSpaceThreeBackground = memo(function SilverSpaceThreeBackgrou
   const isHighQuality = intensity === 'high'
 
   return (
-    <div className={className} style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-      <Canvas
-        camera={{ position: [0, 0, 15], fov: 45 }}
-        gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
-        dpr={[1, 2]} // Limit DPR for performance
-      >
+    <WebGLErrorBoundary>
+      <div className={className} style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+        <Canvas
+          camera={{ position: [0, 0, 15], fov: 45 }}
+          gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
+          dpr={[1, 2]}
+        >
         <color attach="background" args={[SILVER_SPACE_COLORS.absoluteBlack]} />
         
         {/* Lights */}
@@ -138,7 +141,7 @@ export const SilverSpaceThreeBackground = memo(function SilverSpaceThreeBackgrou
         )}
 
         {/* Cinematic Post-Processing */}
-        <EffectComposer disableNormalPass>
+        <SafeEffectComposer disableNormalPass>
           <Bloom 
             luminanceThreshold={0.2} 
             mipmapBlur 
@@ -147,10 +150,11 @@ export const SilverSpaceThreeBackground = memo(function SilverSpaceThreeBackgrou
           />
           <Noise opacity={0.05} />
           <Vignette eskil={false} offset={0.1} darkness={1.1} />
-        </EffectComposer>
+        </SafeEffectComposer>
 
         <CinematicCamera />
-      </Canvas>
-    </div>
+        </Canvas>
+      </div>
+    </WebGLErrorBoundary>
   )
 })

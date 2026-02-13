@@ -21,7 +21,6 @@ import {
   Bloom,
   ChromaticAberration,
   DepthOfField,
-  EffectComposer,
   Noise,
   SMAA,
   ToneMapping,
@@ -30,6 +29,7 @@ import {
 import { BlendFunction, Effect, KernelSize, SMAAPreset, ToneMappingMode } from 'postprocessing'
 import { useMemo } from 'react'
 import * as THREE from 'three'
+import { SafeEffectComposer } from '@/app/_components/chronos-2026/3d/effects/SafeEffectComposer'
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // HBAO+ CUSTOM EFFECT
@@ -411,7 +411,7 @@ export function ChronosPostProcessing({
   if (!enabled || !gl || !scene || !camera) return null
 
   return (
-    <EffectComposer multisampling={quality === 'ultra' ? 8 : quality === 'high' ? 4 : 0}>
+    <SafeEffectComposer multisampling={quality === 'ultra' ? 8 : quality === 'high' ? 4 : 0}>
       <SMAA preset={SMAAPreset.HIGH} />
 
       <Bloom
@@ -453,7 +453,7 @@ export function ChronosPostProcessing({
       <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
 
       <Noise opacity={0.02} blendFunction={BlendFunction.OVERLAY} />
-    </EffectComposer>
+    </SafeEffectComposer>
   )
 }
 

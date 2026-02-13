@@ -26,18 +26,18 @@
  * @author CHRONOS INFINITY TEAM
  */
 
-'use client'
+"use client"
 
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'motion/react'
-import { Brain, Maximize2, MessageSquare, Mic, MicOff, Sparkles, X } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Cpu, Maximize2, MessageSquare, Mic, MicOff, Sparkles, X } from "lucide-react"
+import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "motion/react"
+import { useRouter } from "next/navigation"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // 🎨 TIPOS Y CONSTANTES
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
-type QuantumState = 'idle' | 'listening' | 'thinking' | 'speaking'
+type QuantumState = "idle" | "listening" | "thinking" | "speaking"
 
 interface Particle {
   x: number
@@ -65,36 +65,36 @@ interface EnergyRing {
 
 const QUANTUM_COLORS = {
   idle: {
-    primary: '#8B00FF',
-    secondary: '#A855F7',
-    glow: 'rgba(139, 0, 255, 0.6)',
-    particles: ['#8B00FF', '#A855F7', '#C084FC', '#E879F9'],
+    primary: "#8B00FF",
+    secondary: "#A855F7",
+    glow: "rgba(139, 0, 255, 0.6)",
+    particles: ["#8B00FF", "#A855F7", "#C084FC", "#E879F9"],
   },
   listening: {
-    primary: '#00FFFF',
-    secondary: '#06B6D4',
-    glow: 'rgba(0, 255, 255, 0.6)',
-    particles: ['#00FFFF', '#06B6D4', '#22D3EE', '#67E8F9'],
+    primary: "#00FFFF",
+    secondary: "#06B6D4",
+    glow: "rgba(0, 255, 255, 0.6)",
+    particles: ["#00FFFF", "#06B6D4", "#22D3EE", "#67E8F9"],
   },
   thinking: {
-    primary: '#FFD700',
-    secondary: '#F59E0B',
-    glow: 'rgba(255, 215, 0, 0.6)',
-    particles: ['#FFD700', '#F59E0B', '#FBBF24', '#FCD34D'],
+    primary: "#FFD700",
+    secondary: "#F59E0B",
+    glow: "rgba(255, 215, 0, 0.6)",
+    particles: ["#FFD700", "#F59E0B", "#FBBF24", "#FCD34D"],
   },
   speaking: {
-    primary: '#00FF88',
-    secondary: '#10B981',
-    glow: 'rgba(0, 255, 136, 0.6)',
-    particles: ['#00FF88', '#10B981', '#34D399', '#6EE7B7'],
+    primary: "#00FF88",
+    secondary: "#10B981",
+    glow: "rgba(0, 255, 136, 0.6)",
+    particles: ["#00FF88", "#10B981", "#34D399", "#6EE7B7"],
   },
 }
 
 const STATE_LABELS: Record<QuantumState, string> = {
-  idle: 'NEXUS IA Listo',
-  listening: 'Escuchando...',
-  thinking: 'Procesando...',
-  speaking: 'Respondiendo...',
+  idle: "NEXUS IA Listo",
+  listening: "Escuchando...",
+  thinking: "Procesando...",
+  speaking: "Respondiendo...",
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -158,7 +158,7 @@ function QuantumOrbCanvas({ state, mouseX, mouseY, isHovered, size }: QuantumOrb
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext("2d")
     if (!ctx) return
 
     // Setup canvas con DPR
@@ -175,7 +175,7 @@ function QuantumOrbCanvas({ state, mouseX, mouseY, isHovered, size }: QuantumOrb
       timeRef.current += 0.016
 
       // Clear con fade trail
-      ctx.fillStyle = 'rgba(3, 3, 8, 0.15)'
+      ctx.fillStyle = "rgba(3, 3, 8, 0.15)"
       ctx.fillRect(0, 0, size, size)
 
       // Efecto de distorsión por mouse
@@ -191,11 +191,11 @@ function QuantumOrbCanvas({ state, mouseX, mouseY, isHovered, size }: QuantumOrb
         0,
         centerX,
         centerY,
-        size / 2,
+        size / 2
       )
-      bgGlow.addColorStop(0, colors.glow.replace('0.6', '0.3'))
-      bgGlow.addColorStop(0.5, colors.glow.replace('0.6', '0.1'))
-      bgGlow.addColorStop(1, 'transparent')
+      bgGlow.addColorStop(0, colors.glow.replace("0.6", "0.3"))
+      bgGlow.addColorStop(0.5, colors.glow.replace("0.6", "0.1"))
+      bgGlow.addColorStop(1, "transparent")
       ctx.fillStyle = bgGlow
       ctx.fillRect(0, 0, size, size)
 
@@ -258,11 +258,11 @@ function QuantumOrbCanvas({ state, mouseX, mouseY, isHovered, size }: QuantumOrb
           0,
           screenX,
           screenY,
-          p.size * 4 * scale,
+          p.size * 4 * scale
         )
         particleGlow.addColorStop(0, p.color)
-        particleGlow.addColorStop(0.3, p.color.replace(')', ', 0.5)').replace('rgb', 'rgba'))
-        particleGlow.addColorStop(1, 'transparent')
+        particleGlow.addColorStop(0.3, p.color.replace(")", ", 0.5)").replace("rgb", "rgba"))
+        particleGlow.addColorStop(1, "transparent")
 
         ctx.beginPath()
         ctx.fillStyle = particleGlow
@@ -272,7 +272,7 @@ function QuantumOrbCanvas({ state, mouseX, mouseY, isHovered, size }: QuantumOrb
 
         // Núcleo brillante
         ctx.beginPath()
-        ctx.fillStyle = '#FFFFFF'
+        ctx.fillStyle = "#FFFFFF"
         ctx.globalAlpha = p.alpha * 0.8
         ctx.arc(screenX, screenY, p.size * scale, 0, Math.PI * 2)
         ctx.fill()
@@ -291,7 +291,7 @@ function QuantumOrbCanvas({ state, mouseX, mouseY, isHovered, size }: QuantumOrb
       const outerGlow = ctx.createRadialGradient(coreX, coreY, 0, coreX, coreY, coreSize * 2)
       outerGlow.addColorStop(0, colors.primary)
       outerGlow.addColorStop(0.3, colors.glow)
-      outerGlow.addColorStop(1, 'transparent')
+      outerGlow.addColorStop(1, "transparent")
       ctx.fillStyle = outerGlow
       ctx.beginPath()
       ctx.arc(coreX, coreY, coreSize * 2, 0, Math.PI * 2)
@@ -304,12 +304,12 @@ function QuantumOrbCanvas({ state, mouseX, mouseY, isHovered, size }: QuantumOrb
         0,
         coreX,
         coreY,
-        coreSize,
+        coreSize
       )
-      coreGradient.addColorStop(0, '#FFFFFF')
+      coreGradient.addColorStop(0, "#FFFFFF")
       coreGradient.addColorStop(0.3, colors.primary)
       coreGradient.addColorStop(0.7, colors.secondary)
-      coreGradient.addColorStop(1, colors.glow.replace('0.6', '0.3'))
+      coreGradient.addColorStop(1, colors.glow.replace("0.6", "0.3"))
 
       ctx.beginPath()
       ctx.fillStyle = coreGradient
@@ -324,10 +324,10 @@ function QuantumOrbCanvas({ state, mouseX, mouseY, isHovered, size }: QuantumOrb
         0,
         coreX - coreSize * 0.3,
         coreY - coreSize * 0.3,
-        coreSize * 0.5,
+        coreSize * 0.5
       )
-      highlightGrad.addColorStop(0, 'rgba(255, 255, 255, 0.8)')
-      highlightGrad.addColorStop(1, 'transparent')
+      highlightGrad.addColorStop(0, "rgba(255, 255, 255, 0.8)")
+      highlightGrad.addColorStop(1, "transparent")
       ctx.fillStyle = highlightGrad
       ctx.arc(coreX - coreSize * 0.3, coreY - coreSize * 0.3, coreSize * 0.4, 0, Math.PI * 2)
       ctx.fill()
@@ -335,8 +335,8 @@ function QuantumOrbCanvas({ state, mouseX, mouseY, isHovered, size }: QuantumOrb
       // ═══════════════════════════════════════════════════════════════════
       // CAPA 5: Ondas de energía pulsantes (solo en estados activos)
       // ═══════════════════════════════════════════════════════════════════
-      if (state !== 'idle') {
-        const waveCount = state === 'thinking' ? 4 : state === 'speaking' ? 6 : 2
+      if (state !== "idle") {
+        const waveCount = state === "thinking" ? 4 : state === "speaking" ? 6 : 2
         for (let i = 0; i < waveCount; i++) {
           const waveTime = (timeRef.current * 2 + i * 0.5) % 3
           const waveRadius = waveTime * 40
@@ -355,7 +355,7 @@ function QuantumOrbCanvas({ state, mouseX, mouseY, isHovered, size }: QuantumOrb
       // ═══════════════════════════════════════════════════════════════════
       // CAPA 6: Rayos de luz (god rays) cuando está activo
       // ═══════════════════════════════════════════════════════════════════
-      if (isHovered || state !== 'idle') {
+      if (isHovered || state !== "idle") {
         const rayCount = 8
         for (let i = 0; i < rayCount; i++) {
           const rayAngle = (i / rayCount) * Math.PI * 2 + timeRef.current * 0.5
@@ -365,10 +365,10 @@ function QuantumOrbCanvas({ state, mouseX, mouseY, isHovered, size }: QuantumOrb
             coreX,
             coreY,
             coreX + Math.cos(rayAngle) * rayLength,
-            coreY + Math.sin(rayAngle) * rayLength,
+            coreY + Math.sin(rayAngle) * rayLength
           )
           rayGrad.addColorStop(0, colors.primary)
-          rayGrad.addColorStop(1, 'transparent')
+          rayGrad.addColorStop(1, "transparent")
 
           ctx.beginPath()
           ctx.strokeStyle = rayGrad
@@ -393,7 +393,7 @@ function QuantumOrbCanvas({ state, mouseX, mouseY, isHovered, size }: QuantumOrb
     <canvas
       ref={canvasRef}
       className="absolute inset-0 h-full w-full"
-      style={{ background: 'transparent' }}
+      style={{ background: "transparent" }}
     />
   )
 }
@@ -403,13 +403,13 @@ function QuantumOrbCanvas({ state, mouseX, mouseY, isHovered, size }: QuantumOrb
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export interface Quantum3DAIWidgetProps {
-  position?: 'bottom-right' | 'bottom-left' | 'bottom-center'
+  position?: "bottom-right" | "bottom-left" | "bottom-center"
   size?: number
   onNavigateToIA?: () => void
 }
 
 export function Quantum3DAIWidget({
-  position = 'bottom-right',
+  position = "bottom-right",
   size = 120,
   onNavigateToIA,
 }: Quantum3DAIWidgetProps) {
@@ -417,7 +417,7 @@ export function Quantum3DAIWidget({
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Estado
-  const [currentState, setCurrentState] = useState<QuantumState>('idle')
+  const [currentState, setCurrentState] = useState<QuantumState>("idle")
   const [isHovered, setIsHovered] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const [isListening, setIsListening] = useState(false)
@@ -438,11 +438,11 @@ export function Quantum3DAIWidget({
   // Posiciones
   const positionStyles = useMemo(
     () => ({
-      'bottom-right': 'right-6 bottom-6',
-      'bottom-left': 'left-6 bottom-6',
-      'bottom-center': 'left-1/2 -translate-x-1/2 bottom-6',
+      "bottom-right": "right-6 bottom-6",
+      "bottom-left": "left-6 bottom-6",
+      "bottom-center": "left-1/2 -translate-x-1/2 bottom-6",
     }),
-    [],
+    []
   )
 
   // Colores actuales
@@ -456,20 +456,20 @@ export function Quantum3DAIWidget({
       mouseX.set((e.clientX - rect.left) / rect.width)
       mouseY.set((e.clientY - rect.top) / rect.height)
     },
-    [mouseX, mouseY],
+    [mouseX, mouseY]
   )
 
   const handleClick = useCallback(() => {
-    if (currentState === 'idle') {
-      setCurrentState('listening')
+    if (currentState === "idle") {
+      setCurrentState("listening")
       setIsListening(true)
-    } else if (currentState === 'listening') {
-      setCurrentState('thinking')
+    } else if (currentState === "listening") {
+      setCurrentState("thinking")
       setIsListening(false)
       // Simular procesamiento
       setTimeout(() => {
-        setCurrentState('speaking')
-        setTimeout(() => setCurrentState('idle'), 3000)
+        setCurrentState("speaking")
+        setTimeout(() => setCurrentState("idle"), 3000)
       }, 2000)
     }
   }, [currentState])
@@ -478,7 +478,7 @@ export function Quantum3DAIWidget({
     if (onNavigateToIA) {
       onNavigateToIA()
     } else {
-      router.push('/ia')
+      router.push("/ia")
     }
   }, [router, onNavigateToIA])
 
@@ -494,15 +494,15 @@ export function Quantum3DAIWidget({
       className={`fixed ${positionStyles[position]} z-[9999]`}
       initial={{ opacity: 0, scale: 0, y: 50 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ type: 'spring', damping: 20, delay: 1 }}
+      transition={{ type: "spring", damping: 20, delay: 1 }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ perspective: '1000px' }}
+      style={{ perspective: "1000px" }}
     >
       {/* Label de estado */}
       <AnimatePresence>
-        {(isHovered || currentState !== 'idle') && (
+        {(isHovered || currentState !== "idle") && (
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -567,7 +567,7 @@ export function Quantum3DAIWidget({
               transition={{ delay: 0.15 }}
               onClick={handleNavigate}
               className="flex h-12 w-12 items-center justify-center rounded-full border border-cyan-500/50 bg-cyan-500/20"
-              style={{ boxShadow: '0 0 20px rgba(0, 255, 255, 0.3)' }}
+              style={{ boxShadow: "0 0 20px rgba(0, 255, 255, 0.3)" }}
             >
               <MessageSquare className="h-5 w-5 text-cyan-400" />
             </motion.button>
@@ -597,13 +597,13 @@ export function Quantum3DAIWidget({
           y: orbY,
           rotateX,
           rotateY,
-          transformStyle: 'preserve-3d',
+          transformStyle: "preserve-3d",
         }}
         animate={floatAnimation}
         transition={
           isHovered
-            ? { type: 'spring', stiffness: 300 }
-            : { duration: 4, repeat: Infinity, ease: 'easeInOut' }
+            ? { type: "spring", stiffness: 300 }
+            : { duration: 4, repeat: Infinity, ease: "easeInOut" }
         }
         onClick={handleClick}
         onContextMenu={(e) => {
@@ -616,7 +616,7 @@ export function Quantum3DAIWidget({
           className="absolute inset-0 rounded-full blur-xl"
           style={{ background: colors.glow }}
           animate={{
-            scale: currentState === 'idle' ? [1, 1.2, 1] : [1, 1.4, 1],
+            scale: currentState === "idle" ? [1, 1.2, 1] : [1, 1.4, 1],
             opacity: [0.4, 0.7, 0.4],
           }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -626,10 +626,10 @@ export function Quantum3DAIWidget({
         <div
           className="relative h-full w-full overflow-hidden rounded-full"
           style={{
-            background: 'radial-gradient(circle at 30% 30%, #1a1a2e 0%, #0a0a12 100%)',
+            background: "radial-gradient(circle at 30% 30%, #1a1a2e 0%, #0a0a12 100%)",
             boxShadow: `
               0 0 40px ${colors.glow},
-              inset 0 0 30px ${colors.glow.replace('0.6', '0.2')},
+              inset 0 0 30px ${colors.glow.replace("0.6", "0.2")},
               0 10px 40px rgba(0,0,0,0.5)
             `,
             border: `2px solid ${colors.primary}40`,
@@ -648,19 +648,19 @@ export function Quantum3DAIWidget({
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.div
               animate={{
-                scale: currentState === 'thinking' ? [1, 1.2, 1] : 1,
-                rotate: currentState === 'thinking' ? [0, 180, 360] : 0,
+                scale: currentState === "thinking" ? [1, 1.2, 1] : 1,
+                rotate: currentState === "thinking" ? [0, 180, 360] : 0,
               }}
               transition={{
-                duration: currentState === 'thinking' ? 2 : 0,
-                repeat: currentState === 'thinking' ? Infinity : 0,
-                ease: 'linear',
+                duration: currentState === "thinking" ? 2 : 0,
+                repeat: currentState === "thinking" ? Infinity : 0,
+                ease: "linear",
               }}
             >
-              <Brain
+              <Cpu
                 className="h-8 w-8 drop-shadow-lg"
                 style={{
-                  color: '#FFFFFF',
+                  color: "#FFFFFF",
                   filter: `drop-shadow(0 0 10px ${colors.primary})`,
                 }}
               />
@@ -671,7 +671,7 @@ export function Quantum3DAIWidget({
           <div
             className="pointer-events-none absolute inset-x-4 top-2 h-1/4 rounded-full"
             style={{
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%)',
+              background: "linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%)",
             }}
           />
         </div>
@@ -681,21 +681,21 @@ export function Quantum3DAIWidget({
           className="absolute -right-1 -bottom-1 flex h-8 w-8 items-center justify-center rounded-full"
           style={{
             background:
-              currentState === 'listening'
-                ? 'linear-gradient(135deg, #00FFFF, #06B6D4)'
-                : 'linear-gradient(135deg, #374151, #1F2937)',
+              currentState === "listening"
+                ? "linear-gradient(135deg, #00FFFF, #06B6D4)"
+                : "linear-gradient(135deg, #374151, #1F2937)",
             boxShadow:
-              currentState === 'listening'
-                ? '0 0 20px rgba(0, 255, 255, 0.5)'
-                : '0 0 10px rgba(0,0,0,0.3)',
-            border: '2px solid rgba(255,255,255,0.2)',
+              currentState === "listening"
+                ? "0 0 20px rgba(0, 255, 255, 0.5)"
+                : "0 0 10px rgba(0,0,0,0.3)",
+            border: "2px solid rgba(255,255,255,0.2)",
           }}
           animate={{
-            scale: currentState === 'listening' ? [1, 1.2, 1] : 1,
+            scale: currentState === "listening" ? [1, 1.2, 1] : 1,
           }}
-          transition={{ duration: 0.5, repeat: currentState === 'listening' ? Infinity : 0 }}
+          transition={{ duration: 0.5, repeat: currentState === "listening" ? Infinity : 0 }}
         >
-          {currentState === 'listening' ? (
+          {currentState === "listening" ? (
             <Mic className="h-4 w-4 text-white" />
           ) : (
             <MicOff className="h-4 w-4 text-white/60" />
@@ -703,7 +703,7 @@ export function Quantum3DAIWidget({
         </motion.div>
 
         {/* Indicador de estado activo */}
-        {currentState !== 'idle' && (
+        {currentState !== "idle" && (
           <motion.div
             className="absolute -top-1 -left-1 flex h-6 w-6 items-center justify-center rounded-full"
             style={{
@@ -719,7 +719,7 @@ export function Quantum3DAIWidget({
       </motion.div>
 
       {/* Texto de ayuda */}
-      {currentState === 'idle' && !isExpanded && (
+      {currentState === "idle" && !isExpanded && (
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered ? 1 : 0.5 }}

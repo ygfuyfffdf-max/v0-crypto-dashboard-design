@@ -19,11 +19,14 @@
 
 import { Float, OrbitControls, Sparkles, Stars } from "@react-three/drei"
 import { Canvas, useFrame } from "@react-three/fiber"
-import { Bloom, ChromaticAberration, EffectComposer, Vignette } from "@react-three/postprocessing"
+import { Bloom, ChromaticAberration, Vignette } from "@react-three/postprocessing"
 import { motion } from "motion/react"
 import { BlendFunction } from "postprocessing"
 import { Suspense, memo, useMemo, useRef } from "react"
 import * as THREE from "three"
+
+import { SafeEffectComposer } from "@/app/_components/chronos-2026/3d/effects/SafeEffectComposer"
+import { WebGLErrorBoundary } from "@/app/_components/chronos-2026/3d/WebGLErrorBoundary"
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TIPOS
@@ -361,7 +364,7 @@ interface PostProcessingProps {
 
 function PostProcessingEffects({ mood, pulse }: PostProcessingProps) {
   return (
-    <EffectComposer>
+    <SafeEffectComposer multisampling={0}>
       <Bloom
         luminanceThreshold={0.2}
         luminanceSmoothing={0.9}
@@ -373,7 +376,7 @@ function PostProcessingEffects({ mood, pulse }: PostProcessingProps) {
         offset={new THREE.Vector2(0.002 * pulse, 0.002 * pulse)}
       />
       <Vignette darkness={0.4} offset={0.3} />
-    </EffectComposer>
+    </SafeEffectComposer>
   )
 }
 
@@ -445,34 +448,36 @@ export const OrbFondoVivo = memo(function OrbFondoVivo({
   className = "",
 }: OrbFondoVivoProps) {
   return (
-    <motion.div
-      className={`fixed inset-0 -z-10 ${className}`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: intensity }}
-      transition={{ duration: 1.5, ease: "easeOut" }}
-    >
-      <Canvas
-        camera={{ position: [0, 0, 8], fov: 60 }}
-        gl={{
-          antialias: true,
-          alpha: true,
-          powerPreference: "high-performance",
-          stencil: false,
-          depth: true,
-        }}
-        dpr={[1, 2]}
-        style={{ background: "transparent" }}
+    <WebGLErrorBoundary>
+      <motion.div
+        className={`fixed inset-0 -z-10 ${className}`}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: intensity }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
       >
-        <Suspense fallback={null}>
-          <SceneContent
-            mood={mood}
-            pulse={pulse}
-            particleCount={particleCount}
-            interactive={interactive}
-          />
-        </Suspense>
-      </Canvas>
-    </motion.div>
+        <Canvas
+          camera={{ position: [0, 0, 8], fov: 60 }}
+          gl={{
+            antialias: true,
+            alpha: true,
+            powerPreference: "high-performance",
+            stencil: false,
+            depth: true,
+          }}
+          dpr={[1, 2]}
+          style={{ background: "transparent" }}
+        >
+          <Suspense fallback={null}>
+            <SceneContent
+              mood={mood}
+              pulse={pulse}
+              particleCount={particleCount}
+              interactive={interactive}
+            />
+          </Suspense>
+        </Canvas>
+      </motion.div>
+    </WebGLErrorBoundary>
   )
 })
 

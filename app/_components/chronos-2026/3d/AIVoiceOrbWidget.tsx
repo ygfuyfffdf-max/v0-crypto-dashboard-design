@@ -13,19 +13,18 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-'use client'
+"use client"
 
-import { Float, MeshDistortMaterial, Sparkles } from '@react-three/drei'
-import { Canvas, useFrame } from '@react-three/fiber'
-import Spline from '@splinetool/react-spline'
-import type { Application as SplineApplication } from '@splinetool/runtime'
-import { AnimatePresence, motion, useDragControls } from 'motion/react'
+import { Float, MeshDistortMaterial, Sparkles } from "@react-three/drei"
+import { Canvas, useFrame } from "@react-three/fiber"
+import Spline from "@splinetool/react-spline"
+import type { Application as SplineApplication } from "@splinetool/runtime"
 import {
   AlertTriangle,
   Bot,
-  Brain,
   Check,
   Copy,
+  Cpu,
   DollarSign,
   Loader2,
   Maximize2,
@@ -39,26 +38,27 @@ import {
   Users,
   X,
   Zap,
-} from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import * as THREE from 'three'
+} from "lucide-react"
+import { AnimatePresence, motion, useDragControls } from "motion/react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import * as THREE from "three"
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TIPOS
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export type AIState = 'idle' | 'listening' | 'thinking' | 'responding' | 'success' | 'error'
+export type AIState = "idle" | "listening" | "thinking" | "responding" | "success" | "error"
 
 export interface Message {
   id: string
-  role: 'user' | 'assistant'
+  role: "user" | "assistant"
   content: string
   timestamp: Date
   actions?: AIAction[]
 }
 
 export interface AIAction {
-  type: 'navigate' | 'export' | 'create' | 'analyze' | 'alert'
+  type: "navigate" | "export" | "create" | "analyze" | "alert"
   label: string
   payload: any
 }
@@ -85,51 +85,51 @@ export interface AIVoiceOrbWidgetProps {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const stateColors: Record<AIState, { primary: string; secondary: string; glow: string }> = {
-  idle: { primary: '#8b5cf6', secondary: '#a78bfa', glow: '#8b5cf6' },
-  listening: { primary: '#10b981', secondary: '#34d399', glow: '#10b981' },
-  thinking: { primary: '#f59e0b', secondary: '#fbbf24', glow: '#f59e0b' },
-  responding: { primary: '#ec4899', secondary: '#f472b6', glow: '#ec4899' },
-  success: { primary: '#22c55e', secondary: '#4ade80', glow: '#22c55e' },
-  error: { primary: '#ef4444', secondary: '#f87171', glow: '#ef4444' },
+  idle: { primary: "#8b5cf6", secondary: "#a78bfa", glow: "#8b5cf6" },
+  listening: { primary: "#10b981", secondary: "#34d399", glow: "#10b981" },
+  thinking: { primary: "#f59e0b", secondary: "#fbbf24", glow: "#f59e0b" },
+  responding: { primary: "#ec4899", secondary: "#f472b6", glow: "#ec4899" },
+  success: { primary: "#22c55e", secondary: "#4ade80", glow: "#22c55e" },
+  error: { primary: "#ef4444", secondary: "#f87171", glow: "#ef4444" },
 }
 
 // Quick commands
 const quickCommands: QuickCommand[] = [
   {
-    id: 'ventas',
+    id: "ventas",
     icon: <TrendingUp className="h-4 w-4" />,
-    label: 'Resumen ventas',
-    prompt: '¿Cuál es el resumen de ventas de hoy?',
+    label: "Resumen ventas",
+    prompt: "¿Cuál es el resumen de ventas de hoy?",
   },
   {
-    id: 'alertas',
+    id: "alertas",
     icon: <AlertTriangle className="h-4 w-4" />,
-    label: 'Alertas',
-    prompt: '¿Hay alguna alerta importante?',
+    label: "Alertas",
+    prompt: "¿Hay alguna alerta importante?",
   },
   {
-    id: 'stock',
+    id: "stock",
     icon: <Package className="h-4 w-4" />,
-    label: 'Stock crítico',
-    prompt: '¿Qué productos tienen stock crítico?',
+    label: "Stock crítico",
+    prompt: "¿Qué productos tienen stock crítico?",
   },
   {
-    id: 'clientes',
+    id: "clientes",
     icon: <Users className="h-4 w-4" />,
-    label: 'Top clientes',
-    prompt: '¿Quiénes son los top clientes de este mes?',
+    label: "Top clientes",
+    prompt: "¿Quiénes son los top clientes de este mes?",
   },
   {
-    id: 'capital',
+    id: "capital",
     icon: <DollarSign className="h-4 w-4" />,
-    label: 'Capital bancos',
-    prompt: '¿Cuál es el capital total en bancos?',
+    label: "Capital bancos",
+    prompt: "¿Cuál es el capital total en bancos?",
   },
   {
-    id: 'prediccion',
-    icon: <Brain className="h-4 w-4" />,
-    label: 'Predicción',
-    prompt: '¿Cuál es la predicción de ventas para el próximo mes?',
+    id: "prediccion",
+    icon: <Cpu className="h-4 w-4" />,
+    label: "Predicción",
+    prompt: "¿Cuál es la predicción de ventas para el próximo mes?",
   },
 ]
 
@@ -156,9 +156,9 @@ function Orb3D({ state, audioLevel, onClick }: Orb3DProps) {
       meshRef.current.rotation.y = time * 0.3
       meshRef.current.rotation.x = Math.sin(time * 0.5) * 0.1
 
-      const baseScale = state === 'listening' ? 1.1 : 1
+      const baseScale = state === "listening" ? 1.1 : 1
       const audioScale = 1 + audioLevel * 0.4
-      const pulseScale = state === 'thinking' ? 1 + Math.sin(time * 5) * 0.1 : 1
+      const pulseScale = state === "thinking" ? 1 + Math.sin(time * 5) * 0.1 : 1
 
       meshRef.current.scale.setScalar(baseScale * audioScale * pulseScale)
     }
@@ -191,7 +191,7 @@ function Orb3D({ state, audioLevel, onClick }: Orb3DProps) {
             metalness={0.8}
             roughness={0.2}
             distort={0.3 + audioLevel * 0.2}
-            speed={state === 'thinking' ? 5 : 2}
+            speed={state === "thinking" ? 5 : 2}
           />
         </mesh>
       </Float>
@@ -260,14 +260,14 @@ function SplineOrb({
       // Emit events based on state
       try {
         const eventName = `state_${state}`
-        splineRef.current.emitEvent('mouseDown', eventName)
+        splineRef.current.emitEvent("mouseDown", eventName)
       } catch {
         // Events may not be configured
       }
     }
   }, [state])
 
-  return <Spline scene={scene} onLoad={onLoad} style={{ width: '100%', height: '100%' }} />
+  return <Spline scene={scene} onLoad={onLoad} style={{ width: "100%", height: "100%" }} />
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -284,7 +284,7 @@ function ChatMessage({
   onCopy?: (content: string) => void
 }) {
   const [copied, setCopied] = useState(false)
-  const isAssistant = message.role === 'assistant'
+  const isAssistant = message.role === "assistant"
 
   const handleCopy = () => {
     onCopy?.(message.content)
@@ -296,12 +296,12 @@ function ChatMessage({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex gap-2 ${isAssistant ? '' : 'flex-row-reverse'}`}
+      className={`flex gap-2 ${isAssistant ? "" : "flex-row-reverse"}`}
     >
       {/* Avatar */}
       <div
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-          isAssistant ? 'bg-gradient-to-br from-purple-500 to-blue-500' : 'bg-white/10'
+          isAssistant ? "bg-gradient-to-br from-purple-500 to-blue-500" : "bg-white/10"
         } `}
       >
         {isAssistant ? (
@@ -312,12 +312,12 @@ function ChatMessage({
       </div>
 
       {/* Content */}
-      <div className={`flex-1 ${isAssistant ? '' : 'text-right'}`}>
+      <div className={`flex-1 ${isAssistant ? "" : "text-right"}`}>
         <div
           className={`inline-block max-w-[85%] rounded-2xl px-4 py-2 ${
             isAssistant
-              ? 'rounded-tl-sm bg-white/10 text-white'
-              : 'rounded-tr-sm bg-purple-500 text-white'
+              ? "rounded-tl-sm bg-white/10 text-white"
+              : "rounded-tr-sm bg-purple-500 text-white"
           } `}
         >
           <p className="text-sm whitespace-pre-wrap">{message.content}</p>
@@ -344,9 +344,9 @@ function ChatMessage({
         {/* Meta */}
         <div className="mt-1 flex items-center gap-2">
           <span className="text-xs text-white/30">
-            {message.timestamp.toLocaleTimeString('es-MX', {
-              hour: '2-digit',
-              minute: '2-digit',
+            {message.timestamp.toLocaleTimeString("es-MX", {
+              hour: "2-digit",
+              minute: "2-digit",
             })}
           </span>
           {isAssistant && (
@@ -373,22 +373,22 @@ export function AIVoiceOrbWidget({
   onAction,
   enableVoice = true,
   enableSpline = false,
-  splineScene = '/spline-scenes/ai-voice-assistance-orb.splinecode',
+  splineScene = "/spline-scenes/ai-voice-assistance-orb.splinecode",
   contextData = {},
 }: AIVoiceOrbWidgetProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
-  const [aiState, setAiState] = useState<AIState>('idle')
+  const [aiState, setAiState] = useState<AIState>("idle")
   const [audioLevel, setAudioLevel] = useState(0)
   const [isListening, setIsListening] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState("")
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: '1',
-      role: 'assistant',
+      id: "1",
+      role: "assistant",
       content:
-        '¡Hola! Soy CHRONOS AI, tu asistente de análisis financiero. Puedo ayudarte con ventas, inventario, predicciones y más. ¿En qué puedo ayudarte?',
+        "¡Hola! Soy CHRONOS AI, tu asistente de análisis financiero. Puedo ayudarte con ventas, inventario, predicciones y más. ¿En qué puedo ayudarte?",
       timestamp: new Date(),
     },
   ])
@@ -427,25 +427,25 @@ export function AIVoiceOrbWidget({
 
       const userMessage: Message = {
         id: Date.now().toString(),
-        role: 'user',
+        role: "user",
         content: content.trim(),
         timestamp: new Date(),
       }
 
       setMessages((prev) => [...prev, userMessage])
-      setInput('')
+      setInput("")
       setIsTyping(true)
-      setAiState('thinking')
+      setAiState("thinking")
 
       try {
         // Use provided handler or simulate
         const response = onMessage ? await onMessage(content) : await simulateAIResponse(content)
 
-        setAiState('responding')
+        setAiState("responding")
 
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
-          role: 'assistant',
+          role: "assistant",
           content: response,
           timestamp: new Date(),
           actions: generateActions(content),
@@ -454,16 +454,16 @@ export function AIVoiceOrbWidget({
         setTimeout(() => {
           setMessages((prev) => [...prev, assistantMessage])
           setIsTyping(false)
-          setAiState('success')
-          setTimeout(() => setAiState('idle'), 1500)
+          setAiState("success")
+          setTimeout(() => setAiState("idle"), 1500)
         }, 500)
       } catch {
-        setAiState('error')
+        setAiState("error")
         setIsTyping(false)
-        setTimeout(() => setAiState('idle'), 2000)
+        setTimeout(() => setAiState("idle"), 2000)
       }
     },
-    [onMessage],
+    [onMessage]
   )
 
   // Simulate AI response
@@ -472,30 +472,30 @@ export function AIVoiceOrbWidget({
 
     const responses: Record<string, string> = {
       ventas:
-        '📊 **Resumen de Ventas de Hoy:**\n\n• Total vendido: $45,780 MXN\n• Transacciones: 12\n• Ticket promedio: $3,815 MXN\n• Top producto: Producto Premium A\n• Crecimiento vs ayer: +15%',
+        "📊 **Resumen de Ventas de Hoy:**\n\n• Total vendido: $45,780 MXN\n• Transacciones: 12\n• Ticket promedio: $3,815 MXN\n• Top producto: Producto Premium A\n• Crecimiento vs ayer: +15%",
       stock:
-        '📦 **Productos con Stock Crítico:**\n\n• Producto C: 5 unidades (urgente)\n• Producto F: 12 unidades\n• Producto K: 18 unidades\n\n⚠️ Te recomiendo generar órdenes de compra para evitar quiebre de stock.',
+        "📦 **Productos con Stock Crítico:**\n\n• Producto C: 5 unidades (urgente)\n• Producto F: 12 unidades\n• Producto K: 18 unidades\n\n⚠️ Te recomiendo generar órdenes de compra para evitar quiebre de stock.",
       capital:
-        '💰 **Capital Total en Bancos:**\n\n• Bóveda Monte: $234,500\n• Bóveda USA: $89,200\n• Utilidades: $156,780\n• Profit: $45,000\n\n**Total: $525,480 MXN**',
+        "💰 **Capital Total en Bancos:**\n\n• Bóveda Monte: $234,500\n• Bóveda USA: $89,200\n• Utilidades: $156,780\n• Profit: $45,000\n\n**Total: $525,480 MXN**",
       prediccion:
-        '📈 **Predicción Próximo Mes:**\n\n• Ventas proyectadas: $1,245,000 MXN\n• Confianza: 87%\n• Tendencia: Alcista (+12%)\n• Mejor día estimado: Viernes 15\n\n💡 Considera aumentar inventario de productos Premium.',
+        "📈 **Predicción Próximo Mes:**\n\n• Ventas proyectadas: $1,245,000 MXN\n• Confianza: 87%\n• Tendencia: Alcista (+12%)\n• Mejor día estimado: Viernes 15\n\n💡 Considera aumentar inventario de productos Premium.",
       default:
-        'Entendido. Basándome en los datos actuales del sistema, puedo ayudarte con esa consulta. ¿Necesitas que profundice en algún aspecto específico?',
+        "Entendido. Basándome en los datos actuales del sistema, puedo ayudarte con esa consulta. ¿Necesitas que profundice en algún aspecto específico?",
     }
 
     const lowerQuery = query.toLowerCase()
-    if (lowerQuery.includes('venta')) return responses.ventas ?? responses.default ?? ''
-    if (lowerQuery.includes('stock') || lowerQuery.includes('inventario')) {
-      return responses.stock ?? responses.default ?? ''
+    if (lowerQuery.includes("venta")) return responses.ventas ?? responses.default ?? ""
+    if (lowerQuery.includes("stock") || lowerQuery.includes("inventario")) {
+      return responses.stock ?? responses.default ?? ""
     }
-    if (lowerQuery.includes('capital') || lowerQuery.includes('banco')) {
-      return responses.capital ?? responses.default ?? ''
+    if (lowerQuery.includes("capital") || lowerQuery.includes("banco")) {
+      return responses.capital ?? responses.default ?? ""
     }
-    if (lowerQuery.includes('predicción') || lowerQuery.includes('prediccion')) {
-      return responses.prediccion ?? responses.default ?? ''
+    if (lowerQuery.includes("predicción") || lowerQuery.includes("prediccion")) {
+      return responses.prediccion ?? responses.default ?? ""
     }
 
-    return responses.default ?? ''
+    return responses.default ?? ""
   }
 
   // Generate actions based on query
@@ -503,13 +503,13 @@ export function AIVoiceOrbWidget({
     const lowerQuery = query.toLowerCase()
     const actions: AIAction[] = []
 
-    if (lowerQuery.includes('venta')) {
-      actions.push({ type: 'navigate', label: 'Ver Ventas', payload: { panel: 'ventas' } })
-      actions.push({ type: 'export', label: 'Exportar', payload: { type: 'ventas' } })
+    if (lowerQuery.includes("venta")) {
+      actions.push({ type: "navigate", label: "Ver Ventas", payload: { panel: "ventas" } })
+      actions.push({ type: "export", label: "Exportar", payload: { type: "ventas" } })
     }
-    if (lowerQuery.includes('stock')) {
-      actions.push({ type: 'navigate', label: 'Ver Almacén', payload: { panel: 'almacen' } })
-      actions.push({ type: 'create', label: 'Crear OC', payload: { type: 'orden' } })
+    if (lowerQuery.includes("stock")) {
+      actions.push({ type: "navigate", label: "Ver Almacén", payload: { panel: "almacen" } })
+      actions.push({ type: "create", label: "Crear OC", payload: { type: "orden" } })
     }
 
     return actions
@@ -519,7 +519,7 @@ export function AIVoiceOrbWidget({
   const toggleListening = useCallback(() => {
     setIsListening((prev) => {
       const newVal = !prev
-      setAiState(newVal ? 'listening' : 'idle')
+      setAiState(newVal ? "listening" : "idle")
       return newVal
     })
   }, [])
@@ -530,7 +530,7 @@ export function AIVoiceOrbWidget({
       handleSendMessage(command.prompt)
       setShowCommands(false)
     },
-    [handleSendMessage],
+    [handleSendMessage]
   )
 
   // Copy handler
@@ -594,7 +594,7 @@ export function AIVoiceOrbWidget({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className={`fixed z-[9999] overflow-hidden rounded-2xl border border-white/10 bg-gray-900/95 shadow-2xl backdrop-blur-2xl ${isExpanded ? 'inset-4' : 'h-[600px] w-96'} `}
+            className={`fixed z-[9999] overflow-hidden rounded-2xl border border-white/10 bg-gray-900/95 shadow-2xl backdrop-blur-2xl ${isExpanded ? "inset-4" : "h-[600px] w-96"} `}
             style={!isExpanded ? { right: position.x, bottom: position.y } : undefined}
           >
             {/* Header */}
@@ -616,18 +616,18 @@ export function AIVoiceOrbWidget({
                   <p className="flex items-center gap-1 text-xs text-white/50">
                     <span
                       className={`h-1.5 w-1.5 rounded-full ${
-                        aiState === 'idle' ? 'bg-emerald-400' : 'animate-pulse bg-amber-400'
+                        aiState === "idle" ? "bg-emerald-400" : "animate-pulse bg-amber-400"
                       }`}
                     />
-                    {aiState === 'idle'
-                      ? 'En línea'
-                      : aiState === 'listening'
-                        ? 'Escuchando...'
-                        : aiState === 'thinking'
-                          ? 'Analizando...'
-                          : aiState === 'responding'
-                            ? 'Respondiendo...'
-                            : 'Listo'}
+                    {aiState === "idle"
+                      ? "En línea"
+                      : aiState === "listening"
+                        ? "Escuchando..."
+                        : aiState === "thinking"
+                          ? "Analizando..."
+                          : aiState === "responding"
+                            ? "Respondiendo..."
+                            : "Listo"}
                   </p>
                 </div>
               </div>
@@ -674,7 +674,7 @@ export function AIVoiceOrbWidget({
             <div
               ref={chatRef}
               className="flex-1 space-y-4 overflow-y-auto p-4"
-              style={{ height: isExpanded ? 'calc(100% - 180px)' : '380px' }}
+              style={{ height: isExpanded ? "calc(100% - 180px)" : "380px" }}
             >
               {messages.map((message) => (
                 <ChatMessage
@@ -725,8 +725,8 @@ export function AIVoiceOrbWidget({
                     onClick={toggleListening}
                     className={`rounded-xl p-3 transition-all ${
                       isListening
-                        ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30'
-                        : 'bg-white/10 text-white/50 hover:bg-white/20 hover:text-white'
+                        ? "bg-rose-500 text-white shadow-lg shadow-rose-500/30"
+                        : "bg-white/10 text-white/50 hover:bg-white/20 hover:text-white"
                     } `}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.95 }}
@@ -742,7 +742,7 @@ export function AIVoiceOrbWidget({
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage(input)}
+                    onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage(input)}
                     placeholder="Escribe tu mensaje..."
                     className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-white/30 transition-colors outline-none focus:border-purple-500/50"
                     disabled={isTyping}

@@ -477,6 +477,7 @@ body::before {
   }
 
   .glass-liquid {
+    position: relative;
     background: linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.08) 0%,
@@ -488,6 +489,73 @@ body::before {
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.25),
       0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  }
+
+  /* Liquid Glass Enhanced - Dynamic gradient border with mouse tracking */
+  .glass-liquid::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(
+      from 0deg at 50% 50%,
+      rgba(139, 92, 246, 0.5) 0deg,
+      transparent 60deg,
+      transparent 300deg,
+      rgba(139, 92, 246, 0.5) 360deg
+    );
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .glass-liquid:hover::before {
+    opacity: 1;
+    animation: liquid-border-pulse 4s ease-in-out infinite;
+  }
+
+  @keyframes liquid-border-pulse {
+    0%,
+    100% {
+      opacity: 0.8;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  /* Inner glow pulsation */
+  .glass-liquid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      ellipse 80% 60% at 50% 0%,
+      rgba(139, 92, 246, 0.15) 0%,
+      transparent 50%
+    );
+    opacity: 0.3;
+    animation: liquid-inner-glow 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes liquid-inner-glow {
+    0%,
+    100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.5;
+    }
   }
 
   /* Gen5 Neumorphism */
@@ -3184,4 +3252,263 @@ a,
 
 .theme-border {
   border-color: rgb(var(--border-primary));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHRONOS PREMIUM SCROLLBAR — Dark Glass
+   ═══════════════════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
+}
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SELECTION COLORS — Violet Accent
+   ═══════════════════════════════════════════════════════════════════════════ */
+::selection {
+  background: rgba(139, 92, 246, 0.4);
+  color: #fff;
+}
+::-moz-selection {
+  background: rgba(139, 92, 246, 0.4);
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXTRA KEYFRAMES — Premium Micro-Interactions
+   ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 25%,
+    rgba(139, 92, 246, 0.08) 50%,
+    transparent 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.4);
+  }
+}
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLASS UTILITIES — Reusable glass classes
+   ═══════════════════════════════════════════════════════════════════════════ */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+}
+.glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #fff;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.glass-input:focus {
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow:
+    0 0 0 3px rgba(139, 92, 246, 0.1),
+    0 0 20px rgba(139, 92, 246, 0.1);
+  outline: none;
+}
+
+.glass-button {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
+}
+.glass-button:active {
+  transform: scale(0.97);
+}
+
+.glass-table th {
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.glass-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.8);
+}
+.glass-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STATUS BADGES — Colored pills
+   ═══════════════════════════════════════════════════════════════════════════ */
+.badge-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.badge-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+.badge-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+.badge-info {
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MESH GRADIENT BACKGROUNDS — Premium pages
+   ═══════════════════════════════════════════════════════════════════════════ */
+@property --mesh-hue-1 {
+  syntax: "<angle>";
+  initial-value: 270deg;
+  inherits: false;
+}
+@property --mesh-hue-2 {
+  syntax: "<angle>";
+  initial-value: 200deg;
+  inherits: false;
+}
+@property --mesh-hue-3 {
+  syntax: "<angle>";
+  initial-value: 320deg;
+  inherits: false;
+}
+
+.mesh-gradient-bg {
+  background: #000;
+  position: relative;
+}
+.mesh-gradient-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 80% 50% at 20% 40%,
+      hsla(var(--mesh-hue-1), 70%, 40%, 0.15) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 60% 60% at 80% 20%,
+      hsla(var(--mesh-hue-2), 70%, 40%, 0.12) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 70% 50% at 50% 80%,
+      hsla(var(--mesh-hue-3), 70%, 40%, 0.1) 0%,
+      transparent 60%
+    );
+  animation: mesh-hue-rotate 20s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes mesh-hue-rotate {
+  0% {
+    --mesh-hue-1: 270deg;
+    --mesh-hue-2: 200deg;
+    --mesh-hue-3: 320deg;
+  }
+  33% {
+    --mesh-hue-1: 220deg;
+    --mesh-hue-2: 280deg;
+    --mesh-hue-3: 190deg;
+  }
+  66% {
+    --mesh-hue-1: 310deg;
+    --mesh-hue-2: 170deg;
+    --mesh-hue-3: 260deg;
+  }
+  100% {
+    --mesh-hue-1: 270deg;
+    --mesh-hue-2: 200deg;
+    --mesh-hue-3: 320deg;
+  }
 }

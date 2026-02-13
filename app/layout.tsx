@@ -90,7 +90,7 @@ export const metadata: Metadata = {
     description: 'Dashboard Empresarial Premium',
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: [{ url: '/kocmoc-favicon.svg', type: 'image/svg+xml' }, { url: '/favicon.ico', sizes: 'any' }],
     apple: '/apple-touch-icon.png',
   },
   manifest: '/manifest.json',

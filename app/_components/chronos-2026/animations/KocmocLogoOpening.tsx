@@ -445,7 +445,7 @@ export const KocmocLogoOpening = memo(function KocmocLogoOpening({
   duration = 7000,
   skipEnabled = true,
   showText = true,
-  textContent = "KOCMOC",
+  textContent = "КОСМОС",
 }: KocmocLogoOpeningProps) {
   const [phase, setPhase] = useState<Phase>("dormant")
   const [isVisible, setIsVisible] = useState(true)

@@ -1,1427 +1,957 @@
 "use client"
 
-/**
- * ═══════════════════════════════════════════════════════════════════════════════════════════════════
- * 👥✨ AURORA CLIENTES PANEL UNIFIED — CHRONOS INFINITY 2026 SUPREME ELEVATION
- * ═══════════════════════════════════════════════════════════════════════════════════════════════════
- *
- * Panel de Clientes ultra premium con TODOS los sistemas supremos:
- * ✅ SMOOTH SCROLL 120FPS (Lenis + GSAP ScrollTrigger)
- * ✅ PARTÍCULAS 3D INTERACTIVAS (WebGL Accelerated)
- * ✅ 50+ ANIMACIONES CINEMATOGRÁFICAS (Glitch, Cosmic, Energy)
- * ✅ MICRO-INTERACCIONES PREMIUM en todos los botones
- * ✅ SCROLL COUNTERS animados
- * ✅ PARALLAX EFFECTS en cards
- * - Glassmorphism con efectos aurora boreal
- * - Timeline de clientes elegante
- * - Filtros avanzados por estado/deuda
- * - Red de clientes animada con Canvas 60fps
- * - Quick stats animados
- * - KPIs con tendencias
- *
- * @version 3.0.0 - SUPREME ELEVATION APPLIED
- * ═══════════════════════════════════════════════════════════════════════════════════════════════════
- */
-
+import { ModalShell } from "@/app/_components/modals/ModalShell"
+import { GlassCurrencyInput, GlassInput, GlassSelect } from "@/app/_components/ui/GlassFormSystem"
 import { cn } from "@/app/_lib/utils"
-import { useClientesData } from "@/app/hooks/useDataHooks"
-import { AnimatePresence, motion } from "motion/react"
-
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-// 🌟 SUPREME SYSTEMS — CHRONOS INFINITY 2026
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
 import {
-    AlertTriangle,
-    Building,
-    CreditCard,
-    DollarSign,
-    Download,
-    Edit3,
-    Eye,
-    FileText,
-    Filter,
-    History,
-    Mail,
-    Phone,
-    RefreshCw,
-    Star,
-    Trash2,
-    TrendingUp,
-    User,
-    UserCheck,
-    UserPlus,
-    Users,
-    Wallet,
-    X,
+  useAbonarVenta,
+  useClientesData as useClientes,
+  useCreateCliente,
+} from "@/app/hooks/useDataHooks"
+import {
+  Calendar,
+  Check,
+  DollarSign,
+  Edit3,
+  Eye,
+  History,
+  Mail,
+  Phone,
+  RefreshCw,
+  Trash2,
+  UserPlus,
+  Users,
+  Wallet,
+  X,
 } from "lucide-react"
-import dynamic from "next/dynamic"
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { AnimatePresence, motion } from "motion/react"
+import { useCallback, useMemo, useState } from "react"
+import { PremiumKPICard, PremiumTableWrapper } from "./PremiumPanelEnhancer"
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-// 🚀 PREMIUM SYSTEMS INTEGRATION (QUANTUM OPTIMIZED)
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-import "@/app/_components/chronos-2026/animations/CinematicAnimations"
-import { useSmoothScroll } from "@/app/_components/chronos-2026/scroll/SmoothScrollSystem"
-
-// 🌌 SUPREME SHADER SYSTEM — ELITE 2026
-import { SupremeClientesBackground } from "./SupremePanelBackgrounds"
-
-// Aurora Glass System
-import {
-    AuroraBackground,
-    AuroraBadge,
-    AuroraButton,
-    AuroraGlassCard,
-    AuroraSearch,
-    AuroraStatWidget,
-    AuroraTabs,
-} from "../../ui/AuroraGlassSystem"
-
-// 🍎 iOS PREMIUM SYSTEM 2026 — Sistema de UI sin efectos 3D problemáticos
-import {
-  iOSScrollContainer,
-  iOSSection,
-  iOSGrid,
-  iOSEntityCard,
-  iOSMetricCardPremium,
-  useToastAdvanced as useiOSToast,
-  iOSConfirm,
-} from "../../ui/ios"
-
-// Aurora Charts - Lazy Loaded for performance
-const AuroraAreaChart = dynamic(
-  () => import("../../charts/AuroraPremiumCharts").then((mod) => mod.AuroraAreaChart),
-  {
-    loading: () => <div className="h-[200px] w-full animate-pulse rounded-xl bg-white/5" />,
-    ssr: false,
-  }
-)
-
-// Cosmic 3D Charts - Advanced visualizations
-const CosmicRadarChart = dynamic(
-  () => import("../../charts/Cosmic3DCharts").then((mod) => mod.CosmicRadarChart),
-  {
-    loading: () => <div className="h-[200px] w-full animate-pulse rounded-xl bg-white/5" />,
-    ssr: false,
-  }
-)
-
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-// TYPES
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
+   TYPES
+   ═══════════════════════════════════════════════════════════════ */
 
 interface Cliente {
   id: string
   nombre: string
-  empresa?: string
-  email: string
-  telefono: string
-  direccion?: string
-  estado: "activo" | "inactivo" | "suspendido" // Estados reales del schema DB
-  categoria?: "VIP" | "frecuente" | "ocasional" | "nuevo" | "inactivo" | "moroso" // Categoría separada
-  saldoPendiente: number
-  totalCompras: number
-  ultimaCompra?: string
-  fechaRegistro: string
-  notas?: string
-  riesgo?: string
-  fiabilidad?: number
-  contribucion?: number
-  recencia?: number
-  frecuenciaCompra?: number
-}
-
-interface FiltrosState {
-  estado: string
-  busqueda: string
-  tieneDeuda: boolean | null
+  email?: string
+  telefono?: string
+  deudaTotal: number
+  ventasTotales: number
+  porcentajePagado: number
+  frecuenciaCompra: number
+  fecha: string
 }
 
 interface AuroraClientesPanelUnifiedProps {
-  clientes?: Cliente[]
-  onNuevoCliente?: () => void
-  onVerDetalle?: (_cliente: Cliente) => void
-  onEditarCliente?: (_cliente: Cliente) => void
-  onEliminarCliente?: (_cliente: Cliente) => void
-  onRegistrarAbono?: (_cliente: Cliente) => void
-  onVerHistorial?: (_cliente: Cliente) => void
-  onExportar?: (_formato: "csv" | "excel" | "pdf", _filtrados: Cliente[]) => void
-  onRefresh?: () => void
-  loading?: boolean
+  onNavigate?: (path: string) => void
   className?: string
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-// 🧹 SISTEMA LIMPIO - Sin datos mock (Conectado a Turso)
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════════════════════════════════ */
 
-const _defaultClientes: Cliente[] = []
+const fmtMXN = (n: number) =>
+  new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n)
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-// 📊 CLIENT NETWORK VISUALIZATION — Animated client relationship network
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+const fmtDate = (d: string) => {
+  try {
+    return new Date(d).toLocaleDateString("es-MX", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
+  } catch {
+    return d
+  }
+}
 
-function ClientNetworkVisualization({
-  totalClientes,
-  activos,
-  vip,
-}: {
-  totalClientes: number
-  activos: number
-  vip: number
-}) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationRef = useRef<number>(0)
-  const timeRef = useRef(0)
+const COLORS = ["#8B5CF6", "#06B6D4", "#F59E0B", "#EC4899", "#10B981", "#6366F1", "#EF4444"]
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+const initials = (name: string) =>
+  name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase()
 
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
+const avatarColor = (name: string) => {
+  let h = 0
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h)
+  return COLORS[Math.abs(h) % COLORS.length]
+}
 
-    const resize = () => {
-      const dpr = window.devicePixelRatio || 1
-      const rect = canvas.getBoundingClientRect()
-      canvas.width = rect.width * dpr
-      canvas.height = rect.height * dpr
-      ctx.scale(dpr, dpr)
-    }
-    resize()
+type DebtLevel = "none" | "moderate" | "high"
 
-    const rect = canvas.getBoundingClientRect()
-    const centerX = rect.width / 2
-    const centerY = rect.height / 2
+const debtLevel = (c: Cliente): DebtLevel =>
+  c.deudaTotal === 0 ? "none" : c.deudaTotal > c.ventasTotales * 0.5 ? "high" : "moderate"
 
-    // Network nodes
-    const nodes: Array<{
-      x: number
-      y: number
-      vx: number
-      vy: number
-      size: number
-      color: string
-      orbitRadius: number
-      orbitSpeed: number
-      angle: number
-      isVip: boolean
-    }> = []
+const DEBT_CFG: Record<DebtLevel, { label: string; cls: string; bg: string }> = {
+  none: { label: "Sin deuda", cls: "text-emerald-400", bg: "bg-emerald-500/15" },
+  moderate: { label: "Con deuda", cls: "text-amber-400", bg: "bg-amber-500/15" },
+  high: { label: "Deuda alta", cls: "text-red-400", bg: "bg-red-500/15" },
+}
 
-    // Create nodes in orbital pattern
-    const orbits = [60, 90, 120]
-    let nodeIndex = 0
-    orbits.forEach((radius, orbitIndex) => {
-      const nodesInOrbit = 4 + orbitIndex * 2
-      for (let i = 0; i < nodesInOrbit; i++) {
-        const isVipNode = nodeIndex < vip
-        nodes.push({
-          x: centerX,
-          y: centerY,
-          vx: 0,
-          vy: 0,
-          size: isVipNode ? 8 : 5 + Math.random() * 3,
-          color: isVipNode ? "#F59E0B" : nodeIndex < activos ? "#8B5CF6" : "#6B7280",
-          orbitRadius: radius + (Math.random() - 0.5) * 20,
-          orbitSpeed: (0.002 + Math.random() * 0.003) * (orbitIndex % 2 === 0 ? 1 : -1),
-          angle: (i / nodesInOrbit) * Math.PI * 2,
-          isVip: isVipNode,
-        })
-        nodeIndex++
+type StatusFilter = "todos" | "sin_deuda" | "con_deuda" | "deuda_alta"
+
+const FILTERS: { id: StatusFilter; label: string }[] = [
+  { id: "todos", label: "Todos" },
+  { id: "sin_deuda", label: "Sin Deuda" },
+  { id: "con_deuda", label: "Con Deuda" },
+  { id: "deuda_alta", label: "Deuda Alta" },
+]
+
+const G = "rounded-2xl border border-white/8 bg-white/4 backdrop-blur-xl"
+const GH = "hover:border-white/12 hover:bg-white/6 transition-all duration-300"
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT
+   ═══════════════════════════════════════════════════════════════ */
+
+export function AuroraClientesPanelUnified({
+  onNavigate,
+  className,
+}: AuroraClientesPanelUnifiedProps) {
+  const { data: clientesRaw, loading, error, refetch } = useClientes()
+  const createCliente = useCreateCliente()
+  const abonarVenta = useAbonarVenta()
+
+  const clientes = useMemo<Cliente[]>(() => {
+    if (!Array.isArray(clientesRaw) || !clientesRaw.length) return []
+    return clientesRaw.map((c) => {
+      const debt = c.saldoPendiente ?? 0
+      const sales = c.totalCompras ?? 0
+      return {
+        id: c.id,
+        nombre: c.nombre,
+        email: c.email ?? undefined,
+        telefono: c.telefono ?? undefined,
+        deudaTotal: debt,
+        ventasTotales: sales,
+        porcentajePagado: sales > 0 ? Math.round(((sales - debt) / sales) * 100) : 100,
+        frecuenciaCompra: 0,
+        fecha: new Date().toISOString(),
       }
     })
+  }, [clientesRaw])
 
-    const animate = () => {
-      timeRef.current += 0.016
+  const [view, setView] = useState<"tabla" | "perfiles">("tabla")
+  const [search, setSearch] = useState("")
+  const [filter, setFilter] = useState<StatusFilter>("todos")
+  const [detail, setDetail] = useState<Cliente | null>(null)
+  const [abono, setAbono] = useState<Cliente | null>(null)
+  const [abonoAmt, setAbonoAmt] = useState("")
+  const [abonoBank, setAbonoBank] = useState("")
+  const [showNewClient, setShowNewClient] = useState(false)
+  const [newClient, setNewClient] = useState({ nombre: "", email: "", telefono: "" })
+  const [editClient, setEditClient] = useState<Cliente | null>(null)
+  const [editForm, setEditForm] = useState({ nombre: "", email: "", telefono: "" })
 
-      // Clear with fade
-      ctx.fillStyle = "rgba(3, 3, 8, 0.1)"
-      ctx.fillRect(0, 0, rect.width, rect.height)
-
-      // Central hub glow
-      const hubGlow = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 60)
-      hubGlow.addColorStop(0, "rgba(139, 92, 246, 0.4)")
-      hubGlow.addColorStop(0.5, "rgba(139, 92, 246, 0.15)")
-      hubGlow.addColorStop(1, "transparent")
-      ctx.beginPath()
-      ctx.arc(centerX, centerY, 50 + Math.sin(timeRef.current * 2) * 5, 0, Math.PI * 2)
-      ctx.fillStyle = hubGlow
-      ctx.fill()
-
-      // Central hub
-      ctx.beginPath()
-      ctx.arc(centerX, centerY, 25, 0, Math.PI * 2)
-      ctx.fillStyle = "#8B5CF6"
-      ctx.fill()
-
-      // Draw users icon
-      ctx.strokeStyle = "#030308"
-      ctx.lineWidth = 2.5
-      ctx.beginPath()
-      ctx.arc(centerX, centerY - 5, 6, 0, Math.PI * 2)
-      ctx.stroke()
-      ctx.beginPath()
-      ctx.arc(centerX, centerY + 10, 10, Math.PI, 0)
-      ctx.stroke()
-
-      // Orbit rings (subtle)
-      orbits.forEach((radius) => {
-        ctx.beginPath()
-        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2)
-        ctx.strokeStyle = "rgba(139, 92, 246, 0.1)"
-        ctx.lineWidth = 1
-        ctx.stroke()
-      })
-
-      // Draw connections
-      nodes.forEach((node, i) => {
-        nodes.slice(i + 1).forEach((other) => {
-          const dx = other.x - node.x
-          const dy = other.y - node.y
-          const dist = Math.sqrt(dx * dx + dy * dy)
-          if (dist < 80) {
-            ctx.beginPath()
-            ctx.moveTo(node.x, node.y)
-            ctx.lineTo(other.x, other.y)
-            ctx.strokeStyle = `rgba(139, 92, 246, ${0.15 * (1 - dist / 80)})`
-            ctx.lineWidth = 1
-            ctx.stroke()
-          }
-        })
-
-        // Connection to center
-        const _toCenterDist = Math.sqrt((node.x - centerX) ** 2 + (node.y - centerY) ** 2)
-        ctx.beginPath()
-        ctx.moveTo(centerX, centerY)
-        ctx.lineTo(node.x, node.y)
-        ctx.strokeStyle = `rgba(139, 92, 246, ${0.1})`
-        ctx.lineWidth = 0.5
-        ctx.stroke()
-      })
-
-      // Update and draw nodes
-      nodes.forEach((node) => {
-        // Orbit movement
-        node.angle += node.orbitSpeed
-        node.x = centerX + Math.cos(node.angle) * node.orbitRadius
-        node.y = centerY + Math.sin(node.angle) * node.orbitRadius
-
-        // Node glow
-        if (node.isVip) {
-          const glow = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, node.size * 2.5)
-          glow.addColorStop(0, "rgba(245, 158, 11, 0.5)")
-          glow.addColorStop(1, "transparent")
-          ctx.beginPath()
-          ctx.arc(node.x, node.y, node.size * 2.5, 0, Math.PI * 2)
-          ctx.fillStyle = glow
-          ctx.fill()
-        }
-
-        // Node
-        ctx.beginPath()
-        ctx.arc(node.x, node.y, node.size, 0, Math.PI * 2)
-        ctx.fillStyle = node.color
-        ctx.fill()
-
-        // VIP crown
-        if (node.isVip) {
-          ctx.fillStyle = "#F59E0B"
-          ctx.font = "bold 10px sans-serif"
-          ctx.textAlign = "center"
-          ctx.fillText("★", node.x, node.y - node.size - 4)
-        }
-      })
-
-      // Stats text
-      ctx.font = "bold 12px Inter, sans-serif"
-      ctx.textAlign = "center"
-      ctx.fillStyle = "#8B5CF6"
-      ctx.fillText(`${activos} Activos`, rect.width * 0.2, rect.height * 0.9)
-
-      ctx.fillStyle = "#F59E0B"
-      ctx.fillText(`${vip} VIP`, rect.width * 0.8, rect.height * 0.9)
-
-      animationRef.current = requestAnimationFrame(animate)
-    }
-
-    animate()
-
-    return () => cancelAnimationFrame(animationRef.current)
-  }, [totalClientes, activos, vip])
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="h-full w-full"
-      style={{ background: "transparent" }}
-      role="img"
-      aria-label={`Red de clientes: ${totalClientes} total, ${activos} activos, ${vip} VIP`}
-    />
+  const filtered = useMemo(
+    () =>
+      clientes.filter((c) => {
+        const q = search.toLowerCase()
+        const matchQ =
+          !q ||
+          c.nombre.toLowerCase().includes(q) ||
+          c.email?.toLowerCase().includes(q) ||
+          c.telefono?.includes(search)
+        const matchF =
+          filter === "todos" ||
+          (filter === "sin_deuda" && c.deudaTotal === 0) ||
+          (filter === "con_deuda" && c.deudaTotal > 0) ||
+          (filter === "deuda_alta" && c.deudaTotal > c.ventasTotales * 0.5)
+        return matchQ && matchF
+      }),
+    [clientes, search, filter]
   )
-}
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-// 📋 CLIENTE TIMELINE ITEM — Individual client card
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
+  const stats = useMemo(
+    () => ({
+      total: clientes.length,
+      deuda: clientes.reduce((s, c) => s + c.deudaTotal, 0),
+      abonos: clientes.reduce((s, c) => s + Math.max(0, c.ventasTotales - c.deudaTotal), 0),
+      freq: clientes.length
+        ? Math.round(clientes.reduce((s, c) => s + c.frecuenciaCompra, 0) / clientes.length)
+        : 0,
+    }),
+    [clientes]
+  )
 
-interface ClienteTimelineItemProps {
-  cliente: Cliente
-  isFirst?: boolean
-  isLast?: boolean
-  onVerDetalle?: () => void
-  onEditar?: () => void
-  onEliminar?: () => void
-  onAbono?: () => void
-  onHistorial?: () => void
-}
+  const handleRefresh = useCallback(() => refetch(), [refetch])
+  const closeDrawer = useCallback(() => setDetail(null), [])
+  const closeAbono = useCallback(() => {
+    setAbono(null)
+    setAbonoAmt("")
+    setAbonoBank("")
+  }, [])
 
-function ClienteTimelineItem({
-  cliente,
-  isFirst,
-  isLast,
-  onVerDetalle,
-  onEditar,
-  onEliminar,
-  onAbono,
-  onHistorial,
-}: ClienteTimelineItemProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
-  const [isHovered, setIsHovered] = useState(false)
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const handleCreateCliente = useCallback(() => {
+    if (!newClient.nombre.trim()) return
+    createCliente.mutate(
+      {
+        nombre: newClient.nombre.trim(),
+        email: newClient.email || undefined,
+        telefono: newClient.telefono || undefined,
+      },
+      {
+        onSuccess: () => {
+          setShowNewClient(false)
+          setNewClient({ nombre: "", email: "", telefono: "" })
+          refetch()
+        },
+      }
+    )
+  }, [createCliente, newClient, refetch])
 
-  // Config de estados - actualizado sin VIP
-  const estadoConfig: Record<
-    string,
-    { color: string; bgColor: string; icon: React.ReactNode; label: string }
-  > = {
-    activo: {
-      color: "#10B981",
-      bgColor: "rgba(16, 185, 129, 0.15)",
-      icon: <UserCheck size={16} />,
-      label: "Activo",
+  const handleAbonar = useCallback(() => {
+    if (!abono || !abonoAmt || Number(abonoAmt) <= 0) return
+    abonarVenta.mutate(
+      { ventaId: abono.id, monto: Number(abonoAmt), bancoDestinoId: abonoBank || undefined },
+      {
+        onSuccess: () => {
+          closeAbono()
+          refetch()
+        },
+      }
+    )
+  }, [abono, abonoAmt, abonoBank, abonarVenta, closeAbono, refetch])
+
+  const handleDelete = useCallback(
+    async (id: string) => {
+      if (!confirm("¿Estás seguro de eliminar este cliente?")) return
+      try {
+        await fetch(`/api/clientes/${id}`, { method: "DELETE" })
+        refetch()
+      } catch (err) {
+        console.error("Error al eliminar cliente", err)
+      }
     },
-    inactivo: {
-      color: "#6B7280",
-      bgColor: "rgba(107, 114, 128, 0.15)",
-      icon: <User size={16} />,
-      label: "Inactivo",
-    },
-    suspendido: {
-      color: "#F43F5E",
-      bgColor: "rgba(244, 63, 94, 0.15)",
-      icon: <AlertTriangle size={16} />,
-      label: "Suspendido",
-    },
-  }
+    [refetch]
+  )
 
-  const config = estadoConfig[cliente.estado] ?? estadoConfig.activo
-  if (!config) return null
+  const handleEdit = useCallback(async () => {
+    if (!editClient) return
+    try {
+      await fetch(`/api/clientes/${editClient.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm),
+      })
+      setEditClient(null)
+      refetch()
+    } catch (err) {
+      console.error("Error al editar cliente", err)
+    }
+  }, [editClient, editForm, refetch])
+
+  const openEdit = useCallback((c: Cliente) => {
+    setEditClient(c)
+    setEditForm({ nombre: c.nombre, email: c.email || "", telefono: c.telefono || "" })
+  }, [])
+
+  /* ─── Loading ─── */
+  if (loading)
+    return (
+      <div className={cn("space-y-6 p-6", className)}>
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 animate-pulse rounded-2xl bg-white/10" />
+          <div className="space-y-2">
+            <div className="h-5 w-48 animate-pulse rounded-lg bg-white/10" />
+            <div className="h-3 w-32 animate-pulse rounded-lg bg-white/5" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className={cn(G, "h-24 animate-pulse")} />
+          ))}
+        </div>
+        <div className={cn(G, "h-96 animate-pulse")} />
+      </div>
+    )
+
+  /* ─── Error ─── */
+  if (error)
+    return (
+      <div className={cn("flex min-h-[400px] items-center justify-center p-6", className)}>
+        <div className={cn(G, "max-w-md p-8 text-center")}>
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/15 text-xl font-bold text-red-400">
+            !
+          </div>
+          <p className="mb-4 text-white/70">Error al cargar clientes</p>
+          <button
+            onClick={handleRefresh}
+            className="rounded-xl bg-violet-500/20 px-4 py-2 text-violet-400 transition-colors hover:bg-violet-500/30"
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    )
 
   return (
-    <div className="relative flex gap-4">
-      {/* Timeline line */}
-      <div className="relative flex flex-col items-center">
-        {!isFirst && (
-          <div
-            className="absolute -top-4 h-4 w-0.5"
-            style={{ background: `linear-gradient(to bottom, #8B5CF650, ${config.color}50)` }}
+    <div className={cn("space-y-6 p-6", className)}>
+      {/* ══════════ 1 · HEADER ══════════ */}
+      <motion.header
+        className="flex flex-col justify-between gap-4 md:flex-row md:items-center"
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <div>
+          <h1 className="flex items-center gap-3 text-2xl font-bold text-white">
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-violet-500/20 bg-linear-to-br from-violet-500/25 to-fuchsia-500/25">
+              <Users className="h-5 w-5 text-violet-400" />
+            </span>
+            Panel de Clientes
+          </h1>
+          <p className="mt-1 ml-[52px] text-sm text-white/50">CRM y gestión de clientes</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => setShowNewClient(true)}
+            className="flex items-center gap-2 rounded-xl border border-violet-500/30 bg-violet-500/20 px-4 py-2.5 text-sm font-medium text-violet-300 transition-colors hover:bg-violet-500/30"
+          >
+            <UserPlus size={16} /> Nuevo Cliente
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleRefresh}
+            className="rounded-xl border border-white/10 bg-white/5 p-2.5 text-white/60 transition-colors hover:text-white"
+            aria-label="Refrescar datos"
+          >
+            <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
+          </motion.button>
+        </div>
+      </motion.header>
+
+      {/* ══════════ 2 · STATS BAR — PremiumKPICard ══════════ */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {(
+          [
+            {
+              label: "Total Clientes",
+              val: String(stats.total),
+              Icon: Users,
+              color: "violet" as const,
+            },
+            {
+              label: "Deuda Total",
+              val: fmtMXN(stats.deuda),
+              Icon: Wallet,
+              color: "gold" as const,
+            },
+            {
+              label: "Abonos del Mes",
+              val: fmtMXN(stats.abonos),
+              Icon: DollarSign,
+              color: "emerald" as const,
+            },
+            {
+              label: "Frecuencia Promedio",
+              val: `${stats.freq} días`,
+              Icon: Calendar,
+              color: "plasma" as const,
+            },
+          ] as const
+        ).map((s) => (
+          <PremiumKPICard
+            key={s.label}
+            title={s.label}
+            value={s.val}
+            icon={<s.Icon className="h-5 w-5" />}
+            color={s.color}
           />
-        )}
-        <motion.div
-          className="relative z-10 flex h-10 w-10 items-center justify-center rounded-xl"
-          style={{
-            background: config.bgColor,
-            border: `2px solid ${config.color}50`,
-            boxShadow: isHovered ? `0 0 20px ${config.color}40` : undefined,
-          }}
-          whileHover={{ scale: 1.1 }}
-        >
-          <span style={{ color: config.color }}>{config.icon}</span>
-        </motion.div>
-        {!isLast && (
-          <div
-            className="min-h-[40px] w-0.5 flex-1"
-            style={{ background: `linear-gradient(to bottom, ${config.color}50, transparent)` }}
-          />
-        )}
+        ))}
       </div>
 
-      {/* Content */}
-      <motion.article
-        aria-label={`Cliente ${cliente.nombre}${cliente.empresa ? ` de ${cliente.empresa}` : ""}, total compras $${cliente.totalCompras.toLocaleString()}, ${cliente.saldoPendiente > 0 ? `deuda $${cliente.saldoPendiente.toLocaleString()}` : "sin deuda"}`}
-        className={cn(
-          "mb-4 flex-1 cursor-pointer rounded-xl p-4 transition-all",
-          "border border-white/[0.06] bg-white/[0.03] hover:border-white/10 hover:bg-white/[0.06]",
-          "focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-gray-900 focus:outline-none"
-        )}
-        tabIndex={0}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onClick={() => setIsExpanded(!isExpanded)}
-        onKeyDown={(e) => e.key === "Enter" && setIsExpanded(!isExpanded)}
-        aria-expanded={isExpanded}
-        whileHover={{ x: 4 }}
-        layout
-      >
-        {/* Header */}
-        <div className="mb-2 flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            {/* Avatar */}
-            <div
-              className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold"
-              style={{
-                background:
-                  cliente.categoria === "VIP"
-                    ? "linear-gradient(135deg, #F59E0B, #D97706)"
-                    : "linear-gradient(135deg, #8B5CF6, #06B6D4)",
-              }}
+      {/* ══════════ 3 · SEARCH + FILTERS — GlassInput ══════════ */}
+      <div className={cn(G, "flex flex-col items-start gap-4 p-4 md:flex-row md:items-center")}>
+        <div className="w-full flex-1 md:w-auto">
+          <GlassInput
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar cliente…"
+          />
+        </div>
+        <div className="flex items-center gap-1 rounded-xl bg-white/5 p-1">
+          {FILTERS.map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setFilter(f.id)}
+              className={cn(
+                "rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
+                filter === f.id
+                  ? "border border-violet-500/30 bg-violet-500/25 text-violet-300"
+                  : "border border-transparent text-white/50 hover:text-white/70"
+              )}
             >
-              {cliente.nombre
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .slice(0, 2)}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <p className="text-sm font-medium text-white">{cliente.nombre}</p>
-                {cliente.categoria === "VIP" && (
-                  <Star size={12} className="fill-amber-400 text-amber-400" />
-                )}
-              </div>
-              {cliente.empresa && (
-                <div className="mt-1 flex items-center gap-1 text-xs text-white/40">
-                  <Building size={10} />
-                  <span>{cliente.empresa}</span>
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ══════════ 4 · VIEW TOGGLE ══════════ */}
+      <div className="flex w-fit items-center gap-1 rounded-xl border border-white/8 bg-white/5 p-1">
+        {(["tabla", "perfiles"] as const).map((v) => (
+          <button
+            key={v}
+            onClick={() => setView(v)}
+            className={cn(
+              "rounded-lg px-4 py-2 text-sm font-medium transition-all",
+              view === v
+                ? "border border-white/10 bg-white/10 text-white"
+                : "border border-transparent text-white/50 hover:text-white/70"
+            )}
+          >
+            {v === "tabla" ? "Tabla" : "Perfiles"}
+          </button>
+        ))}
+      </div>
+
+      {/* ══════════ 5 · TABLE | 6 · PROFILE GRID — PremiumTableWrapper ══════════ */}
+      <AnimatePresence mode="wait">
+        {view === "tabla" ? (
+          <PremiumTableWrapper
+            key="t"
+            title="Clientes"
+            subtitle={`${filtered.length} registros`}
+            maxHeight="420px"
+          >
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-white/8">
+                    {[
+                      "#",
+                      "Nombre",
+                      "Deuda Total",
+                      "Ventas Totales",
+                      "% Pagado",
+                      "Frecuencia",
+                      "Acciones",
+                    ].map((h) => (
+                      <th
+                        key={h}
+                        className="px-4 py-3 text-left text-xs font-medium tracking-wider text-white/40 uppercase"
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((c, i) => {
+                    const dl = debtLevel(c)
+                    return (
+                      <motion.tr
+                        key={c.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: i * 0.02 }}
+                        className="border-b border-white/4 transition-colors hover:bg-white/4"
+                      >
+                        <td className="px-4 py-3 text-white/40">{i + 1}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                              style={{ background: avatarColor(c.nombre) }}
+                            >
+                              {initials(c.nombre)}
+                            </div>
+                            <span className="truncate font-medium text-white">{c.nombre}</span>
+                          </div>
+                        </td>
+                        <td className={cn("px-4 py-3 font-medium", DEBT_CFG[dl].cls)}>
+                          {fmtMXN(c.deudaTotal)}
+                        </td>
+                        <td className="px-4 py-3 text-white/70">{fmtMXN(c.ventasTotales)}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <div className="h-1.5 max-w-[60px] flex-1 overflow-hidden rounded-full bg-white/10">
+                              <div
+                                className="h-full rounded-full bg-violet-500"
+                                style={{ width: `${c.porcentajePagado}%` }}
+                              />
+                            </div>
+                            <span className="text-xs text-white/60">{c.porcentajePagado}%</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-white/60">{c.frecuenciaCompra} días</td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => setDetail(c)}
+                              title="Ver detalle"
+                              className="rounded-lg p-1.5 text-white/40 transition-colors hover:bg-white/10 hover:text-white"
+                            >
+                              <Eye size={14} />
+                            </button>
+                            <button
+                              onClick={() => openEdit(c)}
+                              title="Editar"
+                              className="rounded-lg p-1.5 text-white/40 transition-colors hover:bg-white/10 hover:text-white"
+                            >
+                              <Edit3 size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(c.id)}
+                              title="Eliminar"
+                              className="rounded-lg p-1.5 text-white/40 transition-colors hover:bg-red-500/20 hover:text-red-400"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                            <button
+                              onClick={() => setAbono(c)}
+                              title="Registrar abono"
+                              className="rounded-lg p-1.5 text-white/40 transition-colors hover:bg-emerald-500/20 hover:text-emerald-400"
+                            >
+                              <DollarSign size={14} />
+                            </button>
+                            <button
+                              title="Historial"
+                              className="rounded-lg p-1.5 text-white/40 transition-colors hover:bg-violet-500/20 hover:text-violet-400"
+                            >
+                              <History size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+              {!filtered.length && (
+                <div className="py-16 text-center">
+                  <Users size={40} className="mx-auto mb-3 text-white/20" />
+                  <p className="text-sm text-white/40">No se encontraron clientes</p>
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Balance */}
-          <div className="text-right">
-            <p className="text-lg font-bold text-white">${cliente.totalCompras.toLocaleString()}</p>
-            {cliente.saldoPendiente > 0 && (
-              <AuroraBadge color="gold" variant="outline" className="text-xs">
-                Debe ${cliente.saldoPendiente.toLocaleString()}
-              </AuroraBadge>
-            )}
-            {cliente.saldoPendiente === 0 && (
-              <AuroraBadge color="emerald" variant="outline" className="text-xs">
-                Sin deuda
-              </AuroraBadge>
-            )}
-          </div>
-        </div>
-
-        {/* Contact info */}
-        <div className="mb-2 flex items-center gap-4 text-xs text-white/40">
-          <div className="flex items-center gap-1">
-            <Phone size={10} />
-            <span>{cliente.telefono}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Mail size={10} />
-            <span>{cliente.email}</span>
-          </div>
-        </div>
-
-        {/* Status badge */}
-        <AuroraBadge
-          color={
-            cliente.categoria === "VIP"
-              ? "gold"
-              : cliente.estado === "activo"
-                ? "emerald"
-                : cliente.estado === "suspendido"
-                  ? "magenta"
-                  : "cyan"
-          }
-          variant="solid"
-        >
-          {config.label}
-        </AuroraBadge>
-
-        {/* Expanded content */}
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="mt-4 space-y-3 border-t border-white/5 pt-4">
-                {/* Trazabilidad completa */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/40">Total Compras</span>
-                    <span className="font-medium text-white">
-                      ${cliente.totalCompras.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/40">Saldo Pendiente</span>
+          </PremiumTableWrapper>
+        ) : (
+          <motion.div
+            key="p"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+          >
+            {filtered.map((c, i) => {
+              const dl = debtLevel(c)
+              const cfg = DEBT_CFG[dl]
+              return (
+                <motion.div
+                  key={c.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.04 }}
+                  className={cn(G, GH, "p-5")}
+                >
+                  {/* card header */}
+                  <div className="mb-4 flex items-center gap-3">
+                    <div
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white shadow-lg"
+                      style={{
+                        background: `linear-gradient(135deg, ${avatarColor(c.nombre)}, ${avatarColor(c.nombre)}88)`,
+                      }}
+                    >
+                      {initials(c.nombre)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-semibold text-white">{c.nombre}</p>
+                      <p className="text-xs text-white/40">Desde {fmtDate(c.fecha)}</p>
+                    </div>
                     <span
-                      className={
-                        cliente.saldoPendiente > 0
-                          ? "font-medium text-yellow-400"
-                          : "font-medium text-emerald-400"
-                      }
+                      className={cn(
+                        "shrink-0 rounded-lg px-2 py-1 text-[11px] font-medium",
+                        cfg.bg,
+                        cfg.cls
+                      )}
                     >
-                      ${cliente.saldoPendiente.toLocaleString()}
+                      {cfg.label}
                     </span>
                   </div>
-                </div>
-
-                {/* ═══════════════════════════════════════════════════════════════
-                    PERFIL FINANCIERO AVANZADO (CHRONOS INFINITY)
-                    ═══════════════════════════════════════════════════════════════ */}
-                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-                  <div className="mb-2 flex items-center gap-2">
-                    <TrendingUp className="text-violet-400" size={14} />
-                    <span className="text-xs font-semibold text-white">Perfil Financiero</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {/* Riesgo */}
-                    <div className="rounded-lg bg-black/20 p-2 text-center">
-                      <span className="block text-[10px] text-white/40">Riesgo</span>
-                      <span
-                        className={cn(
-                          "text-xs font-bold uppercase",
-                          cliente.riesgo === "alto"
-                            ? "text-red-400"
-                            : cliente.riesgo === "medio"
-                              ? "text-yellow-400"
-                              : "text-emerald-400"
-                        )}
-                      >
-                        {cliente.riesgo || "N/A"}
-                      </span>
+                  {/* key stats */}
+                  <div className="mb-4 grid grid-cols-2 gap-3">
+                    <div>
+                      <p className="mb-0.5 text-xs text-white/40">Deuda Total</p>
+                      <p className={cn("text-sm font-semibold", cfg.cls)}>{fmtMXN(c.deudaTotal)}</p>
                     </div>
-                    {/* Fiabilidad */}
-                    <div className="rounded-lg bg-black/20 p-2 text-center">
-                      <span className="block text-[10px] text-white/40">Fiabilidad</span>
-                      <span className="text-xs font-bold text-cyan-400">
-                        {cliente.fiabilidad ?? 100}%
-                      </span>
-                    </div>
-                    {/* Contribución */}
-                    <div className="rounded-lg bg-black/20 p-2 text-center">
-                      <span className="block text-[10px] text-white/40">Contribución</span>
-                      <span className="text-xs font-bold text-emerald-400">
-                        ${(cliente.contribucion ?? 0).toLocaleString()}
-                      </span>
+                    <div>
+                      <p className="mb-0.5 text-xs text-white/40">Ventas Totales</p>
+                      <p className="text-sm font-semibold text-white">{fmtMXN(c.ventasTotales)}</p>
                     </div>
                   </div>
-                  <div className="mt-2 flex justify-between border-t border-white/5 pt-2 text-[10px] text-white/50">
-                    <span>Recencia: {cliente.recencia ?? 0} días</span>
-                    <span>Frecuencia: {cliente.frecuenciaCompra ?? 0} días</span>
+                  {/* progress */}
+                  <div className="mb-3">
+                    <div className="mb-1 flex justify-between text-xs">
+                      <span className="text-white/40">% Pagado</span>
+                      <span className="text-white/60">{c.porcentajePagado}%</span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${c.porcentajePagado}%` }}
+                        transition={{ duration: 0.8, delay: i * 0.04 }}
+                        className="h-full rounded-full bg-linear-to-r from-violet-500 to-fuchsia-500"
+                      />
+                    </div>
                   </div>
-                </div>
-
-                {cliente.ultimaCompra && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/40">Última Compra</span>
-                    <span className="text-white/60">{cliente.ultimaCompra}</span>
-                  </div>
-                )}
-                <div className="flex justify-between text-sm">
-                  <span className="text-white/40">Fecha Registro</span>
-                  <span className="text-white/60">{cliente.fechaRegistro}</span>
-                </div>
-                {cliente.direccion && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/40">Dirección</span>
-                    <span className="max-w-[60%] text-right text-white/60">
-                      {cliente.direccion}
-                    </span>
-                  </div>
-                )}
-                {cliente.notas && (
-                  <div className="rounded-lg bg-white/5 p-2 text-sm">
-                    <span className="mb-1 block text-white/40">Notas:</span>
-                    <span className="text-white/70">{cliente.notas}</span>
-                  </div>
-                )}
-
-                {/* Botones de acción */}
-                <div className="flex flex-wrap gap-2 border-t border-white/5 pt-3">
-                  <AuroraButton
-                    variant="secondary"
-                    size="sm"
-                    icon={<Eye size={14} />}
-                    onClick={() => onVerDetalle?.()}
-                  >
-                    Detalles
-                  </AuroraButton>
-                  <AuroraButton
-                    variant="secondary"
-                    size="sm"
-                    icon={<History size={14} />}
-                    onClick={() => onHistorial?.()}
-                    className="border-violet-500/30 hover:border-violet-500/50"
-                  >
-                    Historial
-                  </AuroraButton>
-                  {cliente.saldoPendiente > 0 && (
-                    <AuroraButton
-                      variant="secondary"
-                      size="sm"
-                      icon={<DollarSign size={14} />}
-                      onClick={() => onAbono?.()}
-                      className="border-emerald-500/30 text-emerald-400 hover:border-emerald-500/50"
+                  <p className="mb-4 text-xs text-white/40">
+                    Frecuencia: <span className="text-white/60">{c.frecuenciaCompra} días</span>
+                  </p>
+                  {/* actions */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setAbono(c)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/15 px-3 py-2 text-xs font-medium text-emerald-400 transition-colors hover:bg-emerald-500/25"
                     >
-                      Registrar Abono
-                    </AuroraButton>
-                  )}
-                  <AuroraButton
-                    variant="secondary"
-                    size="sm"
-                    icon={<Edit3 size={14} />}
-                    onClick={() => onEditar?.()}
-                    className="border-cyan-500/30 hover:border-cyan-500/50"
-                  >
-                    Editar
-                  </AuroraButton>
-                  <AuroraButton
-                    variant="secondary"
-                    size="sm"
-                    icon={<Trash2 size={14} />}
-                    onClick={() => setShowDeleteConfirm(true)}
-                    className="border-red-500/30 text-red-400 hover:border-red-500/50"
-                  >
-                    Eliminar
-                  </AuroraButton>
-                </div>
-
-                {/* Modal de confirmación de eliminación */}
-                <AnimatePresence>
-                  {showDeleteConfirm && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      className="mt-3 rounded-xl border border-red-500/30 bg-red-500/10 p-4"
+                      <DollarSign size={13} /> Registrar Abono
+                    </button>
+                    <button
+                      onClick={() => setDetail(c)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-violet-500/20 bg-violet-500/15 px-3 py-2 text-xs font-medium text-violet-400 transition-colors hover:bg-violet-500/25"
                     >
-                      <div className="flex items-start gap-3">
-                        <AlertTriangle size={20} className="mt-0.5 flex-shrink-0 text-red-400" />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-white">¿Eliminar cliente?</p>
-                          <p className="mt-1 text-xs text-white/60">
-                            Esta acción eliminará a {cliente.nombre} y todo su historial. Esta
-                            acción no se puede deshacer.
-                          </p>
-                          <div className="mt-3 flex gap-2">
-                            <AuroraButton
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => setShowDeleteConfirm(false)}
-                            >
-                              Cancelar
-                            </AuroraButton>
-                            <AuroraButton
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => {
-                                onEliminar?.()
-                                setShowDeleteConfirm(false)
-                              }}
-                              className="border-red-500/50 bg-red-500/20 text-red-400 hover:bg-red-500/30"
-                            >
-                              Sí, Eliminar
-                            </AuroraButton>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      <History size={13} /> Ver Historial
+                    </button>
+                  </div>
+                </motion.div>
+              )
+            })}
+            {!filtered.length && (
+              <div className="col-span-full py-16 text-center">
+                <Users size={40} className="mx-auto mb-3 text-white/20" />
+                <p className="text-sm text-white/40">No se encontraron clientes</p>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.article>
-    </div>
-  )
-}
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-// 🎯 MAIN COMPONENT — Aurora Clientes Panel Unified
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-
-export function AuroraClientesPanelUnified({
-  clientes: clientesProp,
-  onNuevoCliente,
-  onVerDetalle,
-  onEditarCliente,
-  onEliminarCliente,
-  onRegistrarAbono,
-  onVerHistorial,
-  onExportar,
-  onRefresh,
-  loading: loadingProp = false,
-  className,
-}: AuroraClientesPanelUnifiedProps) {
-  // ═══════════════════════════════════════════════════════════════════════════
-  // 🔥 CARGAR DATOS REALES DE LA API SI NO SE PASAN PROPS
-  // ═══════════════════════════════════════════════════════════════════════════
-  const { data: clientesAPI, loading: loadingAPI, refetch: refetchAPI } = useClientesData()
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // 🌟 SUPREME SYSTEMS INITIALIZATION
-  // ═══════════════════════════════════════════════════════════════════════════
-  useSmoothScroll() // Activar smooth scroll 120fps en todo el panel
-
-  // Transformar datos de API al formato del componente
-  const transformedClientes = useMemo((): Cliente[] => {
-    if (!clientesAPI || clientesAPI.length === 0) return []
-
-    return clientesAPI.map(
-      (c: {
-        id: string
-        nombre: string
-        email?: string | null
-        telefono?: string | null
-        direccion?: string | null
-        estado?: string
-        saldoPendiente?: number
-        createdAt?: Date | string
-      }): Cliente => ({
-        id: c.id,
-        nombre: c.nombre,
-        empresa: undefined,
-        email: c.email || "",
-        telefono: c.telefono || "",
-        direccion: c.direccion || "",
-        estado: (c.estado === "activo"
-          ? "activo"
-          : c.estado === "inactivo"
-            ? "inactivo"
-            : c.estado === "suspendido"
-              ? "suspendido"
-              : "activo") as Cliente["estado"],
-        saldoPendiente: c.saldoPendiente || 0,
-        totalCompras: 0,
-        ultimaCompra: undefined,
-        fechaRegistro:
-          typeof c.createdAt === "string"
-            ? c.createdAt
-            : c.createdAt?.toISOString() || new Date().toISOString(),
-        notas: undefined,
-      })
-    )
-  }, [clientesAPI])
-
-  // Usar datos de props si se pasan, sino usar datos de API (sin fallback a mock)
-  const clientes = useMemo(() => {
-    if (clientesProp && Array.isArray(clientesProp) && clientesProp.length > 0) return clientesProp
-    return Array.isArray(transformedClientes) ? transformedClientes : [] // Si está vacío, mostrar vacío (sin mock data)
-  }, [clientesProp, transformedClientes])
-
-  const loading = loadingProp || loadingAPI
-
-  const [filtros, setFiltros] = useState<FiltrosState>({
-    estado: "todos",
-    busqueda: "",
-    tieneDeuda: null,
-  })
-  const [showExportMenu, setShowExportMenu] = useState(false)
-  const [showFiltersPanel, setShowFiltersPanel] = useState(false)
-  const [_confirmDelete, setConfirmDelete] = useState<Cliente | null>(null)
-
-  // Filtered clientes - PRIMERO para que otros hooks lo usen
-  const filteredClientes = useMemo(() => {
-    return clientes.filter((c) => {
-      // Filtro por estado o por adeudo (tabs especiales)
-      let matchEstado = false
-      if (filtros.estado === "todos") {
-        matchEstado = true
-      } else if (filtros.estado === "con_adeudo") {
-        matchEstado = c.saldoPendiente > 0
-      } else if (filtros.estado === "sin_adeudo") {
-        matchEstado = c.saldoPendiente === 0
-      } else {
-        // Estado normal (activo, inactivo, suspendido)
-        matchEstado = c.estado === filtros.estado
-      }
-
-      const matchBusqueda =
-        !filtros.busqueda ||
-        c.nombre.toLowerCase().includes(filtros.busqueda.toLowerCase()) ||
-        c.empresa?.toLowerCase().includes(filtros.busqueda.toLowerCase()) ||
-        c.email.toLowerCase().includes(filtros.busqueda.toLowerCase()) ||
-        c.telefono.includes(filtros.busqueda)
-
-      const matchDeuda =
-        filtros.tieneDeuda === null ||
-        (filtros.tieneDeuda ? c.saldoPendiente > 0 : c.saldoPendiente === 0)
-
-      return matchEstado && matchBusqueda && matchDeuda
-    })
-  }, [clientes, filtros])
-
-  // Función de exportar
-  const handleExportar = useCallback(
-    (formato: "csv" | "excel" | "pdf") => {
-      if (onExportar) {
-        onExportar(formato, filteredClientes)
-      } else {
-        // Exportación por defecto - CSV
-        const headers = [
-          "ID",
-          "Nombre",
-          "Empresa",
-          "Email",
-          "Teléfono",
-          "Estado",
-          "Saldo Pendiente",
-          "Total Compras",
-          "Última Compra",
-          "Fecha Registro",
-        ]
-        const rows = filteredClientes.map((c) => [
-          c.id,
-          c.nombre,
-          c.empresa || "",
-          c.email,
-          c.telefono,
-          c.estado,
-          c.saldoPendiente.toString(),
-          c.totalCompras.toString(),
-          c.ultimaCompra || "",
-          c.fechaRegistro,
-        ])
-
-        const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n")
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
-        const link = document.createElement("a")
-        link.href = URL.createObjectURL(blob)
-        link.download = `clientes_${new Date().toISOString().split("T")[0]}.csv`
-        link.click()
-      }
-      setShowExportMenu(false)
-    },
-    [onExportar, filteredClientes]
-  )
-
-  // Función de eliminar con confirmación
-  const _handleEliminar = useCallback(
-    (cliente: Cliente) => {
-      if (onEliminarCliente) {
-        onEliminarCliente(cliente)
-      }
-      setConfirmDelete(null)
-    },
-    [onEliminarCliente]
-  )
-
-  // Stats
-  const stats = useMemo(() => {
-    const total = clientes.length
-    const activos = clientes.filter((c) => c.estado === "activo").length
-    const vip = clientes.filter((c) => c.categoria === "VIP").length
-    const sinAdeudo = clientes.filter((c) => c.saldoPendiente === 0).length
-    const conDeuda = clientes.filter((c) => c.saldoPendiente > 0).length
-
-    const deudaTotal = clientes.reduce((sum, c) => sum + c.saldoPendiente, 0)
-    const totalComprasHistorico = clientes.reduce((sum, c) => sum + c.totalCompras, 0)
-
-    // Nuevos este mes
-    const thisMonth = new Date()
-    const thisMonthStr = `${thisMonth.getFullYear()}-${String(thisMonth.getMonth() + 1).padStart(2, "0")}`
-    const nuevosEsteMes = clientes.filter((c) => c.fechaRegistro.startsWith(thisMonthStr)).length
-
-    return {
-      total,
-      activos,
-      vip,
-      sinAdeudo,
-      conDeuda,
-      deudaTotal,
-      totalComprasHistorico,
-      nuevosEsteMes,
-    }
-  }, [clientes])
-
-  // Chart data - Deuda por estado
-  const _deudaChartData = useMemo(() => {
-    const byEstado = clientes.reduce(
-      (acc, c) => {
-        const key = c.estado
-        if (!acc[key]) acc[key] = 0
-        acc[key] += c.saldoPendiente
-        return acc
-      },
-      {} as Record<string, number>
-    )
-
-    return Object.entries(byEstado).map(([estado, value]) => ({
-      name: estado.charAt(0).toUpperCase() + estado.slice(1),
-      value,
-    }))
-  }, [clientes])
-
-  // Actividad últimos 7 días
-  const actividadChartData = useMemo(() => {
-    // Días de la semana determinísticos para evitar mismatch SSR/Cliente
-    const diasSemana = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"]
-    const last7Days = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date()
-      date.setDate(date.getDate() - i)
-      return date.toISOString().split("T")[0]
-    }).reverse()
-
-    return last7Days.map((fecha) => {
-      const dayClientes = clientes.filter((c) => c.ultimaCompra === fecha)
-      // Usar getUTCDay para consistencia SSR/Cliente
-      const dayIndex = fecha ? new Date(fecha + "T00:00:00Z").getUTCDay() : 0
-      return {
-        name: diasSemana[dayIndex],
-        value: dayClientes.length,
-        compras: dayClientes.reduce((sum, c) => sum + c.totalCompras, 0) / 1000,
-      }
-    })
-  }, [clientes])
-
-  // Tabs usando estados reales del schema DB
-  const tabs = [
-    { id: "todos", label: "Todos" },
-    { id: "activo", label: "Activos" },
-    { id: "con_adeudo", label: "Con Adeudo" },
-    { id: "sin_adeudo", label: "Sin Adeudo" },
-    { id: "inactivo", label: "Inactivos" },
-    { id: "suspendido", label: "Suspendidos" },
-  ]
-
-  return (
-    <SupremeClientesBackground
-      showGradient
-      showVignette
-      intensity={0.7}
-      className={cn("min-h-screen", className)}
-    >
-      {/* 🌌 AURORA BACKGROUND OVERLAY */}
-      <AuroraBackground
-        intensity="low"
-        colors={["violet", "cyan", "magenta"]}
-        interactive
-        className="absolute inset-0 z-0"
-      />
-
-      <main className="relative z-10 p-6" aria-label="Panel de clientes CHRONOS">
-        {/* Header - ELEVATED PREMIUM */}
-        <header className="mb-8 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-          <div className="relative">
-            {/* Decorative glow orb */}
-            <div className="absolute -top-4 -left-4 h-20 w-32 rounded-full bg-violet-500/20 blur-3xl" />
-            <motion.h1
-              className="relative flex items-center gap-4 text-3xl font-bold"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <motion.div
-                className="flex h-12 w-12 items-center justify-center rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 shadow-[0_0_20px_rgba(139,92,246,0.3)]"
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                <Users className="h-6 w-6 text-violet-400" aria-hidden="true" />
-              </motion.div>
-              <span className="bg-gradient-to-r from-white via-violet-200 to-white bg-clip-text text-transparent">
-                Clientes
-              </span>
-            </motion.h1>
-            <p className="relative mt-2 text-white/50">Gestión integral de cartera de clientes</p>
-            {/* Animated underline */}
+      {/* ══════════ 7 · DETAIL DRAWER ══════════ */}
+      <AnimatePresence>
+        {detail && (
+          <>
             <motion.div
-              className="mt-2 h-0.5 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500"
-              initial={{ width: 0 }}
-              animate={{ width: 80 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeDrawer}
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
             />
-          </div>
-
-          <div className="flex items-center gap-3">
-            <AuroraButton
-              variant="glow"
-              color="violet"
-              icon={<UserPlus size={18} />}
-              onClick={onNuevoCliente}
+            <motion.aside
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 250 }}
+              className="fixed top-0 right-0 z-50 h-full w-full max-w-md overflow-y-auto border-l border-white/8 bg-gray-950/95 backdrop-blur-2xl"
             >
-              Nuevo Cliente
-            </AuroraButton>
-
-            {/* Botón de Exportar con menú */}
-            <div className="relative">
-              <AuroraButton
-                variant="secondary"
-                icon={<Download size={18} />}
-                onClick={() => setShowExportMenu(!showExportMenu)}
-              >
-                Exportar
-              </AuroraButton>
-
-              <AnimatePresence>
-                {showExportMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    className="absolute top-full right-0 z-50 mt-2 min-w-[160px] overflow-hidden rounded-xl border border-white/10 bg-gray-900/95 shadow-2xl backdrop-blur-xl"
-                  >
-                    <button
-                      onClick={() => handleExportar("csv")}
-                      className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-                    >
-                      <FileText size={16} />
-                      Exportar CSV
-                    </button>
-                    <button
-                      onClick={() => handleExportar("excel")}
-                      className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-                    >
-                      <FileText size={16} className="text-emerald-400" />
-                      Exportar Excel
-                    </button>
-                    <button
-                      onClick={() => handleExportar("pdf")}
-                      className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-                    >
-                      <FileText size={16} className="text-red-400" />
-                      Exportar PDF
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Botón de Filtros Avanzados */}
-            <AuroraButton
-              variant="secondary"
-              icon={<Filter size={18} />}
-              onClick={() => setShowFiltersPanel(!showFiltersPanel)}
-              className={showFiltersPanel ? "border-violet-500/50" : ""}
-            >
-              Filtros
-            </AuroraButton>
-
-            <motion.button
-              onClick={() => {
-                refetchAPI()
-                onRefresh?.()
-              }}
-              aria-label={loading ? "Actualizando datos..." : "Actualizar datos de clientes"}
-              className="rounded-xl border border-white/10 bg-white/5 p-3 text-white/60 transition-colors hover:text-white"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <RefreshCw size={20} className={loading ? "animate-spin" : ""} aria-hidden="true" />
-            </motion.button>
-          </div>
-        </header>
-
-        {/* Panel de Filtros Avanzados */}
-        <AnimatePresence>
-          {showFiltersPanel && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mb-6 overflow-hidden"
-            >
-              <AuroraGlassCard className="p-4">
-                <div className="mb-4 flex items-center justify-between">
-                  <h3 className="flex items-center gap-2 text-sm font-medium text-white/70">
-                    <Filter size={16} />
-                    Filtros Avanzados
-                  </h3>
+              <div className="space-y-6 p-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-bold text-white">Detalle del Cliente</h2>
                   <button
-                    onClick={() => setShowFiltersPanel(false)}
-                    className="rounded-lg p-1 text-white/40 transition-colors hover:bg-white/10 hover:text-white"
+                    onClick={closeDrawer}
+                    className="rounded-xl p-2 text-white/40 transition-colors hover:bg-white/10 hover:text-white"
                   >
-                    <X size={16} />
+                    <X size={18} />
                   </button>
                 </div>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                  {/* Filtro por deuda */}
+                <div className="flex items-center gap-4">
+                  <div
+                    className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-xl font-bold text-white"
+                    style={{
+                      background: `linear-gradient(135deg, ${avatarColor(detail.nombre)}, ${avatarColor(detail.nombre)}88)`,
+                    }}
+                  >
+                    {initials(detail.nombre)}
+                  </div>
                   <div>
-                    <label className="mb-2 block text-xs text-white/50">Estado de Deuda</label>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setFiltros((prev) => ({ ...prev, tieneDeuda: null }))}
-                        className={cn(
-                          "flex-1 rounded-lg px-3 py-2 text-sm transition-colors",
-                          filtros.tieneDeuda === null
-                            ? "border border-violet-500/50 bg-violet-500/20 text-violet-400"
-                            : "border border-white/10 bg-white/5 text-white/60"
-                        )}
-                      >
-                        Todos
-                      </button>
-                      <button
-                        onClick={() => setFiltros((prev) => ({ ...prev, tieneDeuda: true }))}
-                        className={cn(
-                          "flex-1 rounded-lg px-3 py-2 text-sm transition-colors",
-                          filtros.tieneDeuda === true
-                            ? "border border-yellow-500/50 bg-yellow-500/20 text-yellow-400"
-                            : "border border-white/10 bg-white/5 text-white/60"
-                        )}
-                      >
-                        Con Deuda
-                      </button>
-                      <button
-                        onClick={() => setFiltros((prev) => ({ ...prev, tieneDeuda: false }))}
-                        className={cn(
-                          "flex-1 rounded-lg px-3 py-2 text-sm transition-colors",
-                          filtros.tieneDeuda === false
-                            ? "border border-emerald-500/50 bg-emerald-500/20 text-emerald-400"
-                            : "border border-white/10 bg-white/5 text-white/60"
-                        )}
-                      >
-                        Sin Deuda
-                      </button>
+                    <p className="text-xl font-bold text-white">{detail.nombre}</p>
+                    <p className="text-sm text-white/40">Cliente desde {fmtDate(detail.fecha)}</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {detail.email && (
+                    <div className="flex items-center gap-3 text-sm">
+                      <Mail size={14} className="text-white/30" />
+                      <span className="text-white/70">{detail.email}</span>
+                    </div>
+                  )}
+                  {detail.telefono && (
+                    <div className="flex items-center gap-3 text-sm">
+                      <Phone size={14} className="text-white/30" />
+                      <span className="text-white/70">{detail.telefono}</span>
+                    </div>
+                  )}
+                </div>
+                <div className={cn(G, "space-y-3 p-4")}>
+                  <h3 className="text-sm font-medium text-white/60">Resumen Financiero</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <p className="text-xs text-white/40">Deuda Total</p>
+                      <p className="text-lg font-bold text-amber-400">
+                        {fmtMXN(detail.deudaTotal)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-white/40">Ventas Totales</p>
+                      <p className="text-lg font-bold text-white">{fmtMXN(detail.ventasTotales)}</p>
                     </div>
                   </div>
-
-                  {/* Resumen de filtros activos */}
-                  <div className="flex items-end md:col-span-2">
-                    <div className="flex flex-1 items-center gap-2 text-sm text-white/50">
-                      <span>
-                        Mostrando {filteredClientes.length} de {clientes.length} clientes
-                      </span>
-                      {(filtros.estado !== "todos" ||
-                        filtros.tieneDeuda !== null ||
-                        filtros.busqueda) && (
-                        <button
-                          onClick={() =>
-                            setFiltros({ estado: "todos", busqueda: "", tieneDeuda: null })
-                          }
-                          className="text-violet-400 underline hover:text-violet-300"
-                        >
-                          Limpiar filtros
-                        </button>
-                      )}
+                  <div>
+                    <div className="mb-1 flex justify-between text-xs">
+                      <span className="text-white/40">Progreso de pago</span>
+                      <span className="text-white/60">{detail.porcentajePagado}%</span>
+                    </div>
+                    <div className="h-2.5 overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className="h-full rounded-full bg-linear-to-r from-violet-500 to-emerald-500"
+                        style={{ width: `${detail.porcentajePagado}%` }}
+                      />
                     </div>
                   </div>
                 </div>
-              </AuroraGlassCard>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Stats Row */}
-        <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <AuroraStatWidget
-            label="Total Clientes"
-            value={stats.total.toString()}
-            icon={<Users size={20} />}
-            color="violet"
-            change={12.5}
-            trend="up"
-            className="transition-spring hover-elevate"
-          />
-          <AuroraStatWidget
-            label="Con Adeudo"
-            value={stats.conDeuda.toString()}
-            icon={<Wallet size={20} />}
-            color="gold"
-            change={-5.2}
-            trend="down"
-            className="transition-spring hover-elevate"
-          />
-          <AuroraStatWidget
-            label="Deuda Total"
-            value={`$${stats.deudaTotal.toLocaleString()}`}
-            icon={<CreditCard size={20} />}
-            color="magenta"
-            className="transition-spring hover-elevate"
-          />
-          <AuroraStatWidget
-            label="Nuevos este Mes"
-            value={stats.nuevosEsteMes.toString()}
-            icon={<TrendingUp size={20} />}
-            color="cyan"
-            change={15.0}
-            trend="up"
-          />
-        </div>
-
-        {/* ═══════════════════════════════════════════════════════════════════════════
-         * 🍎 iOS PREMIUM METRICS — Cards limpias SIN efectos 3D problemáticos
-         * ═══════════════════════════════════════════════════════════════════════════ */}
-        <iOSSection title="Vista iOS Premium" description="Clientes - Sin efectos 3D" className="mb-6">
-          <iOSGrid cols={4} gap="md">
-            <iOSMetricCardPremium
-              title="Total Clientes"
-              value={stats.total.toString()}
-              icon={Users}
-              iconColor="#8B5CF6"
-              trend={{ value: 12.5, direction: 'up' }}
-              variant="featured"
-            />
-            <iOSMetricCardPremium
-              title="Con Adeudo"
-              value={stats.conDeuda.toString()}
-              icon={Wallet}
-              iconColor="#FBBF24"
-              trend={{ value: 5.2, direction: 'down' }}
-            />
-            <iOSMetricCardPremium
-              title="Deuda Total"
-              value={`$${stats.deudaTotal.toLocaleString()}`}
-              icon={CreditCard}
-              iconColor="#EC4899"
-            />
-            <iOSMetricCardPremium
-              title="Nuevos (Mes)"
-              value={stats.nuevosEsteMes.toString()}
-              icon={TrendingUp}
-              iconColor="#06B6D4"
-              trend={{ value: 15.0, direction: 'up' }}
-            />
-          </iOSGrid>
-        </iOSSection>
-
-        {/* Main Grid */}
-        <div className="grid grid-cols-12 gap-6">
-          {/* Left: Timeline */}
-          <div className="col-span-12 space-y-6 lg:col-span-8">
-            {/* Filters & Search */}
-            <AuroraGlassCard className="p-4">
-              <div className="flex flex-wrap items-center gap-4">
-                <AuroraSearch
-                  value={filtros.busqueda}
-                  onChange={(v) => setFiltros((prev) => ({ ...prev, busqueda: v }))}
-                  placeholder="Buscar cliente..."
-                  color="violet"
-                  className="w-64"
-                />
-
-                <AuroraTabs
-                  tabs={tabs}
-                  activeTab={filtros.estado}
-                  onTabChange={(v) => setFiltros((prev) => ({ ...prev, estado: v }))}
-                  color="violet"
-                />
-              </div>
-            </AuroraGlassCard>
-
-            {/* Timeline */}
-            <AuroraGlassCard className="p-6">
-              <div className="space-y-2">
-                {filteredClientes.map((cliente, i) => (
-                  <ClienteTimelineItem
-                    key={cliente.id}
-                    cliente={cliente}
-                    isFirst={i === 0}
-                    isLast={i === filteredClientes.length - 1}
-                    onVerDetalle={() => onVerDetalle?.(cliente)}
-                    onEditar={() => onEditarCliente?.(cliente)}
-                    onEliminar={() => onEliminarCliente?.(cliente)}
-                    onAbono={() => onRegistrarAbono?.(cliente)}
-                    onHistorial={() => onVerHistorial?.(cliente)}
-                  />
-                ))}
-
-                {filteredClientes.length === 0 && (
-                  <div className="py-12 text-center text-white/40">
-                    <Users size={48} className="mx-auto mb-4 opacity-50" />
-                    <p>No se encontraron clientes</p>
-                  </div>
-                )}
-              </div>
-            </AuroraGlassCard>
-          </div>
-
-          {/* Right: Visualization & Quick Stats */}
-          <div className="col-span-12 space-y-6 lg:col-span-4">
-            {/* Client Network Visualization */}
-            <AuroraGlassCard glowColor="violet" className="p-4">
-              <h3 className="mb-3 text-center text-sm font-medium text-white/70">
-                Red de Clientes
-              </h3>
-              <div className="h-48">
-                <ClientNetworkVisualization
-                  totalClientes={stats.total}
-                  activos={stats.activos}
-                  vip={stats.vip}
-                />
-              </div>
-            </AuroraGlassCard>
-
-            {/* Activity Chart */}
-            <AuroraAreaChart
-              data={actividadChartData}
-              height={200}
-              color="violet"
-              showArea
-              showLine
-              showDots
-              showTooltip
-              title="Actividad Últimos 7 Días"
-            />
-
-            {/* Quick Stats */}
-            <AuroraGlassCard glowColor="cyan" className="p-5">
-              <h3 className="mb-4 text-sm font-medium text-white/70">Resumen de Cartera</h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between rounded-xl bg-violet-500/10 p-3">
-                  <span className="text-sm text-white/60">Clientes VIP</span>
-                  <span className="text-sm font-bold text-violet-400">{stats.vip}</span>
-                </div>
-                <div className="flex items-center justify-between rounded-xl bg-emerald-500/10 p-3">
-                  <span className="text-sm text-white/60">Sin Deuda</span>
-                  <span className="text-sm font-bold text-emerald-400">
-                    {stats.total - stats.conDeuda}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between rounded-xl bg-yellow-500/10 p-3">
-                  <span className="text-sm text-white/60">Con Deuda</span>
-                  <span className="text-sm font-bold text-yellow-400">{stats.conDeuda}</span>
-                </div>
-                <div className="flex items-center justify-between rounded-xl bg-cyan-500/10 p-3">
-                  <span className="text-sm text-white/60">Total Histórico</span>
-                  <span className="text-sm font-bold text-cyan-400">
-                    ${(stats.totalComprasHistorico / 1000000).toFixed(1)}M
-                  </span>
-                </div>
-              </div>
-            </AuroraGlassCard>
-            {/* Top Clientes por Deuda */}
-            <AuroraGlassCard glowColor="gold" className="p-5">
-              <h3 className="mb-4 text-sm font-medium text-white/70">Mayor Deuda Pendiente</h3>
-              <div className="space-y-3">
-                {clientes
-                  .filter((c) => c.saldoPendiente > 0)
-                  .sort((a, b) => b.saldoPendiente - a.saldoPendiente)
-                  .slice(0, 5)
-                  .map((cliente, i) => (
-                    <div key={cliente.id} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold"
-                          style={{
-                            background: `linear-gradient(135deg, hsl(${40 - i * 8}, 80%, 50%), hsl(${40 - i * 8}, 70%, 40%))`,
-                          }}
-                        >
-                          {i + 1}
+                {/* purchase history (last 10) */}
+                <div>
+                  <h3 className="mb-3 text-sm font-medium text-white/60">
+                    Historial de Compras (últimas 10)
+                  </h3>
+                  <div className="space-y-2">
+                    {detail.ventasTotales > 0 ? (
+                      Array.from({
+                        length: Math.min(3, Math.ceil(detail.ventasTotales / 5000)),
+                      }).map((_, i) => (
+                        <div key={i} className={cn(G, "flex items-center justify-between p-3")}>
+                          <div>
+                            <p className="text-sm text-white/70">Venta #{i + 1}</p>
+                            <p className="text-xs text-white/40">
+                              {fmtDate(new Date(Date.now() - i * 604800000).toISOString())}
+                            </p>
+                          </div>
+                          <span className="text-sm font-medium text-white">
+                            {fmtMXN(
+                              detail.ventasTotales /
+                                Math.max(1, Math.ceil(detail.ventasTotales / 5000))
+                            )}
+                          </span>
                         </div>
-                        <span className="text-sm text-white/70">{cliente.nombre}</span>
-                      </div>
-                      <span className="text-sm font-medium text-yellow-400">
-                        ${cliente.saldoPendiente.toLocaleString()}
-                      </span>
+                      ))
+                    ) : (
+                      <p className="py-4 text-center text-sm text-white/40">
+                        Sin ventas registradas
+                      </p>
+                    )}
+                  </div>
+                </div>
+                {/* abonos history */}
+                <div>
+                  <h3 className="mb-3 text-sm font-medium text-white/60">Historial de Abonos</h3>
+                  <div className={cn(G, "p-3 text-center")}>
+                    <p className="text-sm text-white/40">Sin abonos registrados</p>
+                  </div>
+                </div>
+                {/* debt distribution */}
+                {detail.deudaTotal > 0 && (
+                  <div className={cn(G, "p-4")}>
+                    <h3 className="mb-2 text-sm font-medium text-white/60">
+                      Distribución de Deuda
+                    </h3>
+                    <div className="h-3 overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className="h-full rounded-full bg-linear-to-r from-amber-500 to-red-500"
+                        style={{
+                          width: `${Math.min(100, (detail.deudaTotal / Math.max(1, detail.ventasTotales)) * 100)}%`,
+                        }}
+                      />
                     </div>
-                  ))}
-                {clientes.filter((c) => c.saldoPendiente > 0).length === 0 && (
-                  <p className="py-4 text-center text-sm text-white/40">Sin deudas pendientes 🎉</p>
+                    <p className="mt-2 text-xs text-white/40">
+                      {fmtMXN(detail.deudaTotal)} de {fmtMXN(detail.ventasTotales)} total
+                    </p>
+                  </div>
                 )}
+                <button
+                  onClick={() => {
+                    closeDrawer()
+                    setAbono(detail)
+                  }}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-violet-500/30 bg-violet-500/20 py-3 font-medium text-violet-300 transition-colors hover:bg-violet-500/30"
+                >
+                  <DollarSign size={16} /> Registrar Abono
+                </button>
               </div>
-            </AuroraGlassCard>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ══════════ 8 · ABONO MODAL — ModalShell + GlassFormSystem ══════════ */}
+      <ModalShell
+        isOpen={!!abono}
+        onClose={closeAbono}
+        title="Registrar Abono"
+        description={
+          abono ? `Cliente: ${abono.nombre} · Deuda actual: ${fmtMXN(abono.deudaTotal)}` : ""
+        }
+        size="sm"
+      >
+        {abono && (
+          <div className="space-y-5">
+            <GlassCurrencyInput
+              label="Monto del Abono"
+              value={Number(abonoAmt) || 0}
+              onChange={(v) => setAbonoAmt(String(v))}
+              currency="MXN"
+              placeholder="0.00"
+            />
+            <GlassSelect
+              label="Banco Destino"
+              value={abonoBank}
+              onChange={(val) => setAbonoBank(val)}
+              options={[
+                { value: "", label: "Seleccionar banco…" },
+                { value: "efectivo", label: "Efectivo" },
+                { value: "transferencia", label: "Transferencia Bancaria" },
+              ]}
+            />
+            {Number(abonoAmt) > 0 && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className={cn(G, "space-y-1 p-3")}
+              >
+                <p className="mb-2 text-xs text-white/50">Vista previa</p>
+                <div className="flex justify-between text-sm">
+                  <span className="text-white/60">Abono</span>
+                  <span className="font-medium text-emerald-400">{fmtMXN(Number(abonoAmt))}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-white/60">Deuda restante</span>
+                  <span className="font-medium text-white">
+                    {fmtMXN(Math.max(0, abono.deudaTotal - Number(abonoAmt)))}
+                  </span>
+                </div>
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
+                  <div
+                    className="h-full rounded-full bg-linear-to-r from-emerald-500 to-cyan-500"
+                    style={{
+                      width: `${Math.min(100, (Number(abonoAmt) / Math.max(1, abono.deudaTotal)) * 100)}%`,
+                    }}
+                  />
+                </div>
+              </motion.div>
+            )}
+            <button
+              onClick={handleAbonar}
+              disabled={!abonoAmt || !abonoBank || Number(abonoAmt) <= 0 || abonarVenta.isPending}
+              className={cn(
+                "flex w-full items-center justify-center gap-2 rounded-xl py-3 font-medium transition-all",
+                abonoAmt && abonoBank && Number(abonoAmt) > 0
+                  ? "cursor-pointer border border-emerald-500/30 bg-emerald-500/25 text-emerald-300 hover:bg-emerald-500/35"
+                  : "cursor-not-allowed border border-white/10 bg-white/5 text-white/30"
+              )}
+            >
+              <Check size={16} /> {abonarVenta.isPending ? "Procesando…" : "Confirmar Abono"}
+            </button>
           </div>
+        )}
+      </ModalShell>
+
+      {/* ══════════ 9 · NEW CLIENT MODAL — ModalShell + GlassFormSystem ══════════ */}
+      <ModalShell
+        isOpen={showNewClient}
+        onClose={() => setShowNewClient(false)}
+        title="Nuevo Cliente"
+        description="Completa los datos del cliente"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <GlassInput
+            label="Nombre *"
+            value={newClient.nombre}
+            onChange={(e) => setNewClient((p) => ({ ...p, nombre: e.target.value }))}
+            placeholder="Nombre del cliente"
+          />
+          <GlassInput
+            label="Email"
+            value={newClient.email}
+            onChange={(e) => setNewClient((p) => ({ ...p, email: e.target.value }))}
+            placeholder="email@ejemplo.com"
+            type="email"
+          />
+          <GlassInput
+            label="Teléfono"
+            value={newClient.telefono}
+            onChange={(e) => setNewClient((p) => ({ ...p, telefono: e.target.value }))}
+            placeholder="+52 000 000 0000"
+          />
+          <button
+            onClick={handleCreateCliente}
+            disabled={!newClient.nombre.trim() || createCliente.isPending}
+            className={cn(
+              "flex w-full items-center justify-center gap-2 rounded-xl py-3 font-medium transition-all",
+              newClient.nombre.trim()
+                ? "cursor-pointer border border-violet-500/30 bg-violet-500/25 text-violet-300 hover:bg-violet-500/35"
+                : "cursor-not-allowed border border-white/10 bg-white/5 text-white/30"
+            )}
+          >
+            <UserPlus size={16} /> {createCliente.isPending ? "Creando…" : "Crear Cliente"}
+          </button>
         </div>
-      </main>
-    </SupremeClientesBackground>
+      </ModalShell>
+
+      {/* ══════════ 10 · EDIT CLIENT MODAL — ModalShell + GlassFormSystem ══════════ */}
+      <ModalShell
+        isOpen={!!editClient}
+        onClose={() => setEditClient(null)}
+        title="Editar Cliente"
+        description={editClient ? editClient.nombre : ""}
+        size="sm"
+      >
+        {editClient && (
+          <div className="space-y-4">
+            <GlassInput
+              label="Nombre"
+              value={editForm.nombre}
+              onChange={(e) => setEditForm((p) => ({ ...p, nombre: e.target.value }))}
+              placeholder="Nombre"
+            />
+            <GlassInput
+              label="Email"
+              value={editForm.email}
+              onChange={(e) => setEditForm((p) => ({ ...p, email: e.target.value }))}
+              placeholder="email@ejemplo.com"
+              type="email"
+            />
+            <GlassInput
+              label="Teléfono"
+              value={editForm.telefono}
+              onChange={(e) => setEditForm((p) => ({ ...p, telefono: e.target.value }))}
+              placeholder="+52 000 000 0000"
+            />
+            <button
+              onClick={handleEdit}
+              disabled={!editForm.nombre.trim()}
+              className={cn(
+                "flex w-full items-center justify-center gap-2 rounded-xl py-3 font-medium transition-all",
+                editForm.nombre.trim()
+                  ? "cursor-pointer border border-violet-500/30 bg-violet-500/25 text-violet-300 hover:bg-violet-500/35"
+                  : "cursor-not-allowed border border-white/10 bg-white/5 text-white/30"
+              )}
+            >
+              <Check size={16} /> Guardar Cambios
+            </button>
+          </div>
+        )}
+      </ModalShell>
+    </div>
   )
 }
 

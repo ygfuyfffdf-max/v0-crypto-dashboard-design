@@ -15,9 +15,9 @@ import {
   type ThemeStyle,
 } from "@/app/_components/chronos-2026/layout/ChronosHeader2026"
 import { NotificationsPanel } from "@/app/_components/modals/NotificationsPanel"
+import { useClerk } from "@clerk/nextjs"
 import { usePathname, useRouter } from "next/navigation"
 import { useCallback, useMemo, useState } from "react"
-import { useClerk } from "@clerk/nextjs"
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // MAPEO DE RUTAS

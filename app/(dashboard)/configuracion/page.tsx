@@ -1,20 +1,26 @@
-import { Metadata } from 'next'
-import { ConfiguracionClient } from './_components/ConfiguracionClient'
+"use client"
 
-export const metadata: Metadata = {
-  title: 'Configuración | CHRONOS',
-  description: 'Configuración del sistema',
-}
+import { PanelErrorBoundary } from "@/app/_components/chronos-2026/panels/PanelErrorBoundary"
+import { SupremeDashboardBackground } from "@/app/_components/chronos-2026/panels/SupremePanelBackgrounds"
+import dynamic from "next/dynamic"
+
+const AuroraConfiguracionPanelUnified = dynamic(
+  () => import("@/app/_components/chronos-2026/panels/AuroraConfiguracionPanelUnified"),
+  { ssr: false }
+)
 
 export default function ConfiguracionPage() {
   return (
-    <div className="flex flex-col gap-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight">Configuración</h1>
-        <p className="text-muted-foreground">Administra tu cuenta y preferencias del sistema</p>
-      </header>
-
-      <ConfiguracionClient />
-    </div>
+    <PanelErrorBoundary panelName="Configuracion">
+      <SupremeDashboardBackground
+        showParticles={false}
+        showGradient
+        showVignette
+        showGrid
+        intensity={0.65}
+      >
+        <AuroraConfiguracionPanelUnified />
+      </SupremeDashboardBackground>
+    </PanelErrorBoundary>
   )
 }

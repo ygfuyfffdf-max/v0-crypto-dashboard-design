@@ -16,6 +16,11 @@ const isPublicRoute = createRouteMatcher([
   '/api/auth/callback(.*)',
   '/error(.*)',
   '/maintenance(.*)',
+  // Static assets that must always be public
+  '/manifest(.*)',
+  '/favicon.ico',
+  '/icon-192.png',
+  '/icon-512.png',
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
@@ -30,8 +35,8 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|json)).*)',
+    // Skip manifest.json, Next.js internals and all static files (evita 401 PWA)
+    '/((?!manifest\\.json|_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|json)).*)',
     // Always run for API routes
     '/(api|trpc)(.*)',
   ],

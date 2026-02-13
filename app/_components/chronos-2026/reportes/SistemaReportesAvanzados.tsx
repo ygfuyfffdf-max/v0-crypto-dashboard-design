@@ -18,67 +18,36 @@
 
 'use client'
 
-import { cn } from '@/app/_lib/utils'
-import { motion, AnimatePresence } from 'motion/react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import {
-  BarChart3,
-  TrendingUp,
-  Download,
-  Calendar,
-  Filter,
-  Settings,
-  RefreshCw,
-  Eye,
-  EyeOff,
-  Plus,
-  Edit,
-  Trash2,
-  Play,
-  Pause,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  FileText,
-  BarChart2,
-  PieChart,
-  LineChart,
-  Activity,
-  Users,
-  DollarSign,
-  Package,
-  Zap,
-  Brain,
-  Sparkles,
-  Send,
-  Mail,
-  FileSpreadsheet,
-  FileJson,
-  File,
-  Search,
-  ChevronDown,
-  ChevronRight,
-  Star,
-  Award,
-  Target,
-  Globe,
-  Smartphone,
-  Tablet,
-  Monitor,
-  Printer,
-  Share2,
-  Save,
-  Copy,
-  Maximize2,
-  Minimize2,
-} from 'lucide-react'
-import { toast } from 'sonner'
 import { useAI } from '@/app/_hooks/useAI'
 import { usePushNotifications } from '@/app/_hooks/usePushNotifications'
-import { AuroraGlassCard, AuroraButton } from '../../ui/AuroraGlassSystem'
+import { cn } from '@/app/_lib/utils'
+import {
+    Activity,
+    AlertCircle,
+    BarChart2,
+    ChevronDown,
+    Cpu,
+    DollarSign,
+    FileText,
+    Filter,
+    LineChart,
+    Package,
+    PieChart,
+    Plus,
+    Save,
+    Search,
+    Sparkles,
+    Star,
+    Target,
+    Trash2,
+    TrendingUp,
+    Users
+} from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { memo, useCallback, useMemo, useState } from 'react'
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Line, Pie, LineChart as RechartsLineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { AuroraButton, AuroraGlassCard } from '../../ui/AuroraGlassSystem'
 import { QuantumCard } from '../../ui/QuantumElevatedUI'
-import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area } from 'recharts'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -908,7 +877,7 @@ const PanelInsightsIA = memo(function PanelInsightsIA({
       <div className="p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2 rounded-lg bg-gradient-to-r from-violet-500 to-cyan-500">
-            <Brain className="h-5 w-5 text-white" />
+            <Cpu className="h-5 w-5 text-white" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-white">Insights de IA</h3>
@@ -981,7 +950,7 @@ const PanelInsightsIA = memo(function PanelInsightsIA({
           {/* Sin Insights */}
           {insights.length === 0 && (
             <div className="text-center py-8">
-              <Brain className="mx-auto h-12 w-12 text-violet-400 mb-3" />
+              <Cpu className="mx-auto h-12 w-12 text-violet-400 mb-3" />
               <p className="text-white/60">No hay insights disponibles</p>
               <p className="text-sm text-white/40">Genera un reporte para obtener análisis inteligente</p>
             </div>
@@ -1120,9 +1089,9 @@ export const SistemaReportesAvanzados = memo(function SistemaReportesAvanzados({
     try {
       // Simular carga de datos
       await new Promise(resolve => setTimeout(resolve, 1500))
-      
+
       let datos: any[] = []
-      
+
       switch (templateId) {
         case 'tpl_ventas_inteligente':
           datos = [

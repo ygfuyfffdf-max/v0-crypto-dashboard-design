@@ -1,13 +1,13 @@
-'use client'
+"use client"
 
 /**
  * 🌌 KOCMOC CINEMATIC 3D — SILVER SPACE EDITION
  * Cinematográfica premium con colores plata/negro/blanco
  */
 
-import { AnimatePresence, motion } from 'motion/react'
-import { useEffect, useState } from 'react'
-import { SilverSpaceCinematic } from './KocmocPremiumSystem'
+import { AnimatePresence } from "motion/react"
+import { useState } from "react"
+import { SilverSpaceCinematic } from "./KocmocPremiumSystem"
 
 interface KocmocCinematic3DProps {
   onComplete?: () => void
@@ -35,7 +35,7 @@ export function KocmocCinematic3D({
         onComplete={handleComplete}
         duration={duration}
         showChronos={true}
-        useWebGL={true}
+        useWebGL={false}
       />
     </AnimatePresence>
   )

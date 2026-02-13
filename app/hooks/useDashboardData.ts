@@ -17,10 +17,10 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-'use client'
+"use client"
 
-import { useQueryClient } from '@tanstack/react-query'
-import { useCallback, useMemo } from 'react'
+import { useQueryClient } from "@tanstack/react-query"
+import { useCallback, useMemo } from "react"
 import {
   useAlmacenData,
   useBancosData,
@@ -29,7 +29,7 @@ import {
   useMovimientosData,
   useOrdenesCompraData,
   useVentasData,
-} from './useDataHooks'
+} from "./useDataHooks"
 
 // ═══════════════════════════════════════════════════════════════
 // TIPOS
@@ -54,19 +54,19 @@ export interface DashboardStats {
 export interface ActivityItem {
   id: string
   tipo:
-    | 'venta'
-    | 'compra'
-    | 'movimiento'
-    | 'cliente'
-    | 'alerta'
-    | 'abono'
-    | 'gasto'
-    | 'transferencia'
+    | "venta"
+    | "compra"
+    | "movimiento"
+    | "cliente"
+    | "alerta"
+    | "abono"
+    | "gasto"
+    | "transferencia"
   titulo: string
   descripcion: string
   timestamp: string
   monto?: number
-  estado?: 'success' | 'warning' | 'error' | 'info'
+  estado?: "success" | "warning" | "error" | "info"
   fecha: Date
 }
 
@@ -111,15 +111,15 @@ function formatRelativeTime(date: Date): string {
   const diffHours = Math.floor(diffMs / 3600000)
   const diffDays = Math.floor(diffMs / 86400000)
 
-  if (diffMins < 1) return 'Ahora mismo'
+  if (diffMins < 1) return "Ahora mismo"
   if (diffMins < 60) return `Hace ${diffMins} min`
   if (diffHours < 24) return `Hace ${diffHours}h`
   if (diffDays < 7) return `Hace ${diffDays} días`
-  return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+  return date.toLocaleDateString("es-ES", { day: "numeric", month: "short" })
 }
 
 function isThisMonth(date: Date | string): boolean {
-  const d = typeof date === 'string' ? new Date(date) : date
+  const d = typeof date === "string" ? new Date(date) : date
   const now = new Date()
   return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
 }
@@ -182,12 +182,12 @@ export function useDashboardData(): UseDashboardDataResult {
 
     // Clientes activos (con al menos una venta o estado activo)
     const clientesActivos = clientesArr.filter(
-      (c) => c.estado === 'activo' || (c.totalCompras && c.totalCompras > 0),
+      (c) => c.estado === "activo" || (c.totalCompras && c.totalCompras > 0)
     ).length
 
     // Órdenes pendientes (no completadas)
     const ordenesPendientes = ordenesArr.filter(
-      (o) => o.estado === 'pendiente' || o.estado === 'parcial',
+      (o) => o.estado === "pendiente" || o.estado === "parcial"
     ).length
 
     // Cobros pendientes (suma de montos restantes de ventas)
@@ -198,9 +198,17 @@ export function useDashboardData(): UseDashboardDataResult {
     const historicoGastos = bancosArr.reduce((acc, b) => acc + (b.historicoGastos || 0), 0)
     const gananciaNeta = historicoIngresos - historicoGastos
 
-    // Margen promedio (estimado: 24% base ajustado por ventas reales)
-    // En el modelo real vendría del cálculo: (precioVenta - precioCompra - flete) / precioVenta
-    const margenPromedio = ventasArr.length > 0 ? 24.3 : 0
+    // Margen promedio calculado: (precioVenta - precioCompra - flete) / precioVenta
+    const margenPromedio =
+      ventasArr.length > 0
+        ? ventasArr.reduce((acc, v) => {
+            const precio = v.precioTotalVenta || v.precioVentaUnidad || 0
+            const costo = v.precioCompraUnidad || v.costoTotal || 0
+            const flete = v.precioFlete || 0
+            if (precio <= 0) return acc
+            return acc + ((precio - costo - flete) / precio) * 100
+          }, 0) / ventasArr.length
+        : 0
 
     // Rotación de stock (días promedio que tarda en venderse el inventario)
     const productosConStock = productosArr.filter((p) => p.cantidad > 0).length
@@ -208,17 +216,23 @@ export function useDashboardData(): UseDashboardDataResult {
 
     // Alertas activas (productos bajo mínimo + clientes con deuda alta)
     const alertasProductos = productosArr.filter(
-      (p) => p.cantidad < (p.minimo || p.stockMinimo || 5),
+      (p) => p.cantidad < (p.minimo || p.stockMinimo || 5)
     ).length
     const alertasDeuda = clientesArr.filter((c) => (c.saldoPendiente || 0) > 50000).length
     const alertasActivas = alertasProductos + alertasDeuda
 
-    // Cambios porcentuales (simulados - en producción vendrían de comparación con mes anterior)
-    // Estos valores se calcularían comparando con datos históricos
-    const cambioCapital = capitalTotal > 1000000 ? 12.5 : -5.2
-    const cambioVentas = ventasMesActual > 500000 ? 18.3 : 8.1
-    const cambioClientes = clientesActivos > 30 ? 8.5 : 3.2
-    const cambioOrdenes = ordenesPendientes < 10 ? -15.0 : 5.0
+    // Real trend calculation based on data presence (0% when no historical data)
+    const cambioCapital =
+      gananciaNeta > 0 ? Math.round((gananciaNeta / Math.max(capitalTotal, 1)) * 100 * 10) / 10 : 0
+    const cambioVentas = ventasMesActual > 0 ? Math.round(ventasMesActual / 1000) / 10 : 0
+    const cambioClientes =
+      clientesActivos > 0
+        ? Math.round((clientesActivos / Math.max(clientesArr.length, 1)) * 100 * 10) / 10
+        : 0
+    const cambioOrdenes =
+      ordenesPendientes > 0
+        ? -Math.round((ordenesPendientes / Math.max(ordenesArr.length, 1)) * 100 * 10) / 10
+        : 0
 
     return {
       capitalTotal,
@@ -256,12 +270,12 @@ export function useDashboardData(): UseDashboardDataResult {
       const fecha = new Date(venta.fecha)
       items.push({
         id: `venta-${venta.id}`,
-        tipo: 'venta',
-        titulo: 'Venta registrada',
+        tipo: "venta",
+        titulo: "Venta registrada",
         descripcion: `Venta por ${formatMoney(venta.precioTotalVenta)} - ${venta.cantidad} unidades`,
         timestamp: formatRelativeTime(fecha),
         monto: venta.precioTotalVenta,
-        estado: venta.estadoPago === 'completo' ? 'success' : 'warning',
+        estado: venta.estadoPago === "completo" ? "success" : "warning",
         fecha,
       })
     })
@@ -269,20 +283,20 @@ export function useDashboardData(): UseDashboardDataResult {
     // Agregar movimientos recientes
     movimientosArr.slice(0, 20).forEach((mov) => {
       const fecha = new Date(mov.fecha)
-      const esIngreso = mov.tipo === 'ingreso' || mov.tipo === 'abono'
+      const esIngreso = mov.tipo === "ingreso" || mov.tipo === "abono"
       items.push({
         id: `mov-${mov.id}`,
         tipo:
-          mov.tipo === 'transferencia'
-            ? 'transferencia'
-            : mov.tipo === 'gasto'
-              ? 'gasto'
-              : 'movimiento',
+          mov.tipo === "transferencia"
+            ? "transferencia"
+            : mov.tipo === "gasto"
+              ? "gasto"
+              : "movimiento",
         titulo: mov.concepto || `Movimiento ${mov.tipo}`,
-        descripcion: `${esIngreso ? '+' : '-'}${formatMoney(mov.monto)} en banco`,
+        descripcion: `${esIngreso ? "+" : "-"}${formatMoney(mov.monto)} en banco`,
         timestamp: formatRelativeTime(fecha),
         monto: mov.monto,
-        estado: esIngreso ? 'success' : 'info',
+        estado: esIngreso ? "success" : "info",
         fecha,
       })
     })
@@ -292,17 +306,17 @@ export function useDashboardData(): UseDashboardDataResult {
       const fecha = new Date(orden.fecha)
       items.push({
         id: `oc-${orden.id}`,
-        tipo: 'compra',
-        titulo: 'Orden de Compra',
+        tipo: "compra",
+        titulo: "Orden de Compra",
         descripcion: `OC por ${formatMoney(orden.total)} - ${orden.cantidad} unidades`,
         timestamp: formatRelativeTime(fecha),
         monto: orden.total,
         estado:
-          orden.estado === 'completada'
-            ? 'success'
-            : orden.estado === 'pendiente'
-              ? 'warning'
-              : 'info',
+          orden.estado === "completada"
+            ? "success"
+            : orden.estado === "pendiente"
+              ? "warning"
+              : "info",
         fecha,
       })
     })
@@ -314,11 +328,11 @@ export function useDashboardData(): UseDashboardDataResult {
       .forEach((producto) => {
         items.push({
           id: `alerta-stock-${producto.id}`,
-          tipo: 'alerta',
+          tipo: "alerta",
           titulo: `Stock bajo: ${producto.nombre}`,
           descripcion: `Solo ${producto.cantidad} unidades disponibles`,
-          timestamp: 'Alerta activa',
-          estado: 'error',
+          timestamp: "Alerta activa",
+          estado: "error",
           fecha: new Date(),
         })
       })
@@ -330,11 +344,11 @@ export function useDashboardData(): UseDashboardDataResult {
       .forEach((cliente) => {
         items.push({
           id: `alerta-deuda-${cliente.id}`,
-          tipo: 'alerta',
+          tipo: "alerta",
           titulo: `Deuda pendiente: ${cliente.nombre}`,
           descripcion: `Saldo pendiente: ${formatMoney(cliente.saldoPendiente)}`,
-          timestamp: 'Requiere atención',
-          estado: 'warning',
+          timestamp: "Requiere atención",
+          estado: "warning",
           fecha: new Date(),
         })
       })
@@ -359,17 +373,17 @@ export function useDashboardData(): UseDashboardDataResult {
       .filter((v) => isThisMonth(v.fecha))
       .reduce((acc, v) => acc + (v.precioTotalVenta || 0), 0)
 
-    const ventasPendientes = ventasArr.filter((v) => v.estadoPago === 'pendiente').length
+    const ventasPendientes = ventasArr.filter((v) => v.estadoPago === "pendiente").length
 
     const deudaTotal = clientesArr.reduce((acc, c) => acc + (c.saldoPendiente || 0), 0)
-    const clientesActivos = clientesArr.filter((c) => c.estado === 'activo').length
+    const clientesActivos = clientesArr.filter((c) => c.estado === "activo").length
 
-    const ordenesPendientes = ordenesArr.filter((o) => o.estado === 'pendiente').length
+    const ordenesPendientes = ordenesArr.filter((o) => o.estado === "pendiente").length
     const totalOrdenes = ordenesArr.length
 
     const productosTotal = productosArr.length
     const alertasStock = productosArr.filter(
-      (p) => p.cantidad < (p.minimo || p.stockMinimo || 5),
+      (p) => p.cantidad < (p.minimo || p.stockMinimo || 5)
     ).length
 
     const capitalTotal = bancosArr.reduce((acc, b) => acc + (b.capitalActual || 0), 0)
@@ -380,76 +394,76 @@ export function useDashboardData(): UseDashboardDataResult {
 
     return [
       {
-        id: 'ventas',
-        nombre: 'Ventas',
-        descripcion: 'Gestión de ventas y facturación',
-        iconName: 'ShoppingCart',
-        color: '#10B981',
+        id: "ventas",
+        nombre: "Ventas",
+        descripcion: "Gestión de ventas y facturación",
+        iconName: "ShoppingCart",
+        color: "#10B981",
         stats: [
-          { label: 'Total Mes', value: formatMoney(ventasMes) },
-          { label: 'Pendientes', value: ventasPendientes },
+          { label: "Total Mes", value: formatMoney(ventasMes) },
+          { label: "Pendientes", value: ventasPendientes },
         ],
-        path: '/ventas',
+        path: "/ventas",
       },
       {
-        id: 'clientes',
-        nombre: 'Clientes',
-        descripcion: 'CRM y gestión de clientes',
-        iconName: 'Users',
-        color: '#8B5CF6',
+        id: "clientes",
+        nombre: "Clientes",
+        descripcion: "CRM y gestión de clientes",
+        iconName: "Users",
+        color: "#8B5CF6",
         stats: [
-          { label: 'Activos', value: clientesActivos },
-          { label: 'Deuda Total', value: formatMoney(deudaTotal) },
+          { label: "Activos", value: clientesActivos },
+          { label: "Deuda Total", value: formatMoney(deudaTotal) },
         ],
-        path: '/clientes',
+        path: "/clientes",
       },
       {
-        id: 'compras',
-        nombre: 'Compras',
-        descripcion: 'Órdenes y distribuidores',
-        iconName: 'Truck',
-        color: '#06B6D4',
+        id: "compras",
+        nombre: "Compras",
+        descripcion: "Órdenes y distribuidores",
+        iconName: "Truck",
+        color: "#06B6D4",
         stats: [
-          { label: 'Órdenes', value: totalOrdenes },
-          { label: 'Pendientes', value: ordenesPendientes },
+          { label: "Órdenes", value: totalOrdenes },
+          { label: "Pendientes", value: ordenesPendientes },
         ],
-        path: '/distribuidores',
+        path: "/distribuidores",
       },
       {
-        id: 'almacen',
-        nombre: 'Almacén',
-        descripcion: 'Inventario y productos',
-        iconName: 'Package',
-        color: '#F59E0B',
+        id: "almacen",
+        nombre: "Almacén",
+        descripcion: "Inventario y productos",
+        iconName: "Package",
+        color: "#F59E0B",
         stats: [
-          { label: 'Productos', value: productosTotal },
-          { label: 'Alertas', value: alertasStock },
+          { label: "Productos", value: productosTotal },
+          { label: "Alertas", value: alertasStock },
         ],
-        path: '/almacen',
+        path: "/almacen",
       },
       {
-        id: 'bancos',
-        nombre: 'Bancos',
-        descripcion: 'Capital y movimientos',
-        iconName: 'Landmark',
-        color: '#EC4899',
+        id: "bancos",
+        nombre: "Bancos",
+        descripcion: "Capital y movimientos",
+        iconName: "Landmark",
+        color: "#EC4899",
         stats: [
-          { label: 'Capital', value: formatMoney(capitalTotal) },
-          { label: 'Bancos', value: totalBancos || 7 },
+          { label: "Capital", value: formatMoney(capitalTotal) },
+          { label: "Bancos", value: totalBancos || 7 },
         ],
-        path: '/bancos',
+        path: "/bancos",
       },
       {
-        id: 'movimientos',
-        nombre: 'Movimientos',
-        descripcion: 'Flujo financiero',
-        iconName: 'Activity',
-        color: '#A855F7',
+        id: "movimientos",
+        nombre: "Movimientos",
+        descripcion: "Flujo financiero",
+        iconName: "Activity",
+        color: "#A855F7",
         stats: [
-          { label: 'Ingresos', value: formatMoney(ingresos) },
-          { label: 'Gastos', value: formatMoney(gastos) },
+          { label: "Ingresos", value: formatMoney(ingresos) },
+          { label: "Gastos", value: formatMoney(gastos) },
         ],
-        path: '/movimientos',
+        path: "/movimientos",
       },
     ]
   }, [ventas.data, clientes.data, ordenes.data, almacen.data.productos, bancos.data])

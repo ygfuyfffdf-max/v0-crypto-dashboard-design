@@ -1,11 +1,22 @@
-import { Metadata } from 'next'
-import { BancosPageClient } from './BancosPageClient'
+"use client"
 
-export const metadata: Metadata = {
-  title: 'Bancos | CHRONOS Supreme 2026',
-  description: 'Gestión de capital y bóvedas con Aurora Glassmorphism',
-}
+import { PanelErrorBoundary } from "@/app/_components/chronos-2026/panels/PanelErrorBoundary"
+import { SupremeBancosBackground } from "@/app/_components/chronos-2026/panels/SupremePanelBackgrounds"
+import dynamic from "next/dynamic"
+import { useRouter } from "next/navigation"
+
+const AuroraBancosPanelUnified = dynamic(
+  () => import("@/app/_components/chronos-2026/panels/AuroraBancosPanelUnified"),
+  { ssr: false }
+)
 
 export default function BancosPage() {
-  return <BancosPageClient />
+  const router = useRouter()
+  return (
+    <PanelErrorBoundary panelName="Bancos">
+      <SupremeBancosBackground showParticles={false} showGradient showVignette showGrid>
+        <AuroraBancosPanelUnified onNavigate={(path) => router.push(path)} />
+      </SupremeBancosBackground>
+    </PanelErrorBoundary>
+  )
 }

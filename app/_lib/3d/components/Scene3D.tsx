@@ -20,7 +20,6 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import {
   Bloom,
   ChromaticAberration,
-  EffectComposer,
   Noise,
   Vignette,
 } from '@react-three/postprocessing'
@@ -29,6 +28,8 @@ import React, { Suspense, useRef } from 'react'
 import * as THREE from 'three'
 
 import type { PostProcessingPipeline, Scene3DProps } from '../types'
+import { SafeEffectComposer } from '@/app/_components/chronos-2026/3d/effects/SafeEffectComposer'
+import { WebGLErrorBoundary } from '@/app/_components/chronos-2026/3d/WebGLErrorBoundary'
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // 🎨 POST-PROCESSING COMPONENT
@@ -42,7 +43,7 @@ function PostProcessingEffects({ config }: PostProcessingProps) {
   if (!config) return null
 
   return (
-    <EffectComposer multisampling={0}>
+    <SafeEffectComposer multisampling={0}>
       {config.bloom && (
         <Bloom
           intensity={config.bloom.intensity}
@@ -75,7 +76,7 @@ function PostProcessingEffects({ config }: PostProcessingProps) {
       {config.noise && (
         <Noise premultiply={config.noise.premultiply} blendFunction={BlendFunction.ADD} />
       )}
-    </EffectComposer>
+    </SafeEffectComposer>
   )
 }
 
@@ -182,29 +183,30 @@ export function Scene3D({
   const [dpr, setDpr] = React.useState(1)
 
   return (
-    <div className={`relative h-full w-full ${className}`} style={style}>
-      <Canvas
-        shadows
-        dpr={dpr}
-        gl={{
-          antialias: true,
-          alpha: true,
-          powerPreference: 'high-performance',
-          stencil: false,
-          depth: true,
-        }}
-        camera={{
-          position: camera?.position ?? [0, 5, 10],
-          fov: camera?.fov ?? 75,
-          near: camera?.near ?? 0.1,
-          far: camera?.far ?? 1000,
-        }}
-        onCreated={({ gl }) => {
-          gl.toneMapping = THREE.ACESFilmicToneMapping
-          gl.toneMappingExposure = 1.2
-          gl.outputColorSpace = THREE.SRGBColorSpace
-        }}
-      >
+    <WebGLErrorBoundary>
+      <div className={`relative h-full w-full ${className}`} style={style}>
+        <Canvas
+          shadows
+          dpr={dpr}
+          gl={{
+            antialias: true,
+            alpha: true,
+            powerPreference: 'high-performance',
+            stencil: false,
+            depth: true,
+          }}
+          camera={{
+            position: camera?.position ?? [0, 5, 10],
+            fov: camera?.fov ?? 75,
+            near: camera?.near ?? 0.1,
+            far: camera?.far ?? 1000,
+          }}
+          onCreated={({ gl }) => {
+            gl.toneMapping = THREE.ACESFilmicToneMapping
+            gl.toneMappingExposure = 1.2
+            gl.outputColorSpace = THREE.SRGBColorSpace
+          }}
+        >
         {/* Performance optimizations */}
         <AdaptiveDpr pixelated />
         <AdaptiveEvents />
@@ -224,8 +226,9 @@ export function Scene3D({
           </SceneContent>
           <Preload all />
         </Suspense>
-      </Canvas>
-    </div>
+        </Canvas>
+      </div>
+    </WebGLErrorBoundary>
   )
 }
 

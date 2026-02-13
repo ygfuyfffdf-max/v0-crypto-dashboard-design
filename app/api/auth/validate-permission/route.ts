@@ -2,7 +2,7 @@
 // API route para validar permisos de usuarios con el motor cuántico
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { QuantumPermissionEngine } from '@/app/_lib/permissions/QuantumPermissionEngine';
 
 export async function POST(request: NextRequest) {
@@ -89,17 +89,18 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Función auxiliar para obtener información del usuario
-async function getUserInfo(userId: string) {
-  // En producción, esto vendría de una base de datos
-  // Por ahora usamos datos simulados
-  const users = {
-    'user_1': { role: 'bank_profit_manager', riskScore: 0.15 },
-    'user_2': { role: 'user_admin', riskScore: 0.25 },
-    'user_3': { role: 'security_monitor', riskScore: 0.35 }
-  };
-
-  return users[userId as keyof typeof users] || { role: 'viewer', riskScore: 0.5 };
+// Obtener rol desde Clerk publicMetadata (integrado con advanced-user-permission-system)
+async function getUserInfo(userId: string): Promise<{ role: string; riskScore: number }> {
+  try {
+    const client = await clerkClient();
+    const user = await client.users.getUser(userId);
+    const metadata = user?.publicMetadata as Record<string, unknown> | undefined;
+    const role = (metadata?.role as string) || (metadata?.chronos_role as string) || 'viewer';
+    const riskScore = (metadata?.riskScore as number) ?? 0.5;
+    return { role, riskScore };
+  } catch {
+    return { role: 'viewer', riskScore: 0.5 };
+  }
 }
 
 // Función auxiliar para registrar auditoría

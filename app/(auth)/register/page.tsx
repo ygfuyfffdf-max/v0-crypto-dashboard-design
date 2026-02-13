@@ -1,327 +1,441 @@
-// 🔐 CHRONOS REGISTER PAGE - CHRONOS INFINITY
-// Página de registro con logo KOCMOK animado y autenticación Clerk
+// CHRONOS REGISTER — Liquid Glass Premium Dark Register
+// Redesigned: animated mesh gradient, aurora bands, glassmorphism card
 
-'use client'
+"use client"
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { CheckCircle } from 'lucide-react';
-import {
-  SignUp,
-  SignedIn,
-  SignedOut,
-  RedirectToSignIn
-} from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
-import KocmokAnimatedLogo from '@/app/_components/auth/KocmokAnimatedLogo';
-import {
-  Shield,
-  Lock,
-  User,
-  Key,
-  Eye,
-  Fingerprint,
-  Globe,
-  Zap,
-  Star,
-  Sparkles,
-  Activity,
-  ArrowLeft
-} from 'lucide-react';
-import Link from 'next/link';
+import { KocmocLogo } from "@/app/_components/chronos-2026/branding/KocmocLogo"
+import { SignUp, SignedIn, SignedOut } from "@clerk/nextjs"
+import { CheckCircle } from "lucide-react"
+import { motion } from "motion/react"
+import Link from "next/link"
+import React, { useCallback, useRef } from "react"
 
-const RegisterPage: React.FC = () => {
-  const router = useRouter();
+// ─── Animation variants ────────────────────────────────────────────────────────
 
-  // Texto CHRONNOS en griego: ΧΡΟΝΝΟΣ
-  const greekText = "ΧΡΟΝΝΟΣ";
+const fadeSlideUp = {
+  hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
+  visible: (delay: number) => ({
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.8, delay, ease: [0.25, 0.46, 0.45, 0.94] },
+  }),
+}
+
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.92 },
+  visible: (delay: number) => ({
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.7, delay, ease: [0.25, 0.46, 0.45, 0.94] },
+  }),
+}
+
+// ─── Clerk dark theme appearance ────────────────────────────────────────────────
+
+const clerkAppearance = {
+  elements: {
+    rootBox: "mx-auto w-full",
+    card: "bg-transparent shadow-none border-none p-0 w-full",
+    cardBox: "bg-transparent shadow-none border-none w-full",
+    header: "hidden",
+    headerTitle: "text-white text-lg font-medium tracking-wide",
+    headerSubtitle: "text-white/40 text-sm",
+    socialButtonsBlockButton:
+      "bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-violet-500/30 text-white/80 transition-all duration-300 rounded-xl h-11",
+    socialButtonsBlockButtonText: "text-white/80 font-medium text-sm",
+    formButtonPrimary:
+      "bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 text-white font-semibold rounded-xl h-11 shadow-lg shadow-violet-500/20 transition-all duration-300",
+    formFieldLabel: "text-white/50 text-xs font-medium uppercase tracking-widest",
+    formFieldInput:
+      "bg-white/[0.05] border border-white/[0.10] text-white placeholder-white/20 rounded-xl h-11 focus:border-violet-500/40 focus:ring-1 focus:ring-violet-500/20 transition-all duration-300",
+    footerActionLink: "text-violet-400 hover:text-violet-300 transition-colors duration-200",
+    footerAction: "justify-center",
+    dividerLine: "bg-white/[0.06]",
+    dividerText: "text-white/30 text-xs uppercase tracking-widest",
+    identityPreviewText: "text-white/80",
+    identityPreviewEditButton: "text-violet-400 hover:text-violet-300",
+    formFieldSuccessText: "text-emerald-400",
+    formFieldErrorText: "text-red-400",
+    formFieldAction: "text-violet-400 hover:text-violet-300",
+    otpCodeFieldInput:
+      "bg-white/[0.05] border border-white/[0.10] text-white rounded-lg focus:border-violet-500/40",
+    alternativeMethodsBlockButton:
+      "bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-white/70 rounded-xl transition-all duration-300",
+    main: "gap-5",
+    form: "gap-4",
+    footer: "bg-transparent",
+    footerPages: "hidden",
+  },
+  layout: {
+    socialButtonsPlacement: "bottom" as const,
+    socialButtonsVariant: "blockButton" as const,
+  },
+}
+
+// ─── Glass Card with mouse-tracking shine ───────────────────────────────────────
+
+function GlassCard({ children }: { children: React.ReactNode }) {
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const card = cardRef.current
+    if (!card) return
+    const rect = card.getBoundingClientRect()
+    card.style.setProperty("--mx", `${((e.clientX - rect.left) / rect.width) * 100}%`)
+    card.style.setProperty("--my", `${((e.clientY - rect.top) / rect.height) * 100}%`)
+  }, [])
+
+  const handleMouseLeave = useCallback(() => {
+    cardRef.current?.style.setProperty("--mx", "50%")
+    cardRef.current?.style.setProperty("--my", "50%")
+  }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 via-indigo-900 to-slate-900 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0">
-        {[...Array(20)].map((_, i) => (
+    <motion.div
+      ref={cardRef}
+      variants={scaleIn}
+      custom={0.5}
+      initial="hidden"
+      animate="visible"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="glass-card group relative w-full max-w-[420px] rounded-3xl border border-white/8 bg-white/3 px-8 py-10 backdrop-blur-xl transition-all duration-500 hover:border-violet-500/30"
+      style={
+        {
+          "--mx": "50%",
+          "--my": "50%",
+          boxShadow:
+            "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03) inset, 0 -2px 16px rgba(139,92,246,0.04) inset",
+        } as React.CSSProperties
+      }
+    >
+      <div
+        className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(400px circle at var(--mx) var(--my), rgba(139,92,246,0.06), transparent 60%)",
+        }}
+      />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-3xl bg-linear-to-r from-transparent via-white/12 to-transparent" />
+      <div className="relative z-10">{children}</div>
+    </motion.div>
+  )
+}
+
+// ─── Main Register Page ─────────────────────────────────────────────────────────
+
+export default function RegisterPage() {
+  return (
+    <>
+      <style jsx global>{`
+        @property --hue-1 {
+          syntax: "<number>";
+          inherits: false;
+          initial-value: 260;
+        }
+        @property --hue-2 {
+          syntax: "<number>";
+          inherits: false;
+          initial-value: 300;
+        }
+        @property --hue-3 {
+          syntax: "<number>";
+          inherits: false;
+          initial-value: 220;
+        }
+
+        @keyframes meshHueRotate {
+          0% {
+            --hue-1: 260;
+            --hue-2: 300;
+            --hue-3: 220;
+          }
+          33% {
+            --hue-1: 280;
+            --hue-2: 240;
+            --hue-3: 310;
+          }
+          66% {
+            --hue-1: 230;
+            --hue-2: 320;
+            --hue-3: 270;
+          }
+          100% {
+            --hue-1: 260;
+            --hue-2: 300;
+            --hue-3: 220;
+          }
+        }
+
+        .mesh-gradient-bg {
+          background-color: #000;
+          background-image:
+            radial-gradient(
+              ellipse 80% 60% at 20% 80%,
+              hsla(var(--hue-1), 70%, 12%, 0.5) 0%,
+              transparent 70%
+            ),
+            radial-gradient(
+              ellipse 70% 50% at 80% 20%,
+              hsla(var(--hue-2), 60%, 10%, 0.4) 0%,
+              transparent 70%
+            ),
+            radial-gradient(
+              ellipse 90% 70% at 50% 50%,
+              hsla(var(--hue-3), 50%, 8%, 0.3) 0%,
+              transparent 70%
+            );
+          animation: meshHueRotate 20s ease-in-out infinite;
+        }
+
+        @keyframes auroraFlow1 {
+          0% {
+            transform: translateX(-30%) skewX(-5deg) scaleY(1);
+            opacity: 0.12;
+          }
+          25% {
+            transform: translateX(-10%) skewX(3deg) scaleY(1.2);
+            opacity: 0.18;
+          }
+          50% {
+            transform: translateX(10%) skewX(-2deg) scaleY(0.8);
+            opacity: 0.1;
+          }
+          75% {
+            transform: translateX(25%) skewX(4deg) scaleY(1.1);
+            opacity: 0.16;
+          }
+          100% {
+            transform: translateX(-30%) skewX(-5deg) scaleY(1);
+            opacity: 0.12;
+          }
+        }
+        @keyframes auroraFlow2 {
+          0% {
+            transform: translateX(20%) skewX(3deg) scaleY(1);
+            opacity: 0.08;
+          }
+          30% {
+            transform: translateX(-5%) skewX(-4deg) scaleY(1.3);
+            opacity: 0.14;
+          }
+          60% {
+            transform: translateX(-25%) skewX(2deg) scaleY(0.9);
+            opacity: 0.1;
+          }
+          100% {
+            transform: translateX(20%) skewX(3deg) scaleY(1);
+            opacity: 0.08;
+          }
+        }
+        @keyframes auroraFlow3 {
+          0% {
+            transform: translateX(10%) skewX(-2deg) scaleY(1.1);
+            opacity: 0.06;
+          }
+          40% {
+            transform: translateX(-20%) skewX(5deg) scaleY(0.7);
+            opacity: 0.12;
+          }
+          70% {
+            transform: translateX(15%) skewX(-3deg) scaleY(1.4);
+            opacity: 0.09;
+          }
+          100% {
+            transform: translateX(10%) skewX(-2deg) scaleY(1.1);
+            opacity: 0.06;
+          }
+        }
+
+        .aurora-band-1 {
+          position: absolute;
+          top: 8%;
+          left: -10%;
+          right: -10%;
+          height: 180px;
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(139, 92, 246, 0.15) 20%,
+            rgba(109, 40, 217, 0.2) 40%,
+            rgba(76, 29, 149, 0.12) 60%,
+            rgba(139, 92, 246, 0.1) 80%,
+            transparent 100%
+          );
+          filter: blur(40px);
+          animation: auroraFlow1 14s ease-in-out infinite;
+          will-change: transform, opacity;
+        }
+        .aurora-band-2 {
+          position: absolute;
+          top: 18%;
+          left: -10%;
+          right: -10%;
+          height: 140px;
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(59, 130, 246, 0.1) 25%,
+            rgba(99, 102, 241, 0.18) 50%,
+            rgba(139, 92, 246, 0.08) 75%,
+            transparent 100%
+          );
+          filter: blur(50px);
+          animation: auroraFlow2 18s ease-in-out infinite;
+          will-change: transform, opacity;
+        }
+        .aurora-band-3 {
+          position: absolute;
+          top: 4%;
+          left: -10%;
+          right: -10%;
+          height: 120px;
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(168, 85, 247, 0.08) 30%,
+            rgba(192, 132, 252, 0.14) 55%,
+            rgba(124, 58, 237, 0.06) 80%,
+            transparent 100%
+          );
+          filter: blur(60px);
+          animation: auroraFlow3 22s ease-in-out infinite;
+          will-change: transform, opacity;
+        }
+
+        @keyframes progressPulse {
+          0% {
+            width: 0%;
+            opacity: 0.6;
+          }
+          50% {
+            opacity: 1;
+          }
+          100% {
+            width: 100%;
+            opacity: 0.8;
+          }
+        }
+        .redirect-bar {
+          animation: progressPulse 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+      `}</style>
+
+      <div className="mesh-gradient-bg relative flex min-h-screen items-center justify-center overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="aurora-band-1" />
+          <div className="aurora-band-2" />
+          <div className="aurora-band-3" />
+        </div>
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
+
+        <div className="relative z-10 flex w-full flex-col items-center px-6 py-12">
           <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full opacity-30"
+            variants={fadeSlideUp}
+            custom={0}
+            initial="hidden"
+            animate="visible"
+            className="mb-6"
+          >
+            <KocmocLogo size={160} showText textVariant="kosmos" animated />
+          </motion.div>
+
+          <motion.h1
+            variants={fadeSlideUp}
+            custom={0.15}
+            initial="hidden"
+            animate="visible"
+            className="mb-2 text-center text-5xl font-bold tracking-[0.2em] sm:text-6xl"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              backgroundImage:
+                "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(167,139,250,0.9) 50%, rgba(139,92,246,0.8) 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
             }}
-            animate={{
-              y: [-20, 20],
-              x: [-10, 10],
-              scale: [1, 1.5, 1],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Floating security icons */}
-      <div className="absolute inset-0 pointer-events-none">
-        <motion.div
-          className="absolute top-20 left-20 text-purple-400 opacity-20"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        >
-          <Shield size={40} />
-        </motion.div>
-        <motion.div
-          className="absolute top-40 right-32 text-cyan-400 opacity-20"
-          animate={{ rotate: -360 }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-        >
-          <Lock size={30} />
-        </motion.div>
-        <motion.div
-          className="absolute bottom-32 left-32 text-indigo-400 opacity-20"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        >
-          <Fingerprint size={35} />
-        </motion.div>
-        <motion.div
-          className="absolute bottom-20 right-20 text-pink-400 opacity-20"
-          animate={{ rotate: -360 }}
-          transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-        >
-          <Key size={32} />
-        </motion.div>
-      </div>
-
-      {/* Back button */}
-      <motion.div
-        className="absolute top-8 left-8 z-20"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Link
-          href="/login"
-          className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors bg-slate-800/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-purple-500/30"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Volver al Login</span>
-        </Link>
-      </motion.div>
-
-      <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
-        <div className="max-w-6xl w-full">
-          {/* Header with animated title */}
-          <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut" }}
           >
-            <motion.div
-              className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-purple-400 via-cyan-400 to-pink-400 bg-clip-text text-transparent mb-4"
-              animate={{
-                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-              }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-              style={{
-                backgroundSize: "200% 200%",
-                backgroundImage: "linear-gradient(45deg, #a855f7, #06b6d4, #ec4899, #a855f7)"
-              }}
-            >
-              {greekText}
-            </motion.div>
+            КОСМОС
+          </motion.h1>
 
-            <motion.div
-              className="text-2xl md:text-3xl text-purple-200 mb-2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 1 }}
-            >
-              CHRONOS INFINITY
-            </motion.div>
+          <motion.p
+            variants={fadeSlideUp}
+            custom={0.25}
+            initial="hidden"
+            animate="visible"
+            className="mb-1 text-center text-xs font-medium tracking-[0.35em] text-white/30 uppercase"
+          >
+            Chronos Infinity
+          </motion.p>
+          <motion.p
+            variants={fadeSlideUp}
+            custom={0.3}
+            initial="hidden"
+            animate="visible"
+            className="mb-12 text-center text-sm font-medium tracking-wide text-white/50"
+          >
+            Crear cuenta
+          </motion.p>
 
-            <motion.div
-              className="text-lg text-purple-300"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8, duration: 1 }}
-            >
-              Registro de Acceso Cuántico Seguro
-            </motion.div>
-          </motion.div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left side - Logo and description */}
-            <motion.div
-              className="text-center lg:text-left"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 1, ease: "easeOut" }}
-            >
-              <div className="flex justify-center lg:justify-start mb-8">
-                <KocmokAnimatedLogo size="xl" />
-              </div>
-
+          <GlassCard>
+            <SignedOut>
+              <SignUp
+                routing="hash"
+                fallbackRedirectUrl="/dashboard"
+                appearance={clerkAppearance}
+              />
+            </SignedOut>
+            <SignedIn>
               <motion.div
-                className="space-y-4 text-purple-100"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6, duration: 1 }}
+                className="flex flex-col items-center py-6"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
-                <div className="flex items-center justify-center lg:justify-start space-x-3">
-                  <Star className="w-5 h-5 text-yellow-400" />
-                  <span>Registro Biométrico Avanzado</span>
-                </div>
-                <div className="flex items-center justify-center lg:justify-start space-x-3">
-                  <Zap className="w-5 h-5 text-cyan-400" />
-                  <span>Verificación Cuántica en Tiempo Real</span>
-                </div>
-                <div className="flex items-center justify-center lg:justify-start space-x-3">
-                  <Globe className="w-5 h-5 text-green-400" />
-                  <span>Acceso Global Seguro</span>
-                </div>
-                <div className="flex items-center justify-center lg:justify-start space-x-3">
-                  <Sparkles className="w-5 h-5 text-pink-400" />
-                  <span>Encriptación de Grado Militar</span>
-                </div>
-                <div className="flex items-center justify-center lg:justify-start space-x-3">
-                  <Activity className="w-5 h-5 text-orange-400" />
-                  <span>Monitoreo Forense desde el Primer Segundo</span>
-                </div>
-              </motion.div>
-
-              <motion.div
-                className="mt-8 p-4 bg-slate-800/50 backdrop-blur-sm rounded-lg border border-purple-500/30"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8, duration: 0.5 }}
-              >
-                <h3 className="text-lg font-semibold text-white mb-2">¿Por qué elegir CHRONOS?</h3>
-                <ul className="text-sm text-purple-200 space-y-1">
-                  <li>• Autenticación multi-factor con biometría</li>
-                  <li>• Permisos granulares y control de acceso</li>
-                  <li>• Auditoría completa de todas las acciones</li>
-                  <li>• Cumplimiento con estándares internacionales</li>
-                  <li>• Trazabilidad blockchain de todos los eventos</li>
-                </ul>
-              </motion.div>
-            </motion.div>
-
-            {/* Right side - Clerk Sign Up */}
-            <motion.div
-              className="bg-slate-800/50 backdrop-blur-lg rounded-2xl p-8 border border-purple-500/30"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5, duration: 1, ease: "easeOut" }}
-            >
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-white mb-2">Crear Cuenta</h2>
-                <p className="text-purple-300">Únete al ecosistema de seguridad cuántica</p>
-              </div>
-
-              <SignedOut>
-                <SignUp
-                  routing="hash"
-                  redirectUrl="/admin"
-                  appearance={{
-                    elements: {
-                      rootBox: "mx-auto",
-                      card: "bg-slate-800 border border-purple-500 rounded-xl",
-                      headerTitle: "text-white text-xl font-bold",
-                      headerSubtitle: "text-purple-300",
-                      socialButtonsBlockButton: "bg-purple-600 hover:bg-purple-700 text-white border-purple-500",
-                      formButtonPrimary: "bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white font-semibold",
-                      formFieldLabel: "text-purple-200",
-                      formFieldInput: "bg-slate-700 border-purple-500 text-white placeholder-purple-400",
-                      footerActionLink: "text-cyan-400 hover:text-cyan-300",
-                      dividerLine: "bg-purple-600",
-                      dividerText: "text-purple-300",
-                      identityPreviewText: "text-white",
-                      identityPreviewEditButton: "text-cyan-400 hover:text-cyan-300",
-                      formFieldSuccessText: "text-green-400",
-                      formFieldErrorText: "text-red-400",
-                      logoBox: "flex justify-center mb-4",
-                      logoImage: "w-16 h-16",
-                      formFieldInputShowPasswordButton: "text-purple-400 hover:text-purple-300"
-                    },
-                    layout: {
-                      socialButtonsPlacement: "bottom",
-                      socialButtonsVariant: "blockButton",
-                      helpPageUrl: "/help",
-                      privacyPageUrl: "/privacy",
-                      termsPageUrl: "/terms",
-                      logoPlacement: "inside",
-                      logoLinkUrl: "/"
-                    }
-                  }}
-                />
-              </SignedOut>
-
-              <SignedIn>
                 <motion.div
-                  className="text-center"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
+                  className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-linear-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/25"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.2 }}
                 >
-                  <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2">¡Registro Exitoso!</h3>
-                  <p className="text-green-400 mb-4">Bienvenido a CHRONOS INFINITY</p>
-                  <p className="text-purple-300 text-sm">Redirigiendo al panel de control...</p>
-                  <div className="w-full bg-gradient-to-r from-green-500 to-emerald-500 h-1 rounded-full animate-pulse mt-4" />
+                  <CheckCircle className="h-7 w-7 text-white" />
                 </motion.div>
-              </SignedIn>
-            </motion.div>
-          </div>
+                <h3 className="mb-1 text-lg font-semibold text-white">Cuenta creada con éxito</h3>
+                <p className="mb-6 text-sm text-white/40">Redirigiendo al dashboard…</p>
+                <div className="h-0.5 w-full overflow-hidden rounded-full bg-white/6">
+                  <div className="redirect-bar h-full rounded-full bg-linear-to-r from-violet-500 to-emerald-500" />
+                </div>
+              </motion.div>
+            </SignedIn>
+          </GlassCard>
 
-          {/* Security badges */}
-          <motion.div
-            className="flex flex-wrap justify-center items-center gap-4 mt-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.5 }}
+          <motion.p
+            variants={fadeSlideUp}
+            custom={0.65}
+            initial="hidden"
+            animate="visible"
+            className="mt-8 text-center text-sm text-white/30"
           >
-            <div className="flex items-center space-x-2 bg-slate-800/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-green-500/30">
-              <Shield className="w-4 h-4 text-green-400" />
-              <span className="text-green-400 text-sm">SOC 2 Compliant</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-slate-800/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-blue-500/30">
-              <Lock className="w-4 h-4 text-blue-400" />
-              <span className="text-blue-400 text-sm">ISO 27001</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-slate-800/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-purple-500/30">
-              <Fingerprint className="w-4 h-4 text-purple-400" />
-              <span className="text-purple-400 text-sm">GDPR Ready</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-slate-800/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-cyan-500/30">
-              <Key className="w-4 h-4 text-cyan-400" />
-              <span className="text-cyan-400 text-sm">Zero Trust</span>
-            </div>
-          </motion.div>
+            ¿Ya tienes cuenta?{" "}
+            <Link
+              href="/login"
+              className="text-violet-400 transition-colors duration-200 hover:text-violet-300"
+            >
+              Iniciar sesión
+            </Link>
+          </motion.p>
 
-          {/* Footer */}
-          <motion.div
-            className="text-center mt-8 text-purple-300 text-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2, duration: 1 }}
+          <motion.footer
+            variants={fadeSlideUp}
+            custom={0.75}
+            initial="hidden"
+            animate="visible"
+            className="mt-10 text-center text-[11px] tracking-widest text-white/15"
           >
-            <p>&copy; 2026 CHRONOS INFINITY. Todos los derechos reservados.</p>
-            <p className="mt-2 text-xs">Al registrarte, aceptas nuestros términos de servicio y políticas de seguridad cuántica.</p>
-          </motion.div>
+            &copy; {new Date().getFullYear()} CHRONOS INFINITY &mdash; All rights reserved
+          </motion.footer>
         </div>
       </div>
-    </div>
-  );
-};
-
-export default RegisterPage;
+    </>
+  )
+}

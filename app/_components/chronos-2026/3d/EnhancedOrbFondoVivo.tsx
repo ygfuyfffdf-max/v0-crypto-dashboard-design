@@ -23,7 +23,6 @@ import { Canvas, useFrame } from "@react-three/fiber"
 import {
   Bloom,
   ChromaticAberration,
-  EffectComposer,
   Noise,
   Vignette,
 } from "@react-three/postprocessing"
@@ -33,6 +32,8 @@ import { Suspense, memo, useMemo, useRef, type FC } from "react"
 import * as THREE from "three"
 
 import useMood from "@/app/hooks/useMood"
+import { SafeEffectComposer } from "@/app/_components/chronos-2026/3d/effects/SafeEffectComposer"
+import { WebGLErrorBoundary } from "@/app/_components/chronos-2026/3d/WebGLErrorBoundary"
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TIPOS
@@ -403,7 +404,7 @@ const PostProcessing: FC<PostProcessingProps> = memo(function PostProcessing({
   enableGodRays = false,
 }) {
   return (
-    <EffectComposer>
+    <SafeEffectComposer multisampling={0}>
       {/* Bloom volumétrico */}
       <Bloom
         luminanceThreshold={0.2}
@@ -424,7 +425,7 @@ const PostProcessing: FC<PostProcessingProps> = memo(function PostProcessing({
 
       {/* Noise film grain */}
       <Noise opacity={0.02} blendFunction={BlendFunction.OVERLAY} />
-    </EffectComposer>
+    </SafeEffectComposer>
   )
 })
 
@@ -513,35 +514,37 @@ const EnhancedOrbFondoVivo: FC<EnhancedOrbProps> = memo(function EnhancedOrbFond
   const pulse = pulseOverride ?? 0.5
 
   return (
-    <motion.div
-      className={`pointer-events-none fixed inset-0 z-0 ${className}`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 2, ease: "easeOut" }}
-    >
-      <Canvas
-        camera={{ position: [0, 0, 6], fov: 50 }}
-        dpr={[1, 2]}
-        gl={{
-          antialias: true,
-          alpha: true,
-          powerPreference: "high-performance",
-        }}
+    <WebGLErrorBoundary>
+      <motion.div
+        className={`pointer-events-none fixed inset-0 z-0 ${className}`}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2, ease: "easeOut" }}
       >
-        <Suspense fallback={null}>
-          <SceneContent
-            mood={mood}
-            pulse={pulse}
-            intensity={intensity}
-            particleCount={particleCount}
-            enablePostProcessing={enablePostProcessing}
-            enableGodRays={enableGodRays}
-            enableParticles={enableParticles}
-            interactive={interactive}
-          />
-        </Suspense>
-      </Canvas>
-    </motion.div>
+        <Canvas
+          camera={{ position: [0, 0, 6], fov: 50 }}
+          dpr={[1, 2]}
+          gl={{
+            antialias: true,
+            alpha: true,
+            powerPreference: "high-performance",
+          }}
+        >
+          <Suspense fallback={null}>
+            <SceneContent
+              mood={mood}
+              pulse={pulse}
+              intensity={intensity}
+              particleCount={particleCount}
+              enablePostProcessing={enablePostProcessing}
+              enableGodRays={enableGodRays}
+              enableParticles={enableParticles}
+              interactive={interactive}
+            />
+          </Suspense>
+        </Canvas>
+      </motion.div>
+    </WebGLErrorBoundary>
   )
 })
 

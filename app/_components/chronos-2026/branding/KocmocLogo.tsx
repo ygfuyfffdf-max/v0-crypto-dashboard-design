@@ -23,11 +23,15 @@ import { memo, useEffect, useRef } from 'react'
 // TIPOS
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
+export type KocmocTextVariant = 'chronos' | 'kosmos'
+
 export interface KocmocLogoProps {
   /** Tamaño del logo */
   size?: number
-  /** Mostrar texto ΧΡΟΝΟΣ */
+  /** Mostrar texto debajo (ΧΡΟΝΟΣ o КОСМОС) */
   showText?: boolean
+  /** Variante de texto: chronos (ΧΡΟΝΟΣ) o kosmos (КОСМОС) como en diseño original */
+  textVariant?: KocmocTextVariant
   /** Animar las órbitas */
   animated?: boolean
   /** Color principal (blanco por defecto) */
@@ -42,9 +46,15 @@ export interface KocmocLogoProps {
 // COMPONENTE PRINCIPAL
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
+const TEXT_VARIANTS: Record<KocmocTextVariant, string> = {
+  chronos: 'ΧΡΟΝΟΣ',
+  kosmos: 'КОСМОС',
+}
+
 export const KocmocLogo = memo(function KocmocLogo({
   size = 300,
   showText = true,
+  textVariant = 'kosmos',
   animated = true,
   color = '#FFFFFF',
   className = '',
@@ -250,7 +260,7 @@ export const KocmocLogo = memo(function KocmocLogo({
       {/* Canvas del logo */}
       <canvas ref={canvasRef} style={{ width: size, height: size }} className="block" />
 
-      {/* Texto ΧΡΟΝΟΣ */}
+      {/* Texto ΧΡΟΝΟΣ / КОСМОС */}
       {showText && (
         <motion.h1
           className="mt-4 text-center tracking-[0.35em] select-none"
@@ -265,7 +275,7 @@ export const KocmocLogo = memo(function KocmocLogo({
             letterSpacing: '0.35em',
           }}
         >
-          ΧΡΟΝΟΣ
+          {TEXT_VARIANTS[textVariant]}
         </motion.h1>
       )}
     </motion.div>

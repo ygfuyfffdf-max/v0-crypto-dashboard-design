@@ -24,6 +24,7 @@ interface SafeEffectComposerProps {
   children?: ReactNode
   enabled?: boolean
   multisampling?: number
+  disableNormalPass?: boolean
 }
 
 /**
@@ -33,6 +34,7 @@ export function SafeEffectComposer({
   children,
   enabled = true,
   multisampling = 0,
+  disableNormalPass = false,
 }: SafeEffectComposerProps) {
   const { gl, scene, camera } = useThree()
   const [isReady, setIsReady] = useState(false)
@@ -46,8 +48,13 @@ export function SafeEffectComposer({
       try {
         if (!gl || !scene || !camera) return false
 
-        const context = gl.getContext()
+        const context = gl.getContext?.()
         if (!context) return false
+        // Context lost => no considerar listo (evita TypeError en postprocessing)
+        const glContext = context as WebGLRenderingContext
+        if (typeof glContext.isContextLost === 'function' && glContext.isContextLost()) {
+          return false
+        }
 
         // Verificar que el renderer tiene las propiedades necesarias
         if (!gl.domElement || gl.domElement.width === 0 || gl.domElement.height === 0) {
@@ -78,6 +85,18 @@ export function SafeEffectComposer({
     }
   }, [gl, scene, camera])
 
+  // Cuando se pierde el contexto WebGL, dejar de renderizar el composer para evitar TypeError (length undefined)
+  useEffect(() => {
+    if (!gl?.domElement) return
+    const canvas = gl.domElement
+    const handleContextLost = () => {
+      setHasError(true)
+      setIsReady(false)
+    }
+    canvas.addEventListener('webglcontextlost', handleContextLost, false)
+    return () => canvas.removeEventListener('webglcontextlost', handleContextLost)
+  }, [gl])
+
   // No renderizar si no está habilitado, no está listo, o hay error
   if (!enabled || !isReady || hasError) {
     return null
@@ -91,7 +110,7 @@ export function SafeEffectComposer({
   try {
     return (
       <Suspense fallback={null}>
-        <EffectComposer multisampling={multisampling}>
+        <EffectComposer multisampling={multisampling} disableNormalPass={disableNormalPass}>
           {children as React.ReactElement}
         </EffectComposer>
       </Suspense>

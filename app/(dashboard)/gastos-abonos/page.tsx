@@ -1,26 +1,22 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════════════════════════════
- * 💸 PÁGINA DE GASTOS Y ABONOS — CHRONOS 2026
- * ═══════════════════════════════════════════════════════════════════════════════════════════════════
- *
- * Página server component que renderiza el panel de Gastos y Abonos Aurora Unified.
- * Protegida con ErrorBoundary para capturar errores de extensiones browser.
- *
- * ═══════════════════════════════════════════════════════════════════════════════════════════════════
- */
+"use client"
 
-import { AuroraGastosYAbonosPanelUnified } from "@/app/_components/chronos-2026/panels/AuroraGastosYAbonosPanelUnified"
-import { ErrorBoundaryPremium } from "@/app/_components/ErrorBoundaryPremium"
+import { PanelErrorBoundary } from "@/app/_components/chronos-2026/panels/PanelErrorBoundary"
+import { SupremeGastosBackground } from "@/app/_components/chronos-2026/panels/SupremePanelBackgrounds"
+import dynamic from "next/dynamic"
+import { useRouter } from "next/navigation"
 
-export const metadata = {
-  title: "Gastos y Abonos — CHRONOS",
-  description: "Gestión de gastos y abonymosos del sistema CHRONOS",
-}
+const AuroraGastosYAbonosPanelUnified = dynamic(
+  () => import("@/app/_components/chronos-2026/panels/AuroraGastosYAbonosPanelUnified"),
+  { ssr: false }
+)
 
 export default function GastosAbonosPage() {
+  const router = useRouter()
   return (
-    <ErrorBoundaryPremium>
-      <AuroraGastosYAbonosPanelUnified />
-    </ErrorBoundaryPremium>
+    <PanelErrorBoundary panelName="Gastos y Abonos">
+      <SupremeGastosBackground showParticles={false} showGradient showVignette showGrid>
+        <AuroraGastosYAbonosPanelUnified onNavigate={(path) => router.push(path)} />
+      </SupremeGastosBackground>
+    </PanelErrorBoundary>
   )
 }

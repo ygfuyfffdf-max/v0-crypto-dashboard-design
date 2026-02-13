@@ -22,8 +22,8 @@ export {
 // ═══════════════════════════════════════════════════════════════════════════
 export {
   DEFAULT_VOICE,
-  ElevenLabsService,
   ELEVENLABS_VOICES,
+  ElevenLabsService,
   isSpeechRecognitionSupported,
   isSpeechSynthesisSupported,
   useElevenLabsVoice,
@@ -109,3 +109,6 @@ export {
 
 // 🚀 Supreme AI Unified Widget - Widget Unificado Supremo
 export { SupremeAIUnifiedWidget } from "./SupremeAIUnifiedWidget"
+
+// 🔮 Global AI Orb - Asistente flotante global estilo Siri
+export { GlobalAIOrb } from "./GlobalAIOrb"

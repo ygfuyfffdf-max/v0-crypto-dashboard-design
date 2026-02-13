@@ -17,65 +17,37 @@
 
 'use client'
 
-import { cn } from '@/app/_lib/utils'
-import { motion, AnimatePresence } from 'motion/react'
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import {
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
-  FileText,
-  Download,
-  Calendar,
-  Clock,
-  Filter,
-  Search,
-  Settings,
-  Play,
-  Pause,
-  RotateCcw,
-  Eye,
-  EyeOff,
-  Plus,
-  Edit,
-  Trash2,
-  Send,
-  Check,
-  X,
-  AlertTriangle,
-  BarChart,
-  PieChart,
-  Activity,
-  Users,
-  DollarSign,
-  Target,
-  Brain,
-  Sparkles,
-  Zap,
-  Mail,
-  FileSpreadsheet,
-  FileJson,
-  File,
-  BarChartHorizontal,
-  LineChart,
-  AreaChart,
-  ScatterChart,
-} from 'lucide-react'
-import { toast } from 'sonner'
-import { useAI } from '@/app/_hooks/useAI'
-import { usePushNotifications } from '@/app/_hooks/usePushNotifications'
-import { AuroraGlassCard, AuroraButton } from '../../ui/AuroraGlassSystem'
-import { QuantumCard } from '../../ui/QuantumElevatedUI'
-import { reportesService } from '@/app/_lib/services/reportes-supreme.service'
 import type {
-  TemplateReporte,
-  ReporteProgramado,
-  EjecucionReporte,
-  FormatoReporte,
-  FrecuenciaReporte,
-  TipoReporte,
-  EstadoEjecucion,
+    FormatoReporte,
+    FrecuenciaReporte,
+    ReporteProgramado,
+    TemplateReporte
 } from '@/app/_lib/services/reportes-supreme.service'
+import { cn } from '@/app/_lib/utils'
+import {
+    Calendar,
+    Clock,
+    Cpu,
+    Edit,
+    File,
+    FileJson,
+    FileSpreadsheet,
+    FileText,
+    Mail,
+    Pause,
+    Play,
+    Settings,
+    Sparkles,
+    Trash2,
+    TrendingDown,
+    TrendingUp,
+    X,
+    Zap
+} from 'lucide-react'
+import { motion } from 'motion/react'
+import { memo, useEffect, useState } from 'react'
+import { AuroraButton, AuroraGlassCard } from '../../ui/AuroraGlassSystem'
+import { QuantumCard } from '../../ui/QuantumElevatedUI'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TYPES EXTENDIDOS
@@ -146,12 +118,12 @@ const MetricasReportes = memo(function MetricasReportes({
                   </span>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <p className="text-2xl font-bold text-white">
-                  {metrica.valor >= 1000000 
-                    ? `${(metrica.valor / 1000000).toFixed(1)}M` 
-                    : metrica.valor >= 1000 
+                  {metrica.valor >= 1000000
+                    ? `${(metrica.valor / 1000000).toFixed(1)}M`
+                    : metrica.valor >= 1000
                     ? `${(metrica.valor / 1000).toFixed(1)}K`
                     : metrica.valor.toLocaleString()
                   }
@@ -161,7 +133,7 @@ const MetricasReportes = memo(function MetricasReportes({
           </QuantumCard>
         </motion.div>
       ))}
-      
+
       {loading && (
         <div className="col-span-full flex items-center justify-center py-8">
           <div className="text-center">
@@ -189,14 +161,14 @@ const PanelInsightsIA = memo(function PanelInsightsIA({
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-gradient-to-r from-violet-500 to-cyan-500">
-              <Brain className="h-5 w-5 text-white" />
+              <Cpu className="h-5 w-5 text-white" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-white">Insights con IA</h3>
               <p className="text-sm text-white/60">Análisis inteligente de datos</p>
             </div>
           </div>
-          
+
           <AuroraButton
             onClick={onGenerarNuevos}
             variant="secondary"
@@ -252,9 +224,9 @@ const PanelInsightsIA = memo(function PanelInsightsIA({
                     {Math.round(insight.confianza * 100)}% confianza
                   </span>
                 </div>
-                
+
                 <p className="text-sm text-white/70 mb-3">{insight.descripcion}</p>
-                
+
                 {insight.accionRecomendada && (
                   <div className="flex justify-end">
                     <AuroraButton size="sm" variant="outline">
@@ -320,7 +292,7 @@ const ListaReportesProgramados = memo(function ListaReportesProgramados({
                 <div className={cn('p-2 rounded-lg', getEstadoColor(reporte))}>
                   {getFormatoIcono(reporte.formato)}
                 </div>
-                
+
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <h4 className="font-medium text-white">{reporte.nombre}</h4>
@@ -331,7 +303,7 @@ const ListaReportesProgramados = memo(function ListaReportesProgramados({
                       {reporte.pausado ? 'Pausado' : reporte.activo ? 'Activo' : 'Inactivo'}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center gap-4 text-xs text-white/50">
                     <span className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
@@ -346,13 +318,13 @@ const ListaReportesProgramados = memo(function ListaReportesProgramados({
                       {reporte.destinatarios.filter(d => d.activo).length} destinatarios
                     </span>
                   </div>
-                  
+
                   {reporte.descripcion && (
                     <p className="text-sm text-white/60 mt-1">{reporte.descripcion}</p>
                   )}
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <AuroraButton
                   onClick={() => onEjecutar(reporte.id)}
@@ -362,7 +334,7 @@ const ListaReportesProgramados = memo(function ListaReportesProgramados({
                 >
                   <Play className="h-4 w-4" />
                 </AuroraButton>
-                
+
                 <AuroraButton
                   onClick={() => onPausar(reporte.id)}
                   variant="ghost"
@@ -370,7 +342,7 @@ const ListaReportesProgramados = memo(function ListaReportesProgramados({
                 >
                   {reporte.pausado ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
                 </AuroraButton>
-                
+
                 <AuroraButton
                   onClick={() => onEditar(reporte.id)}
                   variant="ghost"
@@ -378,7 +350,7 @@ const ListaReportesProgramados = memo(function ListaReportesProgramados({
                 >
                   <Edit className="h-4 w-4" />
                 </AuroraButton>
-                
+
                 <AuroraButton
                   onClick={() => onEliminar(reporte.id)}
                   variant="ghost"

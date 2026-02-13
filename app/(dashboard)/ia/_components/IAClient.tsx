@@ -1,13 +1,12 @@
-'use client'
+"use client"
 
-import { cn, formatCurrency } from '@/app/_lib/utils'
-import { useChronosStore } from '@/app/lib/store'
-import { AnimatePresence, motion } from 'motion/react'
+import { cn, formatCurrency } from "@/app/_lib/utils"
+import { useChronosStore } from "@/app/lib/store"
 import {
   AlertTriangle,
   BarChart3,
-  Brain,
   CheckCircle2,
+  Cpu,
   Loader2,
   Mic,
   MicOff,
@@ -16,8 +15,9 @@ import {
   TrendingUp,
   Volume2,
   VolumeX,
-} from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+} from "lucide-react"
+import { AnimatePresence, motion } from "motion/react"
+import { useEffect, useRef, useState } from "react"
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -25,14 +25,14 @@ import { useEffect, useRef, useState } from 'react'
 
 interface ChatMessage {
   id: string
-  role: 'user' | 'assistant'
+  role: "user" | "assistant"
   content: string
   timestamp: Date
 }
 
 interface AIInsight {
   id: string
-  type: 'success' | 'warning' | 'info' | 'prediction'
+  type: "success" | "warning" | "info" | "prediction"
   title: string
   description: string
   value?: string
@@ -67,44 +67,44 @@ function generateAIResponse(input: string, context: AIContext): string {
   const lowerInput = input.toLowerCase()
 
   if (
-    lowerInput.includes('capital') ||
-    lowerInput.includes('dinero') ||
-    lowerInput.includes('balance')
+    lowerInput.includes("capital") ||
+    lowerInput.includes("dinero") ||
+    lowerInput.includes("balance")
   ) {
     const total = Object.values(context.bancos).reduce(
       (acc: number, b: BancoContext) => acc + (b.capitalActual || 0),
-      0,
+      0
     )
     return `📊 **Resumen de Capital**\n\nEl capital total actual es de **${formatCurrency(
-      total,
+      total
     )}**.\n\nDistribuido en ${Object.keys(context.bancos).length} bancos/bóvedas.`
   }
 
-  if (lowerInput.includes('venta') || lowerInput.includes('ventas')) {
+  if (lowerInput.includes("venta") || lowerInput.includes("ventas")) {
     const totalVentas = context.ventas?.length || 0
     const montoTotal =
       context.ventas?.reduce(
         (acc: number, v: VentaContext) => acc + (v.precioTotalVenta || 0),
-        0,
+        0
       ) || 0
     return `📈 **Análisis de Ventas**\n\nTienes **${totalVentas}** ventas registradas.\nMonto total: **${formatCurrency(
-      montoTotal,
+      montoTotal
     )}**\n\n¿Necesitas un reporte más detallado?`
   }
 
-  if (lowerInput.includes('cliente')) {
+  if (lowerInput.includes("cliente")) {
     const totalClientes = context.clientes?.length || 0
     const activos =
-      context.clientes?.filter((c: ClienteContext) => c.estado === 'activo').length || 0
+      context.clientes?.filter((c: ClienteContext) => c.estado === "activo").length || 0
     return `👥 **Cartera de Clientes**\n\nTotal: **${totalClientes}** clientes\nActivos: **${activos}**\n\nPuedo mostrarte los clientes con deudas pendientes si lo necesitas.`
   }
 
-  if (lowerInput.includes('ayuda') || lowerInput.includes('puedes')) {
-    return '🤖 **¿Cómo puedo ayudarte?**\n\n• Consultar capital y balance de bancos\n• Analizar ventas y tendencias\n• Ver cartera de clientes\n• Generar reportes\n• Verificar stock de almacén\n• Optimizar distribución de capital\n\nSolo pregúntame lo que necesites.'
+  if (lowerInput.includes("ayuda") || lowerInput.includes("puedes")) {
+    return "🤖 **¿Cómo puedo ayudarte?**\n\n• Consultar capital y balance de bancos\n• Analizar ventas y tendencias\n• Ver cartera de clientes\n• Generar reportes\n• Verificar stock de almacén\n• Optimizar distribución de capital\n\nSolo pregúntame lo que necesites."
   }
 
-  if (lowerInput.includes('hola') || lowerInput.includes('buenos')) {
-    return '👋 **¡Hola!**\n\nSoy CHRONOS AI, tu asistente financiero. Estoy listo para ayudarte con:\n\n• Análisis de datos\n• Reportes en tiempo real\n• Predicciones\n• Recomendaciones\n\n¿En qué puedo asistirte hoy?'
+  if (lowerInput.includes("hola") || lowerInput.includes("buenos")) {
+    return "👋 **¡Hola!**\n\nSoy CHRONOS AI, tu asistente financiero. Estoy listo para ayudarte con:\n\n• Análisis de datos\n• Reportes en tiempo real\n• Predicciones\n• Recomendaciones\n\n¿En qué puedo asistirte hoy?"
   }
 
   return `🤔 Entiendo tu consulta sobre "${input}".\n\nPuedo ayudarte con información sobre capital, ventas, clientes, distribuidores y almacén. ¿Podrías ser más específico?\n\nEjemplos:\n• "¿Cuál es el capital total?"\n• "Muestra las ventas del mes"\n• "¿Cuántos clientes activos hay?"`
@@ -119,14 +119,14 @@ export function IAClient() {
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
-      id: '1',
-      role: 'assistant',
+      id: "1",
+      role: "assistant",
       content:
-        '¡Hola! Soy **CHRONOS AI**, tu asistente financiero inteligente. 🤖\n\nPuedo ayudarte a:\n\n• 📊 Analizar tus ventas y tendencias\n• 📝 Generar reportes automáticos\n• 💰 Predecir flujo de caja\n• 🎯 Optimizar distribución de capital\n\n¿En qué puedo ayudarte hoy?',
+        "¡Hola! Soy **CHRONOS AI**, tu asistente financiero inteligente. 🤖\n\nPuedo ayudarte a:\n\n• 📊 Analizar tus ventas y tendencias\n• 📝 Generar reportes automáticos\n• 💰 Predecir flujo de caja\n• 🎯 Optimizar distribución de capital\n\n¿En qué puedo ayudarte hoy?",
       timestamp: new Date(),
     },
   ])
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState("")
   const [isTyping, setIsTyping] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [isListening, setIsListening] = useState(false)
@@ -135,31 +135,31 @@ export function IAClient() {
   // Insights basados en datos reales
   const insights: AIInsight[] = [
     {
-      id: '1',
-      type: 'success',
-      title: 'Sistema Operativo',
+      id: "1",
+      type: "success",
+      title: "Sistema Operativo",
       description: `${Object.keys(bancos).length} bancos activos con capital distribuido`,
       value: formatCurrency(
-        Object.values(bancos).reduce((acc, b) => acc + (b.capitalActual || 0), 0),
+        Object.values(bancos).reduce((acc, b) => acc + (b.capitalActual || 0), 0)
       ),
     },
     {
-      id: '2',
-      type: 'info',
-      title: 'Ventas Registradas',
+      id: "2",
+      type: "info",
+      title: "Ventas Registradas",
       description: `Total de ${ventas.length} ventas en el sistema`,
       value: formatCurrency(ventas.reduce((acc, v) => acc + (v.precioTotalVenta || 0), 0)),
     },
     {
-      id: '3',
-      type: clientes.filter((c) => (c.deuda || 0) > 0).length > 5 ? 'warning' : 'success',
-      title: 'Cartera de Clientes',
-      description: `${clientes.filter((c) => c.estado === 'activo').length} clientes activos`,
+      id: "3",
+      type: clientes.filter((c) => (c.deuda || 0) > 0).length > 5 ? "warning" : "success",
+      title: "Cartera de Clientes",
+      description: `${clientes.filter((c) => c.estado === "activo").length} clientes activos`,
     },
     {
-      id: '4',
-      type: 'prediction',
-      title: 'Órdenes de Compra',
+      id: "4",
+      type: "prediction",
+      title: "Órdenes de Compra",
       description: `${ordenesCompra.length} órdenes en el sistema`,
       value: formatCurrency(ordenesCompra.reduce((acc, o) => acc + (o.costoTotal || 0), 0)),
     },
@@ -177,20 +177,20 @@ export function IAClient() {
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
-      role: 'user',
+      role: "user",
       content: input,
       timestamp: new Date(),
     }
 
     setMessages((prev) => [...prev, userMessage])
-    setInput('')
+    setInput("")
     setIsTyping(true)
 
     // Simular respuesta de IA
     setTimeout(() => {
       const aiResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        role: 'assistant',
+        role: "assistant",
         content: generateAIResponse(input, {
           bancos,
           ventas,
@@ -206,7 +206,7 @@ export function IAClient() {
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       handleSend()
     }
@@ -222,7 +222,7 @@ export function IAClient() {
         <div className="flex items-center gap-4">
           <div className="relative">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600">
-              <Brain className="h-7 w-7 text-white" />
+              <Cpu className="h-7 w-7 text-white" />
             </div>
             <div className="absolute -right-1 -bottom-1 h-4 w-4 animate-pulse rounded-full border-2 border-gray-900 bg-emerald-500" />
           </div>
@@ -238,10 +238,10 @@ export function IAClient() {
           <button
             onClick={() => setIsSpeaking(!isSpeaking)}
             className={cn(
-              'rounded-xl border p-3 transition-all',
+              "rounded-xl border p-3 transition-all",
               isSpeaking
-                ? 'border-violet-500/30 bg-violet-500/20 text-violet-400'
-                : 'border-white/10 bg-white/5 text-gray-400 hover:text-white',
+                ? "border-violet-500/30 bg-violet-500/20 text-violet-400"
+                : "border-white/10 bg-white/5 text-gray-400 hover:text-white"
             )}
           >
             {isSpeaking ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
@@ -265,11 +265,11 @@ export function IAClient() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
                 className={cn(
-                  'rounded-xl border p-4',
-                  insight.type === 'success' && 'border-emerald-500/20 bg-emerald-500/10',
-                  insight.type === 'warning' && 'border-amber-500/20 bg-amber-500/10',
-                  insight.type === 'info' && 'border-blue-500/20 bg-blue-500/10',
-                  insight.type === 'prediction' && 'border-violet-500/20 bg-violet-500/10',
+                  "rounded-xl border p-4",
+                  insight.type === "success" && "border-emerald-500/20 bg-emerald-500/10",
+                  insight.type === "warning" && "border-amber-500/20 bg-amber-500/10",
+                  insight.type === "info" && "border-blue-500/20 bg-blue-500/10",
+                  insight.type === "prediction" && "border-violet-500/20 bg-violet-500/10"
                 )}
               >
                 <div className="flex items-start justify-between">
@@ -277,14 +277,14 @@ export function IAClient() {
                     <p className="font-medium">{insight.title}</p>
                     <p className="mt-1 text-sm text-gray-400">{insight.description}</p>
                   </div>
-                  {insight.type === 'success' && (
+                  {insight.type === "success" && (
                     <CheckCircle2 className="h-5 w-5 text-emerald-400" />
                   )}
-                  {insight.type === 'warning' && (
+                  {insight.type === "warning" && (
                     <AlertTriangle className="h-5 w-5 text-amber-400" />
                   )}
-                  {insight.type === 'info' && <BarChart3 className="h-5 w-5 text-blue-400" />}
-                  {insight.type === 'prediction' && (
+                  {insight.type === "info" && <BarChart3 className="h-5 w-5 text-blue-400" />}
+                  {insight.type === "prediction" && (
                     <TrendingUp className="h-5 w-5 text-violet-400" />
                   )}
                 </div>
@@ -297,7 +297,7 @@ export function IAClient() {
           <div className="border-t border-white/10 pt-4">
             <p className="mb-3 text-sm text-gray-400">Acciones Rápidas</p>
             <div className="flex flex-wrap gap-2">
-              {['Capital total', 'Ventas del mes', 'Clientes activos'].map((action) => (
+              {["Capital total", "Ventas del mes", "Clientes activos"].map((action) => (
                 <button
                   key={action}
                   onClick={() => {
@@ -323,25 +323,25 @@ export function IAClient() {
                   key={message.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={cn('flex', message.role === 'user' ? 'justify-end' : 'justify-start')}
+                  className={cn("flex", message.role === "user" ? "justify-end" : "justify-start")}
                 >
                   <div
                     className={cn(
-                      'max-w-[80%] rounded-2xl p-4',
-                      message.role === 'user'
-                        ? 'border border-violet-500/30 bg-violet-500/20'
-                        : 'border border-white/10 bg-white/5',
+                      "max-w-[80%] rounded-2xl p-4",
+                      message.role === "user"
+                        ? "border border-violet-500/30 bg-violet-500/20"
+                        : "border border-white/10 bg-white/5"
                     )}
                   >
                     <div className="prose prose-invert prose-sm max-w-none">
-                      {message.content.split('\n').map((line, i) => (
+                      {message.content.split("\n").map((line, i) => (
                         <p key={i} className="mb-1 last:mb-0">
                           {line
-                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                            .split('<strong>')
+                            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                            .split("<strong>")
                             .map((part, j) => {
-                              if (part.includes('</strong>')) {
-                                const [bold, rest] = part.split('</strong>')
+                              if (part.includes("</strong>")) {
+                                const [bold, rest] = part.split("</strong>")
                                 return (
                                   <span key={j}>
                                     <strong className="text-white">{bold}</strong>
@@ -380,10 +380,10 @@ export function IAClient() {
               <button
                 onClick={() => setIsListening(!isListening)}
                 className={cn(
-                  'rounded-xl border p-3 transition-all',
+                  "rounded-xl border p-3 transition-all",
                   isListening
-                    ? 'border-red-500/30 bg-red-500/20 text-red-400'
-                    : 'border-white/10 bg-white/5 text-gray-400 hover:text-white',
+                    ? "border-red-500/30 bg-red-500/20 text-red-400"
+                    : "border-white/10 bg-white/5 text-gray-400 hover:text-white"
                 )}
               >
                 {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}

@@ -1,11 +1,22 @@
-import { Metadata } from 'next'
-import { OrdenesPageClient } from './OrdenesPageClient'
+"use client"
 
-export const metadata: Metadata = {
-  title: 'Órdenes de Compra | CHRONOS 2026',
-  description: 'Gestión de órdenes de compra con distribución GYA',
-}
+import { PanelErrorBoundary } from "@/app/_components/chronos-2026/panels/PanelErrorBoundary"
+import { SupremeComprasBackground } from "@/app/_components/chronos-2026/panels/SupremePanelBackgrounds"
+import dynamic from "next/dynamic"
+import { useRouter } from "next/navigation"
+
+const AuroraComprasPanelUnified = dynamic(
+  () => import("@/app/_components/chronos-2026/panels/AuroraComprasPanelUnified"),
+  { ssr: false }
+)
 
 export default function OrdenesPage() {
-  return <OrdenesPageClient />
+  const router = useRouter()
+  return (
+    <PanelErrorBoundary panelName="Ordenes">
+      <SupremeComprasBackground showParticles={false} showGradient showVignette showGrid>
+        <AuroraComprasPanelUnified onNavigate={(path) => router.push(path)} />
+      </SupremeComprasBackground>
+    </PanelErrorBoundary>
+  )
 }

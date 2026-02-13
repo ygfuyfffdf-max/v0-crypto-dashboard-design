@@ -1,22 +1,11 @@
 // CHRONOS INFINITY - Dashboard Layout
-// Nested layout for the dashboard route group
-// Note: <html>/<body> are in the root layout. Clerk auth is handled by middleware.
+// Nested layout wrapping all dashboard routes with AppShell (sidebar + header)
 
-import type { ReactNode } from 'react';
+"use client"
 
-export const metadata = {
-  title: 'CHRONOS INFINITY - Dashboard',
-  description: 'Panel de control avanzado con monitoreo en tiempo real',
-};
+import { AppShell } from "@/app/_components/chronos-2026/layout/AppShell"
+import type { ReactNode } from "react"
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {children}
-    </main>
-  );
+export default function DashboardLayout({ children }: { children: ReactNode }) {
+  return <AppShell>{children}</AppShell>
 }
