@@ -144,7 +144,7 @@ export class PolyglotPersistenceEngine {
         connectTimeout: this.config.redis.connectTimeout,
         keepAlive: true,
         noDelay: true,
-        reconnectStrategy: (retries) => Math.min(retries * 50, 1000),
+        reconnectStrategy: (retries: number) => Math.min(retries * 50, 1000),
       },
       password: this.config.redis.password,
       disableOfflineQueue: false,
@@ -161,7 +161,7 @@ export class PolyglotPersistenceEngine {
         disableLosslessIntegers: true, // Mejor rendimiento
         logging: {
           level: 'warn',
-          logger: (level, message) => {
+          logger: (level: string, message: string) => {
             if (level === 'error') {
               console.error('Neo4j error:', message);
             }
@@ -287,7 +287,7 @@ export class PolyglotPersistenceEngine {
   async executeNeo4j<T = any>(query: string, params: any = {}): Promise<T[]> {
     const startTime = performance.now();
 
-    const session = this.neo4jDriver.session({
+    const session = (this.neo4jDriver as Driver & { session: (config?: { defaultAccessMode?: any; database?: string }) => Session }).session({
       defaultAccessMode: neo4j.session.READ,
       database: 'neo4j'
     });
@@ -298,9 +298,9 @@ export class PolyglotPersistenceEngine {
       const latency = performance.now() - startTime;
 
       // Transformar resultados
-      const records = result.records.map(record => {
-        const obj: any = {};
-        record.keys.forEach((key, index) => {
+      const records = result.records.map((record: { keys: string[]; get: (index: number) => unknown }) => {
+        const obj: Record<string, unknown> = {};
+        record.keys.forEach((key: string, index: number) => {
           obj[key] = record.get(index);
         });
         return obj;
@@ -488,7 +488,7 @@ export class PolyglotPersistenceEngine {
    * Verifica conexión con Neo4j
    */
   private async verifyNeo4jConnection(): Promise<void> {
-    const session = this.neo4jDriver.session();
+    const session = (this.neo4jDriver as Driver & { session: () => Session }).session();
     try {
       await session.run('RETURN 1');
     } finally {
@@ -641,7 +641,7 @@ export class PolyglotPersistenceEngine {
           const hitsValue = line.split(':')[1];
           if (hitsValue) {
             const hits = parseInt(hitsValue);
-            const missesLine = lines.find(l => l.startsWith('keyspace_misses:'));
+            const missesLine = lines.find((l: string) => l.startsWith('keyspace_misses:'));
             const missesValue = missesLine?.split(':')[1];
             const misses = missesValue ? parseInt(missesValue) : 0;
             this.metrics.redis.hitRate = hits / (hits + misses);
@@ -764,7 +764,7 @@ export class PolyglotPersistenceEngine {
       this.pgPool.end(),
       this.mongoClient.close(),
       this.redisClient.quit(),
-      this.neo4jDriver.close()
+      (this.neo4jDriver as Driver & { close: () => Promise<void> }).close()
     ]);
 
     console.log('✅ All database connections closed safely');
