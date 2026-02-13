@@ -9,9 +9,10 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'motion/react'
 import { useState, useEffect, useCallback } from 'react'
-import { Card } from '@/app/_components/ui/card'
+import { AuroraDashboardUnified } from '@/app/_components/chronos-2026/panels'
 
 // Logo KOCMOC para loading premium
 const KocmocLogo = dynamic(
@@ -202,6 +203,20 @@ function KocmocLoadingScreen({ onComplete }: { onComplete?: () => void }) {
 // MAIN CLIENT COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
+function DashboardContent() {
+  const router = useRouter()
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen bg-black"
+    >
+      <AuroraDashboardUnified onNavigate={(path) => router.push(path)} />
+    </motion.div>
+  )
+}
+
 export default function DashboardClient() {
   const [isLoading, setIsLoading] = useState(true)
   const [showDashboard, setShowDashboard] = useState(false)
@@ -231,21 +246,7 @@ export default function DashboardClient() {
 
       <AnimatePresence>
         {showDashboard && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="min-h-screen bg-black"
-          >
-            <Card className="max-w-6xl mx-auto p-6">
-              <h1 className="text-3xl font-bold text-white mb-2">Chronos 2026</h1>
-              <p className="text-gray-400 mb-6">Dashboard Financiero</p>
-              <div className="bg-gray-800 rounded-lg p-8 text-center">
-                <h2 className="text-xl font-semibold text-white mb-4">Dashboard Unificado</h2>
-                <p className="text-gray-400">Funcionalidad de dashboard en desarrollo</p>
-              </div>
-            </Card>
-          </motion.div>
+          <DashboardContent />
         )}
       </AnimatePresence>
     </>

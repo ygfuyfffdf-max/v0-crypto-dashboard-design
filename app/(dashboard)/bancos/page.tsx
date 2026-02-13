@@ -1,18 +1,11 @@
-'use client'
+import { Metadata } from 'next'
+import { BancosPageClient } from './BancosPageClient'
 
-import { Card } from '@/app/_components/ui/card'
+export const metadata: Metadata = {
+  title: 'Bancos | CHRONOS Supreme 2026',
+  description: 'Gestión de capital y bóvedas con Aurora Glassmorphism',
+}
 
 export default function BancosPage() {
-  return (
-    <div className="min-h-screen bg-gray-900 p-4">
-      <Card className="max-w-6xl mx-auto p-6">
-        <h1 className="text-3xl font-bold text-white mb-2">Bancos</h1>
-        <p className="text-gray-400 mb-6">Gestión de Capital</p>
-        <div className="bg-gray-800 rounded-lg p-8 text-center">
-          <h2 className="text-xl font-semibold text-white mb-4">Panel de Bancos</h2>
-          <p className="text-gray-400">Funcionalidad de bancos en desarrollo</p>
-        </div>
-      </Card>
-    </div>
-  )
+  return <BancosPageClient />
 }
