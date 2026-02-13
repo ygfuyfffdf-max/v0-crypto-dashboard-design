@@ -118,7 +118,7 @@ jobs:
           NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'mock-project' }}
 
       - name: 📤 Upload Build Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: success()
         with:
           name: build-output
@@ -181,7 +181,7 @@ jobs:
           NEXT_PUBLIC_FIREBASE_PROJECT_ID: 'mock-project'
 
       - name: 📤 Upload Playwright Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report
