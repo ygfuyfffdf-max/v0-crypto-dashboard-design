@@ -32,7 +32,6 @@ import { AnimatePresence, motion } from 'motion/react'
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // 🌟 SUPREME SYSTEMS — CHRONOS INFINITY 2026
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
-import '@/app/_components/chronos-2026/animations/CinematicAnimations'
 import {
     AlertTriangle,
     ArrowDownRight,

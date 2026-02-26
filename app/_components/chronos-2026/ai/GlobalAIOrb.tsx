@@ -102,6 +102,7 @@ export function GlobalAIOrb({ className }: { className?: string }) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [listening, setListening] = useState(false)
+  const [aiLoading, setAiLoading] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -112,14 +113,32 @@ export function GlobalAIOrb({ className }: { className?: string }) {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" })
   }, [messages])
 
-  const respond = useCallback((text: string) => {
+  const respond = useCallback(async (text: string) => {
+    // Try real AI API first, fall back to mock responses
+    setAiLoading(true)
+    try {
+      const response = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, context: getContextLabel(pathname) }),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        const reply = data.message || data.response || data.text || data.content || JSON.stringify(data)
+        setMessages((p) => [...p, { role: 'assistant', content: reply, timestamp: new Date() }])
+        return
+      }
+    } catch {
+      // API unavailable — fall through to mock
+    } finally {
+      setAiLoading(false)
+    }
+    // Mock fallback
     const reply =
       AI_RESPONSES[text] ??
       `Entendido. Estoy procesando tu solicitud: "${text}". Un momento por favor.`
-    setTimeout(() => {
-      setMessages((p) => [...p, { role: "assistant", content: reply, timestamp: new Date() }])
-    }, 800)
-  }, [])
+    setMessages((p) => [...p, { role: 'assistant', content: reply, timestamp: new Date() }])
+  }, [pathname])
 
   const sendMessage = useCallback(
     (text: string) => {
@@ -244,6 +263,24 @@ export function GlobalAIOrb({ className }: { className?: string }) {
                 </div>
               )}
 
+              {/* AI typing indicator */}
+              {aiLoading && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mr-8 flex items-center gap-1.5 rounded-xl bg-white/4 px-3 py-2"
+                >
+                  {[0,1,2].map((i) => (
+                    <motion.span
+                      key={i}
+                      className="h-1.5 w-1.5 rounded-full bg-violet-400/70"
+                      animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
+                      transition={{ repeat: Infinity, duration: 1, delay: i * 0.2 }}
+                    />
+                  ))}
+                </motion.div>
+              )}
+
               {messages.map((m, i) => (
                 <motion.div
                   key={i}
@@ -305,7 +342,7 @@ export function GlobalAIOrb({ className }: { className?: string }) {
 
               <button
                 onClick={() => sendMessage(input)}
-                disabled={!input.trim()}
+                disabled={!input.trim() || aiLoading}
                 className="rounded-lg bg-violet-600/80 p-1.5 text-white transition hover:bg-violet-500 disabled:opacity-30"
               >
                 <Send className="h-4 w-4" />
