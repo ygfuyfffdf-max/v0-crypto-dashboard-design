@@ -119,7 +119,7 @@
     "@react-three/csg": "^4.0.0",
     "@react-three/drei": "latest",
     "@react-three/fiber": "latest",
-    "@react-three/postprocessing": "2.16.3",
+    "@react-three/postprocessing": "3.0.4",
     "@react-three/xr": "^6.6.29",
     "@sentry/nextjs": "^10.31.0",
     "@splinetool/react-spline": "^4.1.0",
