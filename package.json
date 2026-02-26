@@ -186,7 +186,7 @@
     "react-resizable-panels": "^4.0.7",
     "react-virtualized-auto-sizer": "^2.0.2",
     "react-window": "^2.2.4",
-    "recharts": "2.15.0",
+    "recharts": "3.7.0",
     "redis": "^5.10.0",
     "resend": "^6.9.1",
     "simplex-noise": "^4.0.3",
