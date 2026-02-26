@@ -22,32 +22,23 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform, PanInfo } from 'motion/react'
 import {
-  LucideIcon,
-  ChevronRight,
-  ChevronLeft,
-  Home,
-  Plus,
-  X,
-  MoreHorizontal,
-  Bell,
-  Search,
-  Settings,
-  User,
-  Menu,
+    ChevronLeft,
+    ChevronRight,
+    LucideIcon,
+    Plus,
+    Search,
+    X
 } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import {
-  createContext,
-  forwardRef,
-  memo,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
+    memo,
+    ReactNode,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState
 } from 'react'
 import { CleanScrollContainer, useCleanDesign } from './iOSCleanDesignSystem'
 
@@ -540,6 +531,11 @@ interface iOSPageLayoutProps {
   backgroundColor?: string
 }
 
+// Uppercase aliases for JSX (TypeScript requires capitalized JSX components)
+const IOSHeaderClean = iOSHeaderClean
+const IOSFABClean = iOSFABClean
+const IOSTabBarClean = iOSTabBarClean
+
 export const iOSPageLayout = memo(function iOSPageLayout({
   children,
   title,
@@ -589,7 +585,7 @@ export const iOSPageLayout = memo(function iOSPageLayout({
       style={{ backgroundColor }}
     >
       {/* Header */}
-      <iOSHeaderClean
+      <IOSHeaderClean
         title={title}
         subtitle={subtitle}
         showBackButton={showBackButton}
@@ -635,7 +631,7 @@ export const iOSPageLayout = memo(function iOSPageLayout({
 
       {/* FAB */}
       {showFAB && (
-        <iOSFABClean
+        <IOSFABClean
           icon={fabIcon}
           label={fabLabel}
           actions={fabActions}
@@ -650,7 +646,7 @@ export const iOSPageLayout = memo(function iOSPageLayout({
 
       {/* Tab Bar */}
       {showTabBar && tabs && activeTab && onTabChange && (
-        <iOSTabBarClean
+        <IOSTabBarClean
           tabs={tabs}
           activeTab={activeTab}
           onTabChange={onTabChange}
@@ -914,13 +910,8 @@ export const iOSSearchBarClean = memo(function iOSSearchBarClean({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export {
-  type TabItem,
-  type iOSTabBarProps,
-  type FABAction,
-  type iOSFABProps,
-  type iOSHeaderProps,
-  type iOSPageLayoutProps,
-  type iOSListSectionProps,
-  type ListItemProps,
-  type iOSSearchBarProps,
+    type FABAction,
+    type iOSFABProps,
+    type iOSHeaderProps, type iOSListSectionProps, type iOSPageLayoutProps, type iOSSearchBarProps, type iOSTabBarProps, type ListItemProps, type TabItem
 }
+

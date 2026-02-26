@@ -1,26 +1,30 @@
 "use client"
 
+import {
+    LiquidGlassButton,
+    LiquidGlassSearchField
+} from "@/app/_components/chronos-2026/primitives/LiquidGlassSystem"
 import { ModalShell } from "@/app/_components/modals/ModalShell"
 import { GlassCurrencyInput, GlassInput, GlassSelect } from "@/app/_components/ui/GlassFormSystem"
 import { cn } from "@/app/_lib/utils"
 import { useMovimientosData } from "@/app/hooks/useDataHooks"
 import {
-  AlertTriangle,
-  ArrowLeftRight,
-  BarChart3,
-  Calendar,
-  Check,
-  CreditCard,
-  DollarSign,
-  Landmark,
-  PieChart,
-  Plus,
-  Receipt,
-  RefreshCw,
-  TrendingDown,
-  TrendingUp,
-  Wallet,
-  X,
+    AlertTriangle,
+    ArrowLeftRight,
+    BarChart3,
+    Calendar,
+    Check,
+    CreditCard,
+    DollarSign,
+    Landmark,
+    PieChart,
+    Plus,
+    Receipt,
+    RefreshCw,
+    TrendingDown,
+    TrendingUp,
+    Wallet,
+    X,
 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import React, { useCallback, useMemo, useState } from "react"
@@ -324,19 +328,21 @@ function CreateModal({
           </>
         )}
         <div className="flex gap-3 pt-2">
-          <button
-            onClick={onClose}
-            className="flex-1 rounded-xl border border-white/10 bg-white/5 py-2.5 text-sm text-white/60 hover:bg-white/10"
-          >
+          <LiquidGlassButton variant="glass" size="md" className="flex-1" onClick={onClose}>
             Cancelar
-          </button>
-          <button
+          </LiquidGlassButton>
+          <LiquidGlassButton
+            variant="accent"
+            size="md"
+            loading={submitting}
+            icon={<Check size={16} />}
+            iconPosition="left"
+            className="flex-1"
             onClick={handleSubmit}
             disabled={submitting}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-linear-to-r from-pink-600 to-violet-600 py-2.5 text-sm font-medium text-white hover:shadow-lg hover:shadow-violet-500/20 disabled:opacity-40"
           >
-            <Check size={16} /> {submitting ? "Guardando..." : "Guardar"}
-          </button>
+            {submitting ? "Guardando..." : "Guardar"}
+          </LiquidGlassButton>
         </div>
       </div>
     </ModalShell>
@@ -414,7 +420,7 @@ export function AuroraGastosYAbonosPanelUnified({
   className,
 }: AuroraGastosYAbonosPanelUnifiedProps) {
   // Use movimientos data as the unified source for gastos, abonos, and transfers
-  const { data: movData, isLoading: gLoading, refetch: refetchMovimientos } = useMovimientosData()
+  const { data: movData, loading: gLoading, refetch: refetchMovimientos } = useMovimientosData()
   const aLoading = gLoading
   const allMovimientos = useMemo(() => (movData as any)?.movimientos || [], [movData])
   const gastos = useMemo(
@@ -624,15 +630,16 @@ export function AuroraGastosYAbonosPanelUnified({
             <p className="mt-1 pl-[52px] text-sm text-white/40">Control de egresos e ingresos</p>
           </div>
           <div className="flex items-center gap-2">
-            <button
+            <LiquidGlassButton
+              variant="accent"
+              icon={<Plus size={16} />}
               onClick={() => {
                 setModalType(activeTab)
                 setShowModal(true)
               }}
-              className="flex items-center gap-2 rounded-xl bg-linear-to-r from-pink-600 to-violet-600 px-4 py-2.5 text-sm font-medium transition-all hover:shadow-lg hover:shadow-pink-500/20 active:scale-[0.97]"
             >
-              <Plus size={16} /> Crear
-            </button>
+              Crear
+            </LiquidGlassButton>
             <button
               onClick={() => onNavigate?.("/gastos")}
               className="rounded-xl border border-white/10 bg-white/5 p-2.5 text-white/60 hover:bg-white/10 hover:text-white"
@@ -687,10 +694,10 @@ export function AuroraGastosYAbonosPanelUnified({
           ))}
         </div>
 
-        {/* 6. FILTERS — GlassInput */}
+        {/* 6. FILTERS (Liquid Glass) */}
         <Glass className="flex flex-wrap items-center gap-3 p-3">
           <div className="min-w-[200px] flex-1">
-            <GlassInput
+            <LiquidGlassSearchField
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar..."

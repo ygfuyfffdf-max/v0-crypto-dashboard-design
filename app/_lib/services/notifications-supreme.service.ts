@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════════════════════════════
  * 🔔 CHRONOS INFINITY 2026 — SERVICIO DE NOTIFICACIONES SUPREMO

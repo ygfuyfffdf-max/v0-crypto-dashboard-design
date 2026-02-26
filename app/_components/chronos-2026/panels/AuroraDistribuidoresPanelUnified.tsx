@@ -1,27 +1,32 @@
 "use client"
 
+import {
+    LiquidGlassButton,
+    LiquidGlassSearchField,
+    LiquidGlassSegmentedControl,
+} from "@/app/_components/chronos-2026/primitives/LiquidGlassSystem"
 import { ModalShell } from "@/app/_components/modals/ModalShell"
 import { GlassCurrencyInput, GlassInput, GlassSelect } from "@/app/_components/ui/GlassFormSystem"
 import { cn } from "@/app/_lib/utils"
 import { useDistribuidoresData as useDistribuidores } from "@/app/hooks/useDataHooks"
 import {
-  AlertTriangle,
-  BarChart3,
-  Check,
-  Clock,
-  CreditCard,
-  DollarSign,
-  Edit3,
-  Eye,
-  Filter,
-  Package,
-  Plus,
-  Receipt,
-  RefreshCw,
-  Trash2,
-  TrendingUp,
-  Truck,
-  Users,
+    AlertTriangle,
+    BarChart3,
+    Check,
+    Clock,
+    CreditCard,
+    DollarSign,
+    Edit3,
+    Eye,
+    Filter,
+    Package,
+    Plus,
+    Receipt,
+    RefreshCw,
+    Trash2,
+    TrendingUp,
+    Truck,
+    Users,
 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useMemo, useState } from "react"
@@ -104,7 +109,7 @@ function ProfileCard({
 
   return (
     <motion.div
-      className={cn(glass, "group cursor-pointer p-5 transition-all hover:border-white/15")}
+      className={cn(glass, "group cursor-pointer p-5 neo-tactile-hover-elevate")}
       whileHover={{ y: -4, scale: 1.01 }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -223,7 +228,7 @@ function ProfileCard({
             e.stopPropagation()
             onDelete()
           }}
-          className="rounded-xl border border-red-500/15 bg-red-500/10 px-3 py-2 text-[11px] font-medium text-red-400/50 transition-colors hover:bg-red-500/20 hover:text-red-400"
+          className="rounded-xl ring-1 ring-red-500/30 px-3 py-2 text-[11px] font-medium text-red-400/90 transition-colors hover:bg-red-500/20 hover:text-red-400 focus-visible:ring-2 focus-visible:ring-red-500/50"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -364,7 +369,7 @@ export function AuroraDistribuidoresPanelUnified({
   onNavigate,
   className,
 }: AuroraDistribuidoresPanelUnifiedProps) {
-  const { data: rawData, isLoading: loading, error, refetch } = useDistribuidores()
+  const { data: rawData, loading, error, refetch } = useDistribuidores()
 
   const [viewMode, setViewMode] = useState<"tabla" | "perfiles">("perfiles")
   const [searchQuery, setSearchQuery] = useState("")
@@ -556,14 +561,13 @@ export function AuroraDistribuidoresPanelUnified({
           >
             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
           </motion.button>
-          <motion.button
+          <LiquidGlassButton
+            variant="secondary"
+            icon={<Plus size={16} />}
             onClick={() => onNavigate?.("/distribuidores/nuevo")}
-            className="flex items-center gap-2 rounded-2xl bg-cyan-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-cyan-500"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
           >
-            <Plus size={16} /> Nuevo Distribuidor
-          </motion.button>
+            Nuevo Distribuidor
+          </LiquidGlassButton>
         </div>
       </div>
 
@@ -588,28 +592,19 @@ export function AuroraDistribuidoresPanelUnified({
         ))}
       </div>
 
-      {/* ─── VIEW TOGGLE + SEARCH + FILTERS ─── */}
+      {/* ─── VIEW TOGGLE + SEARCH + FILTERS (Liquid Glass) ─── */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className={cn(glass, "inline-flex shrink-0 gap-0.5 p-1")}>
-          {(["tabla", "perfiles"] as const).map((mode) => (
-            <button
-              key={mode}
-              onClick={() => setViewMode(mode)}
-              className={cn(
-                "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all",
-                viewMode === mode
-                  ? "bg-cyan-600 text-white shadow-lg shadow-cyan-500/20"
-                  : "text-white/40 hover:bg-white/5 hover:text-white/70"
-              )}
-            >
-              {mode === "tabla" ? <BarChart3 size={14} /> : <Users size={14} />}
-              {mode === "tabla" ? "Tabla" : "Perfiles"}
-            </button>
-          ))}
-        </div>
+        <LiquidGlassSegmentedControl
+          value={viewMode}
+          onChange={(v) => setViewMode(v)}
+          options={[
+            { value: "tabla", icon: <BarChart3 size={14} />, label: "Tabla" },
+            { value: "perfiles", icon: <Users size={14} />, label: "Perfiles" },
+          ]}
+        />
 
         <div className="max-w-xs min-w-[180px] flex-1">
-          <GlassInput
+          <LiquidGlassSearchField
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar distribuidor..."

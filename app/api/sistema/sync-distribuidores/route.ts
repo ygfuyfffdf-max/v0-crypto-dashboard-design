@@ -51,7 +51,7 @@ async function syncDistribuidores() {
           totalOrdenesCompra: totalCompras,
           totalPagado: totalPagado,
           numeroOrdenes: ordenesDelDist.length,
-          updatedAt: new Date(),
+          updatedAt: Math.floor(Date.now() / 1000),
         })
         .where(eq(distribuidores.id, d.id))
     }

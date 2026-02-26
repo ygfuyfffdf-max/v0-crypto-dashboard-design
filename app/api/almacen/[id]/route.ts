@@ -48,7 +48,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
     }
 
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     await db
       .update(almacen)

@@ -118,7 +118,7 @@ export function GastoFormPremium({
     reset,
     formState: { errors, isValid },
   } = useForm<GastoFormData>({
-    resolver: zodResolver(GastoFormSchema),
+    resolver: zodResolver(GastoFormSchema) as any,
     defaultValues: {
       bancoId: 'boveda_monte',
       monto: 0,
@@ -373,7 +373,7 @@ export function AbonoFormPremium({
     setValue,
     formState: { errors, isValid },
   } = useForm<AbonoFormData>({
-    resolver: zodResolver(AbonoFormSchema),
+    resolver: zodResolver(AbonoFormSchema) as any,
     defaultValues: {
       clienteId: tipo === 'cliente' ? preselectedId || '' : '',
       distribuidorId: tipo === 'distribuidor' ? preselectedId || '' : '',
@@ -696,7 +696,7 @@ export function TransferenciaFormPremium({
     reset,
     formState: { errors, isValid },
   } = useForm<TransferenciaFormData>({
-    resolver: zodResolver(TransferenciaFormSchema),
+    resolver: zodResolver(TransferenciaFormSchema) as any,
     defaultValues: {
       bancoOrigenId: 'boveda_monte',
       bancoDestinoId: 'utilidades',

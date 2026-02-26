@@ -60,7 +60,7 @@ export interface KPICardProps {
   formato?: FormatoKPI
   variante?: VarianteKPI
   tamano?: TamanoKPI
-  icono?: React.ElementType
+  icono?: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
   descripcion?: string
   periodo?: string
   tendencia?: TendenciaKPI

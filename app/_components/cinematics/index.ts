@@ -10,14 +10,11 @@ export { KocmocCinematic3D } from './KocmocCinematic3D'
 
 // 🆕 KOCMOC PREMIUM SYSTEM — Silver Space Edition
 export {
-  SilverDustBackground,
-  KocmocLogoPremium,
-  SilverSpaceCinematic,
-  LightningEffect,
-  SILVER_SPACE_COLORS,
+    KocmocLogoPremium, LightningEffect,
+    SILVER_SPACE_COLORS, SilverDustBackground, SilverSpaceCinematic
 } from './KocmocPremiumSystem'
 
-export { KocmocShowcase } from './KocmocShowcase'
+// KocmocShowcase — removed (module not found)
 
 // Re-export legacy cinematics
 export { default as CinematicTransition } from '../chronos-2026/transitions/CinematicTransitions'

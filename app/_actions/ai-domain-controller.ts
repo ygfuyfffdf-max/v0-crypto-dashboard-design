@@ -283,7 +283,7 @@ export async function aiCreateVenta(data: Record<string, unknown>): Promise<AIRe
       montoRestante: precioTotalVenta,
       estadoPago: 'pendiente',
       estado: 'activa',
-      fecha: new Date(),
+      fecha: Math.floor(Date.now() / 1000),
     })
 
     const nuevaVenta = await db.query.ventas.findFirst({
@@ -348,7 +348,7 @@ export async function aiCreateCliente(data: Record<string, unknown>): Promise<AI
       email,
       telefono,
       direccion,
-      createdAt: new Date(),
+      createdAt: Math.floor(Date.now() / 1000),
     })
 
     const nuevoCliente = await db.query.clientes.findFirst({
@@ -410,7 +410,7 @@ export async function aiCreateDistribuidor(data: Record<string, unknown>): Promi
         email: data.email || null,
         telefono: data.telefono || null,
         direccion: data.direccion || null,
-        createdAt: new Date(),
+        createdAt: Math.floor(Date.now() / 1000),
       })
       .returning()
 
@@ -478,7 +478,7 @@ export async function aiCreateGasto(data: Record<string, unknown>): Promise<AIRe
         tipo: 'gasto',
         monto: data.monto,
         concepto: data.concepto,
-        fecha: new Date(),
+        fecha: Math.floor(Date.now() / 1000),
       })
     })
 
@@ -542,7 +542,7 @@ export async function aiCreateIngreso(data: Record<string, unknown>): Promise<AI
         tipo: 'ingreso',
         monto: data.monto,
         concepto: data.concepto,
-        fecha: new Date(),
+        fecha: Math.floor(Date.now() / 1000),
       })
     })
 
@@ -617,14 +617,14 @@ export async function aiCreateTransferencia(data: Record<string, unknown>): Prom
           tipo: 'transferencia_salida',
           monto: data.monto,
           concepto: `Transferencia a ${data.banco_destino_nombre || 'otro banco'}`,
-          fecha: new Date(),
+          fecha: Math.floor(Date.now() / 1000),
         },
         {
           bancoId: data.banco_destino_id,
           tipo: 'transferencia_entrada',
           monto: data.monto,
           concepto: `Transferencia desde ${data.banco_origen_nombre || 'otro banco'}`,
-          fecha: new Date(),
+          fecha: Math.floor(Date.now() / 1000),
         },
       ])
     })

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // 🛡️ CHRONOS INFINITY - SECURITY EVENTS API
 // API route para gestión de eventos de seguridad y monitoreo en tiempo real
 

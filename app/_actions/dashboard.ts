@@ -43,7 +43,7 @@ export interface ActivityItem {
   tipo: 'venta' | 'abono' | 'gasto' | 'ingreso' | 'transferencia'
   descripcion: string
   monto: number
-  fecha: Date
+  fecha: number
   bancoId?: string
   clienteId?: string
   entidad?: string
@@ -73,26 +73,26 @@ export interface DashboardData {
 // HELPER FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════════
 
-function getStartOfDay(date: Date = new Date()): Date {
+function getStartOfDay(date: Date = new Date()): number {
   const d = new Date(date)
   d.setHours(0, 0, 0, 0)
-  return d
+  return Math.floor(d.getTime() / 1000)
 }
 
-function getStartOfWeek(date: Date = new Date()): Date {
+function getStartOfWeek(date: Date = new Date()): number {
   const d = new Date(date)
   const day = d.getDay()
   const diff = d.getDate() - day + (day === 0 ? -6 : 1)
   d.setDate(diff)
   d.setHours(0, 0, 0, 0)
-  return d
+  return Math.floor(d.getTime() / 1000)
 }
 
-function getStartOfMonth(date: Date = new Date()): Date {
+function getStartOfMonth(date: Date = new Date()): number {
   const d = new Date(date)
   d.setDate(1)
   d.setHours(0, 0, 0, 0)
-  return d
+  return Math.floor(d.getTime() / 1000)
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -125,7 +125,7 @@ export async function getDashboardKPIs(): Promise<DashboardKPIs> {
       db
         .select({ total: sum(bancos.capitalActual) })
         .from(bancos)
-        .where(eq(bancos.activo, true)),
+        .where(eq(bancos.activo, 1)),
 
       // Ventas de hoy
       db
@@ -162,7 +162,7 @@ export async function getDashboardKPIs(): Promise<DashboardKPIs> {
       db
         .select({
           totalActivos: sql<number>`count(*) filter (where ${clientes.estado} = 'activo')`,
-          nuevosDelMes: sql<number>`count(*) filter (where ${clientes.createdAt} >= ${startOfMonth.getTime() / 1000})`,
+          nuevosDelMes: sql<number>`count(*) filter (where ${clientes.createdAt} >= ${startOfMonth})`,
           conDeuda: sql<number>`count(*) filter (where ${clientes.saldoPendiente} > 0)`,
           deudaTotal: sum(clientes.saldoPendiente),
         })
@@ -251,10 +251,6 @@ export async function getRecentActivity(limit = 10): Promise<ActivityItem[]> {
     const recentMovimientos = await db.query.movimientos.findMany({
       orderBy: [desc(movimientos.fecha)],
       limit,
-      with: {
-        cliente: true,
-        banco: true,
-      },
     })
 
     return recentMovimientos.map((mov) => ({
@@ -262,10 +258,10 @@ export async function getRecentActivity(limit = 10): Promise<ActivityItem[]> {
       tipo: mov.tipo as ActivityItem['tipo'],
       descripcion: mov.concepto ?? 'Movimiento',
       monto: mov.monto,
-      fecha: mov.fecha ?? new Date(),
+      fecha: mov.fecha ?? Math.floor(Date.now() / 1000),
       bancoId: mov.bancoId ?? undefined,
       clienteId: mov.clienteId ?? undefined,
-      entidad: mov.cliente?.nombre ?? mov.banco?.nombre ?? undefined,
+      entidad: undefined as string | undefined,
     }))
   } catch (error) {
     logger.error('Error obteniendo actividad reciente', error as Error, {
@@ -281,10 +277,10 @@ export async function getRecentActivity(limit = 10): Promise<ActivityItem[]> {
 export async function getBancosResumen(): Promise<BancoResumen[]> {
   try {
     const now = new Date()
-    const hace24h = new Date(now.getTime() - 86400000)
+    const hace24h = Math.floor(now.getTime() / 1000) - 86400
 
     const bancosData = await db.query.bancos.findMany({
-      where: eq(bancos.activo, true),
+      where: eq(bancos.activo, 1),
       orderBy: (bancos, { asc }) => [asc(bancos.orden)],
     })
 

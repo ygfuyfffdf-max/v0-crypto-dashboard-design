@@ -18,8 +18,8 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
-import { motion, useAnimationControls, AnimatePresence } from 'motion/react'
-import { ReactNode, memo, useEffect, useMemo, useState, useCallback, useRef } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import { ReactNode, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // SHIMMER EFFECT
@@ -135,8 +135,8 @@ export const iOSMorphGradient = memo(function iOSMorphGradient({
             opacity: intensity,
           }}
           animate={{
-            x: `${positions[index].x}%`,
-            y: `${positions[index].y}%`,
+            x: `${positions[index]?.x ?? 0}%`,
+            y: `${positions[index]?.y ?? 0}%`,
           }}
           transition={{
             duration: speed,
@@ -431,8 +431,10 @@ export const iOSRipple = memo(function iOSRipple({
       let x: number, y: number
 
       if ('touches' in event) {
-        x = event.touches[0].clientX - rect.left
-        y = event.touches[0].clientY - rect.top
+        const touch = event.touches[0]
+        if (!touch) return
+        x = touch.clientX - rect.left
+        y = touch.clientY - rect.top
       } else {
         x = event.clientX - rect.left
         y = event.clientY - rect.top
@@ -524,6 +526,7 @@ export const iOSReveal = memo(function iOSReveal({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
+        if (!entry) return
         if (entry.isIntersecting) {
           setIsInView(true)
           setHasAnimated(true)

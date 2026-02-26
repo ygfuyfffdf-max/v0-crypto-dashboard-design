@@ -1,7 +1,7 @@
 // 🎤 DEEPGRAM SERVICE HOOK - CHRONOS INFINITY
 // Hook para gestionar el servicio de Deepgram STT
 
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 interface DeepgramOptions {
   apiKey?: string
@@ -192,8 +192,8 @@ export function useDeepgramService(options: DeepgramOptions = {}) {
           const randomText = sampleTexts[Math.floor(Math.random() * sampleTexts.length)]
           const confidence = Math.random() * 0.3 + 0.7 // Entre 0.7 y 1.0
           
-          setCurrentTranscript(randomText)
-          callbacksRef.current.onTranscript?.(randomText, true, confidence)
+          setCurrentTranscript(randomText ?? '')
+          callbacksRef.current.onTranscript?.(randomText ?? '', true, confidence)
           
           // Programar próxima simulación
           setTimeout(simulateTranscription, Math.random() * 3000 + 2000)

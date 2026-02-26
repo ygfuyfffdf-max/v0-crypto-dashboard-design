@@ -1,13 +1,13 @@
 import { logger } from '@/app/lib/utils/logger'
 import { db } from '@/database'
 import {
-  almacen,
-  bancos,
-  clientes,
-  movimientos,
-  ordenesCompra,
-  salidaAlmacen,
-  ventas,
+    almacen,
+    bancos,
+    clientes,
+    movimientos,
+    ordenesCompra,
+    salidaAlmacen,
+    ventas,
 } from '@/database/schema'
 import { eq, sql } from 'drizzle-orm'
 import { NextResponse, type NextRequest } from 'next/server'
@@ -113,7 +113,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Venta no encontrada' }, { status: 404 })
     }
 
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
     const { montoPagado: nuevoMontoPagado, observaciones, estadoPago } = body
 
     // Calcular nuevo estado si se actualiza el monto pagado
@@ -270,7 +270,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Venta no encontrada' }, { status: 404 })
     }
 
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     // Si la venta tenía pagos, revertir la distribución de los bancos
     const montoPagado = ventaActual.montoPagado || 0

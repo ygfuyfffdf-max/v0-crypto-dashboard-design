@@ -65,7 +65,7 @@ import {
 } from './CognitoChat'
 import { processQuery } from './CognitoEngine'
 import { useVoice, VoiceButton, VoiceWaveVisualizer } from './CognitoVoice'
-import type { CognitoMode, CognitoWidgetProps, ProactiveSuggestion } from './types'
+import type { CognitoAction, CognitoMode, CognitoWidgetProps, ProactiveSuggestion } from './types'
 import { STATE_COLORS, STATE_LABELS } from './types'
 import { useCognitoStore } from './useCognitoStore'
 
@@ -365,7 +365,7 @@ export function CognitoWidget({
 
            // Ejecutar callback de acción si existe
            if (commandResult.action) {
-             onActionExecuted?.(commandResult.action)
+             onActionExecuted?.(commandResult.action as unknown as CognitoAction)
            }
            
            setIsProcessing(false)

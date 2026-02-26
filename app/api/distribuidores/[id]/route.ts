@@ -110,7 +110,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       .update(distribuidores)
       .set({
         ...updateData,
-        updatedAt: new Date(),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(eq(distribuidores.id, id))
 
@@ -159,7 +159,7 @@ export async function DELETE(
       .update(distribuidores)
       .set({
         estado: 'inactivo',
-        updatedAt: new Date(),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(eq(distribuidores.id, id))
 

@@ -1,43 +1,56 @@
 /**
- * CHRONOS INFINITY 2026 - MIDDLEWARE
- * Route protection and authentication via Clerk v6+
+ * CHRONOS INFINITY 2026 — Clerk Auth Middleware
+ *
+ * Route protection powered by Clerk.
+ * Public pages and API routes are allowlisted; everything else requires sign-in.
+ *
+ * ┌─────────────────────────────────────────────────────┐
+ * │  PUBLIC PAGES:  /, /login, /register, /error, etc.  │
+ * │  PUBLIC API:    /api/auth/*, /api/health, webhooks   │
+ * │  PROTECTED:     everything else → sign-in redirect   │
+ * └─────────────────────────────────────────────────────┘
  */
 
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
-// Public routes that don't require authentication
-const isPublicRoute = createRouteMatcher([
+// ─── Public Route Matchers ──────────────────────────────────────────────────
+
+/** Pages accessible without authentication */
+const isPublicPage = createRouteMatcher([
   '/',
   '/login(.*)',
   '/register(.*)',
   '/forgot-password(.*)',
-  '/api/auth/webhook',
-  '/api/health',
-  '/api/auth/callback(.*)',
   '/error(.*)',
   '/maintenance(.*)',
-  // Static assets that must always be public
-  '/manifest(.*)',
-  '/favicon.ico',
-  '/icon-192.png',
-  '/icon-512.png',
-]);
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+])
 
-export default clerkMiddleware(async (auth, req) => {
-  // Allow public routes without authentication
-  if (isPublicRoute(req)) {
-    return;
+/** API routes that don't require authentication */
+const isPublicApi = createRouteMatcher([
+  '/api/auth(.*)',
+  '/api/health(.*)',
+  '/api/webhooks(.*)',
+])
+
+// ─── Middleware ──────────────────────────────────────────────────────────────
+
+export default clerkMiddleware(async (auth, request) => {
+  const isPublic = isPublicPage(request) || isPublicApi(request)
+
+  if (!isPublic) {
+    await auth.protect()
   }
+})
 
-  // Protect all other routes - redirect to login if not authenticated
-  await auth.protect();
-});
+// ─── Matcher Config ─────────────────────────────────────────────────────────
 
 export const config = {
   matcher: [
-    // Skip manifest.json, Next.js internals and all static files (evita 401 PWA)
-    '/((?!manifest\\.json|_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|json)).*)',
-    // Always run for API routes
+    // Skip Next.js internals and all static files (incl. manifest.json for PWA)
+    '/((?!manifest\\.json|_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|json|map)).*)',
+    // Always run for API and tRPC routes
     '/(api|trpc)(.*)',
   ],
-};
+}

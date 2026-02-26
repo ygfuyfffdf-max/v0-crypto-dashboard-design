@@ -114,7 +114,7 @@ interface MetricaDashboard {
   valor: number
   valorAnterior: number
   formato: 'numero' | 'moneda' | 'porcentaje'
-  icono: React.ElementType
+  icono: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
   color: string
   tendencia: 'up' | 'down' | 'neutral'
   periodo: string

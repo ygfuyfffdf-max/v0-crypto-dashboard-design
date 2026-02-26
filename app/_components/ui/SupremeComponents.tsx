@@ -20,15 +20,13 @@
 import { cn } from '@/app/lib/utils'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import React, {
-  ButtonHTMLAttributes,
-  InputHTMLAttributes,
-  ReactNode,
-  SelectHTMLAttributes,
-  forwardRef,
-  useCallback,
-  useId,
-  useMemo,
-  useState,
+    ButtonHTMLAttributes,
+    InputHTMLAttributes,
+    ReactNode,
+    SelectHTMLAttributes,
+    forwardRef,
+    useId,
+    useState
 } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
@@ -126,7 +124,7 @@ export const tokens = {
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success' | 'gold'
 export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onDrag' | 'onDragEnd' | 'onDragEnter' | 'onDragExit' | 'onDragLeave' | 'onDragOver' | 'onDragStart' | 'onAnimationStart' | 'onAnimationEnd' | 'onAnimationIteration'> {
   variant?: ButtonVariant
   size?: ButtonSize
   loading?: boolean
@@ -796,3 +794,4 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
 export { tokens as designTokens }
+

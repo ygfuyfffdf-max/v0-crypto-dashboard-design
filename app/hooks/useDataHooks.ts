@@ -13,7 +13,7 @@
 'use client'
 
 import { logger } from '@/app/lib/utils/logger'
-import { useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
 // ═══════════════════════════════════════════════════════════════
@@ -135,10 +135,32 @@ interface SalidaAlmacen {
   notas?: string
 }
 
+interface MovimientoAlmacen {
+  id: string
+  tipo: 'entrada' | 'salida'
+  productoId: string
+  cantidad: number
+  fecha: string
+  usuario: string
+  notas?: string
+}
+
+interface CorteAlmacen {
+  id: string
+  fecha: string
+  usuario: string
+  totalProductos: number
+  totalEntradas: number
+  totalSalidas: number
+  observaciones?: string
+}
+
 interface AlmacenDataResult {
   productos: ProductoAlmacen[]
   entradas: EntradaAlmacen[]
   salidas: SalidaAlmacen[]
+  movimientos?: MovimientoAlmacen[]
+  cortes?: CorteAlmacen[]
 }
 
 export function useAlmacenData(): DataHookResult<AlmacenDataResult> {
@@ -442,7 +464,7 @@ export {
     useDistribuidoresData as useDistribuidores,
     useMovimientosData as useMovimientos,
     useOrdenesCompraData as useOrdenes,
-    useVentasData as useVentas,
+    useVentasData as useVentas
 }
 
 // ═══════════════════════════════════════════════════════════════

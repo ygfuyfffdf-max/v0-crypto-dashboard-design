@@ -24,11 +24,11 @@ export async function GET(request: NextRequest) {
     }
 
     if (fechaInicio) {
-      conditions.push(gte(movimientos.fecha, new Date(fechaInicio)))
+      conditions.push(gte(movimientos.fecha, Math.floor(new Date(fechaInicio).getTime() / 1000)))
     }
 
     if (fechaFin) {
-      conditions.push(lte(movimientos.fecha, new Date(fechaFin)))
+      conditions.push(lte(movimientos.fecha, Math.floor(new Date(fechaFin).getTime() / 1000)))
     }
 
     const ingresos = await db
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
     }
 
     const movimientoId = uuidv4()
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     // Crear movimiento de ingreso
     await db.insert(movimientos).values({

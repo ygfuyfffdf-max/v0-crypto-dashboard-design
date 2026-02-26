@@ -15,7 +15,6 @@ import {
   ClipboardList,
   Landmark,
   LayoutDashboard,
-  Menu,
   Package,
   Receipt,
   Settings,
@@ -26,13 +25,13 @@ import {
 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react"
+import { usePathname } from "next/navigation"
+import { useCallback, useEffect, useState, type ReactNode } from "react"
 
 import { cn } from "@/app/_lib/utils"
-import { UserButton } from "@clerk/nextjs"
+import { KocmocLogoCompact } from "../branding/KocmocLogo"
 import { GlobalAIOrb } from "../ai/GlobalAIOrb"
-import { ThemeToggle } from "../widgets/ThemeToggle"
+import { ChronosHeader2026Client } from "./ChronosHeader2026Client"
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -63,13 +62,6 @@ const NAV_ITEMS: NavItem[] = [
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
-
-function getPageName(pathname: string): string {
-  const item = NAV_ITEMS.find(
-    (n) => pathname === n.path || (n.path !== "/dashboard" && pathname.startsWith(n.path))
-  )
-  return item?.label ?? "Dashboard"
-}
 
 function isActive(pathname: string, itemPath: string): boolean {
   if (itemPath === "/dashboard") return pathname === "/dashboard" || pathname === "/"
@@ -184,7 +176,7 @@ function Sidebar({
       animate={{ width: collapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH_EXPANDED }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
     >
-      {/* Logo area */}
+      {/* Logo area — KOCMOC branding */}
       <div className="flex h-14 items-center border-b border-white/6 px-4">
         <AnimatePresence mode="wait">
           {!collapsed ? (
@@ -196,23 +188,26 @@ function Sidebar({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-violet-500 to-purple-700 shadow-lg shadow-violet-500/25">
-                <LayoutDashboard size={16} className="text-white" />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg">
+                <KocmocLogoCompact size={36} animated className="drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]" />
               </div>
-              <span className="bg-linear-to-r from-violet-300 via-purple-300 to-fuchsia-300 bg-clip-text text-base font-bold tracking-wider text-transparent">
-                CHRONOS
-              </span>
+              <div>
+                <span className="block text-base font-bold tracking-wider text-white">KOCMOC</span>
+                <span className="-mt-0.5 block text-[10px] font-medium tracking-widest text-white/50">
+                  CHRONOS INFINITY
+                </span>
+              </div>
             </motion.div>
           ) : (
             <motion.div
               key="logo-compact"
-              className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-violet-500 to-purple-700 shadow-lg shadow-violet-500/25"
+              className="mx-auto flex items-center justify-center"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.2 }}
             >
-              <LayoutDashboard size={16} className="text-white" />
+              <KocmocLogoCompact size={40} animated className="drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -298,12 +293,11 @@ function MobileSidebar({
             {/* Header */}
             <div className="flex h-14 items-center justify-between border-b border-white/6 px-4">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-violet-500 to-purple-700 shadow-lg shadow-violet-500/25">
-                  <LayoutDashboard size={16} className="text-white" />
+                <KocmocLogoCompact size={36} animated className="drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]" />
+                <div>
+                  <span className="block text-base font-bold tracking-wider text-white">KOCMOC</span>
+                  <span className="-mt-0.5 block text-[10px] font-medium tracking-widest text-white/50">CHRONOS INFINITY</span>
                 </div>
-                <span className="bg-linear-to-r from-violet-300 via-purple-300 to-fuchsia-300 bg-clip-text text-base font-bold tracking-wider text-transparent">
-                  CHRONOS
-                </span>
               </div>
               <motion.button
                 onClick={onClose}
@@ -333,85 +327,6 @@ function MobileSidebar({
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
-// HEADER
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-
-function Header({
-  pageName,
-  sidebarCollapsed,
-  onMobileMenuToggle,
-}: {
-  pageName: string
-  sidebarCollapsed: boolean
-  onMobileMenuToggle: () => void
-}) {
-  return (
-    <motion.header
-      className="sticky top-0 z-30 flex h-14 items-center border-b border-white/6 bg-black/40 backdrop-blur-xl"
-      initial={{ y: -56, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30, delay: 0.1 }}
-    >
-      <div className="flex w-full items-center justify-between px-4 lg:px-6">
-        {/* Left — Mobile menu + Logo */}
-        <div className="flex items-center gap-3">
-          {/* Mobile hamburger */}
-          <motion.button
-            onClick={onMobileMenuToggle}
-            className="rounded-lg p-2 text-white/50 transition-colors hover:bg-white/6 hover:text-white lg:hidden"
-            whileTap={{ scale: 0.9 }}
-            aria-label="Toggle menu"
-          >
-            <Menu size={20} />
-          </motion.button>
-
-          {/* Logo — visible on desktop when sidebar is collapsed, always on mobile */}
-          <div className="flex items-center gap-2 lg:hidden">
-            <span className="bg-linear-to-r from-violet-400 via-purple-400 to-fuchsia-400 bg-clip-text text-lg font-bold tracking-widest text-transparent">
-              CHRONOS
-            </span>
-          </div>
-        </div>
-
-        {/* Center — Breadcrumb */}
-        <div className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-2 lg:flex">
-          <div className="flex items-center gap-2 rounded-full border border-white/6 bg-white/3 px-4 py-1.5">
-            <div className="h-1.5 w-1.5 rounded-full bg-violet-400 shadow-sm shadow-violet-400/50" />
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={pageName}
-                className="text-sm font-medium text-white/70"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.2 }}
-              >
-                {pageName}
-              </motion.span>
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* Right — Theme + User */}
-        <div className="flex items-center gap-2">
-          <ThemeToggle size="sm" />
-          <div className="ml-1">
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: "w-8 h-8 ring-2 ring-white/10 ring-offset-1 ring-offset-black/50",
-                  userButtonPopoverCard: "bg-gray-950 border border-white/10 backdrop-blur-2xl",
-                },
-              }}
-            />
-          </div>
-        </div>
-      </div>
-    </motion.header>
-  )
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // APP SHELL — MAIN EXPORT
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
@@ -421,11 +336,9 @@ interface AppShellProps {
 
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname()
-  const router = useRouter()
 
   // ── Sidebar collapsed state (persisted) ──────────────────────────────────
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   // Hydrate collapsed state from localStorage
@@ -453,17 +366,6 @@ export function AppShell({ children }: AppShellProps) {
       return next
     })
   }, [])
-
-  const toggleMobileMenu = useCallback(() => {
-    setMobileMenuOpen((prev) => !prev)
-  }, [])
-
-  const closeMobileMenu = useCallback(() => {
-    setMobileMenuOpen(false)
-  }, [])
-
-  // Current page name for breadcrumb
-  const pageName = useMemo(() => getPageName(pathname), [pathname])
 
   // Sidebar width for main content offset
   const sidebarWidth = sidebarCollapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH_EXPANDED
@@ -497,8 +399,8 @@ export function AppShell({ children }: AppShellProps) {
       {/* ── Desktop Sidebar ──────────────────────────────────────────────────── */}
       <Sidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} pathname={pathname} />
 
-      {/* ── Mobile Sidebar Overlay ───────────────────────────────────────────── */}
-      <MobileSidebar open={mobileMenuOpen} onClose={closeMobileMenu} pathname={pathname} />
+      {/* ── Mobile Sidebar Overlay (ChronosHeader2026 has its own mobile nav) ─── */}
+      <MobileSidebar open={false} onClose={() => {}} pathname={pathname} />
 
       {/* ── Main Content Area ────────────────────────────────────────────────── */}
       <motion.div
@@ -506,22 +408,19 @@ export function AppShell({ children }: AppShellProps) {
         animate={{ marginLeft: isDesktop ? sidebarWidth : 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
-        {/* Header */}
-        <Header
-          pageName={pageName}
-          sidebarCollapsed={sidebarCollapsed}
-          onMobileMenuToggle={toggleMobileMenu}
-        />
+        {/* Header — KOCMOC premium with logo, nav dropdowns, search, notifications */}
+        <ChronosHeader2026Client />
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-6">
+        {/* Page Content — min-height ensures panels are always visible */}
+        <main className="relative flex min-h-[calc(100vh-4rem)] flex-1 flex-col overflow-y-auto p-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={pathname}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              className="relative min-h-full w-full"
+              initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -12, filter: "blur(2px)" }}
+              transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               {children}
             </motion.div>

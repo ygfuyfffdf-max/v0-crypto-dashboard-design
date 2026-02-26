@@ -68,7 +68,7 @@ function KpiCard({ kpi, index }: { kpi: KpiDef; index: number }) {
         borderColor: `${kpi.colorHex}30`,
         boxShadow: `0 0 28px -6px ${kpi.colorHex}25`,
       }}
-      className="relative rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 backdrop-blur-sm transition-colors duration-300"
+      className="relative rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 backdrop-blur-sm transition-colors duration-300 neo-tactile-hover-elevate"
     >
       <div className="mb-3 flex items-center gap-2">
         <div

@@ -1,12 +1,5 @@
 import type { Metadata, Viewport } from 'next'
 import type React from 'react'
-import {
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
 // 🌟 CHRONOS 2026 — ROOT LAYOUT
@@ -20,8 +13,8 @@ import './globals.css'
 // Parche de emergencia para validación defensiva
 import '@/app/lib/utils/defensive-validation-patch'
 
-import { AppProviders } from '@/app/providers/AppProviders'
 import { ConditionalClerkProvider } from '@/app/_components/providers/ConditionalClerkProvider'
+import { AppProviders } from '@/app/providers/AppProviders'
 import { Analytics } from '@vercel/analytics/next'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════

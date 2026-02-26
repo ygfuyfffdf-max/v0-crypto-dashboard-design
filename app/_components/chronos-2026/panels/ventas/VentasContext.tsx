@@ -1,9 +1,9 @@
 "use client"
 
+import { useToastAdvanced } from "@/app/_components/ui/ios"
+import { useVentasData } from "@/app/hooks/useDataHooks"
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react"
 import { FiltrosState, Venta, VentasContextType } from "./types"
-import { useVentasData } from "@/app/hooks/useDataHooks"
-import { useToastAdvanced } from "@/app/_components/ui/ios"
 
 const VentasContext = createContext<VentasContextType | undefined>(undefined)
 
@@ -21,7 +21,7 @@ interface VentasProviderProps {
 }
 
 export function VentasProvider({ initialData = [], children }: VentasProviderProps) {
-  const { ventas: dataFromHook, loading, refresh } = useVentasData()
+  const { data: dataFromHook, loading, refetch: refresh } = useVentasData()
   const [localVentas, setLocalVentas] = useState<Venta[]>(initialData)
   const [filtros, setFiltrosState] = useState<FiltrosState>({
     estado: "all",
@@ -29,12 +29,12 @@ export function VentasProvider({ initialData = [], children }: VentasProviderPro
     fechaInicio: "",
     fechaFin: "",
   })
-  const { toast } = useToastAdvanced()
+  const { success: toastSuccess, error: toastError } = useToastAdvanced()
 
   // Sync with hook data when available
   useEffect(() => {
     if (dataFromHook && dataFromHook.length > 0) {
-      setLocalVentas(dataFromHook)
+      setLocalVentas(dataFromHook as unknown as Venta[])
     }
   }, [dataFromHook])
 
@@ -69,21 +69,21 @@ export function VentasProvider({ initialData = [], children }: VentasProviderPro
   const handleCreateVenta = async (venta: Partial<Venta>) => {
     // Here we would call the Server Action
     // await createVentaAction(venta)
-    toast({ title: "Venta creada", message: "La venta se ha registrado correctamente", type: "success" })
+    toastSuccess("Venta creada", "La venta se ha registrado correctamente")
     refresh()
   }
 
   const handleUpdateVenta = async (venta: Venta) => {
     // Here we would call the Server Action
     // await updateVentaAction(venta)
-    toast({ title: "Venta actualizada", message: "Los cambios se han guardado", type: "success" })
+    toastSuccess("Venta actualizada", "Los cambios se han guardado")
     refresh()
   }
 
   const handleDeleteVenta = async (id: string) => {
     // Here we would call the Server Action
     // await deleteVentaAction(id)
-    toast({ title: "Venta eliminada", message: "La venta ha sido eliminada permanentemente", type: "error" })
+    toastError("Venta eliminada", "La venta ha sido eliminada permanentemente")
     refresh()
   }
 

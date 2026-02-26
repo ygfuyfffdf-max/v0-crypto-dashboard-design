@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * FlowDistributor - Authentication API Routes
  * Handles user registration, login, and logout

@@ -21,15 +21,15 @@
 import { cn } from '@/app/lib/utils'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useRouter } from 'next/navigation'
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  ReactNode,
+import {
+    createContext,
+    ReactNode,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
 } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -700,4 +700,4 @@ export function useDefaultCommands(): Command[] {
 // EXPORTS
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
-export type { Command, CommandCategory }
+// Command and CommandCategory are already exported at their declarations above

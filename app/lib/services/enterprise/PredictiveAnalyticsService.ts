@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * 🔮 PREDICTIVE ANALYTICS SERVICE - OMEGA LEVEL
  *

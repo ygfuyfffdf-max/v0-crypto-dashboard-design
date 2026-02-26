@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ═══════════════════════════════════════════════════════════════════════════════
 // CHRONOS INFINITY 2026 — SEED LIMPIO (SOLO BANCOS)
 // Sistema listo para llenar desde cero

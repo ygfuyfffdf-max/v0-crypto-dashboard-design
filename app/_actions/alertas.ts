@@ -84,8 +84,8 @@ export interface AlertaConDetalles {
   unidad: string | null
   accionSugerida: string | null
   metadata: string | null
-  createdAt: Date | null
-  fechaResuelta: Date | null
+  createdAt: number | null
+  fechaResuelta: number | null
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -143,7 +143,7 @@ export async function marcarAlertaVista(
       .update(alertas)
       .set({
         estado: 'vista',
-        fechaVista: new Date(),
+        fechaVista: Math.floor(Date.now() / 1000),
       })
       .where(eq(alertas.id, alertaId))
 
@@ -175,7 +175,7 @@ export async function resolverAlerta(
       .update(alertas)
       .set({
         estado: 'resuelta',
-        fechaResuelta: new Date(),
+        fechaResuelta: Math.floor(Date.now() / 1000),
         resueltaPor: resueltaPor ?? null,
         notasResolucion: notas ?? null,
       })
@@ -641,7 +641,7 @@ export async function actualizarConfiguracionAlerta(
     await db
       .update(alertasConfig)
       .set({
-        activo: updates.activo,
+        activo: updates.activo !== undefined ? (updates.activo ? 1 : 0) : undefined,
         umbral: updates.umbral,
         severidad: updates.severidad,
         frecuenciaHoras: updates.frecuenciaHoras,

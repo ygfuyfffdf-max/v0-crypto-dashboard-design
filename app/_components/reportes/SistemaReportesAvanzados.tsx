@@ -46,8 +46,8 @@ import {
 } from 'lucide-react'
 import { motion } from 'motion/react'
 import { memo, useEffect, useState } from 'react'
-import { AuroraButton, AuroraGlassCard } from '../../ui/AuroraGlassSystem'
-import { QuantumCard } from '../../ui/QuantumElevatedUI'
+import { AuroraButton, AuroraGlassCard } from '../ui/AuroraGlassSystem'
+import { QuantumGlassCard as QuantumCard } from '../ui/QuantumElevatedUI'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TYPES EXTENDIDOS
@@ -100,7 +100,7 @@ const MetricasReportes = memo(function MetricasReportes({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
         >
-          <QuantumCard elevation="lg" interactive className="p-6">
+          <QuantumCard className="p-6">
             <div className="flex items-center justify-between mb-4">
                 <div className={cn('p-2 rounded-lg', metrica.color)}>
                   {metrica.icono}
@@ -229,7 +229,7 @@ const PanelInsightsIA = memo(function PanelInsightsIA({
 
                 {insight.accionRecomendada && (
                   <div className="flex justify-end">
-                    <AuroraButton size="sm" variant="outline">
+                    <AuroraButton size="sm" variant="ghost">
                       {insight.accionRecomendada}
                     </AuroraButton>
                   </div>
@@ -418,77 +418,5 @@ const ModalConfiguracionReporte = memo(function ModalConfiguracionReporte({
 
   if (!abierto) return null
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      onClick={onCerrar}
-    >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl border border-white/20 backdrop-blur-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="p-6 border-b border-white/10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gradient-to-r from-violet-500 to-cyan-500">
-                <Settings className="h-5 w-5 text-white" />
-              </div>
-              <h2 className="text-xl font-bold text-white">
-                {reporte ? 'Editar Reporte' : 'Nuevo Reporte'}
-              </h2>
-            </div>
-            <button
-              onClick={onCerrar}
-              className="p-2 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-
-        <div className="p-6 space-y-6">
-          <div>
-            <label className="block text-sm text-white/60 mb-2">Nombre del Reporte</label>
-            <input
-              type="text"
-              value={formData.nombre}
-              onChange={(e) => setFormData(prev => ({ ...prev, nombre: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-violet-500/50"
-              placeholder="Ej: Reporte Diario de Ventas"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm text-white/60 mb-2">Descripción</label>
-            <textarea
-              value={formData.descripcion}
-              onChange={(e) => setFormData(prev => ({ ...prev, descripcion: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-violet-500/50 h-24 resize-none"
-              placeholder="Descripción del reporte..."
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm text-white/60 mb-2">Template</label>
-              <select
-                value={formData.templateId}
-                onChange={(e) => setFormData(prev => ({ ...prev, templateId: e.target.value }))}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-violet-500/50"
-              >
-                <option value="" className="bg-slate-800">Seleccionar template</option>
-                {templates.map(template => (
-                  <option key={template.id} value={template.id} className="bg-slate-800">
-                    {template.nombre}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div
+  return null
+})

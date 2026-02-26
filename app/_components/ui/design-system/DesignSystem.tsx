@@ -988,6 +988,7 @@ export function Badge({
 
 // Export legacy name
 export const OmegaBadge = Badge;
+export const OmegaGlassCard = GlassCard;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // 📤 EXPORTS

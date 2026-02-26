@@ -11,7 +11,7 @@
 import { cn } from '@/app/_lib/utils'
 import { useSoundEffects, type SoundEffect } from '@/app/lib/audio/sound-system'
 import { motion } from 'motion/react'
-import { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
 // SOUND BUTTON
@@ -70,7 +70,7 @@ export function SoundButton({
       onMouseEnter={handleHover}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      {...props}
+      {...(props as any)}
     >
       {children}
     </motion.button>
@@ -124,7 +124,7 @@ export function SoundCard({
       onMouseEnter={handleHover}
       whileHover={{ scale: 1.02, y: -4 }}
       whileTap={clickSound ? { scale: 0.98 } : undefined}
-      {...props}
+      {...(props as any)}
     >
       {children}
     </motion.div>
@@ -198,7 +198,7 @@ export function SoundModalWrapper({ isOpen, onClose, children }: SoundModalWrapp
   }, [onClose, play, config.enabled])
 
   // Override onClose en children si es un componente que acepta onClose
-  const childrenWithSound = React.cloneElement(children as React.ReactElement, {
+  const childrenWithSound = React.cloneElement(children as React.ReactElement<any>, {
     onClose: handleClose,
   })
 

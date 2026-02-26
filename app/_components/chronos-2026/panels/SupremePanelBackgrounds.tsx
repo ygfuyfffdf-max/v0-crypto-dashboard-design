@@ -72,7 +72,13 @@ const SupremePanelBackground = memo(function SupremePanelBackground({
   const gradientConfig = getGradientConfig(preset)
 
   return (
-    <div className={cn("relative min-h-full w-full overflow-hidden", className)}>
+    <div
+      className={cn(
+        "relative min-h-full w-full overflow-hidden",
+        "rounded-2xl border border-white/[0.06] shadow-[0_0_60px_-12px_rgba(139,92,246,0.15),inset_0_1px_0_rgba(255,255,255,0.03)]",
+        className
+      )}
+    >
       {/* WebGL Shader Background */}
       {showParticles && (
         <div className="pointer-events-none absolute inset-0" style={{ zIndex: -20 }}>
@@ -122,7 +128,7 @@ const SupremePanelBackground = memo(function SupremePanelBackground({
       {/* Grid Pattern */}
       {showGrid && (
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.015]"
+          className="pointer-events-none absolute inset-0 opacity-[0.025]"
           style={{
             zIndex: -10,
             backgroundImage: `

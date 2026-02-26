@@ -110,7 +110,7 @@ export function SafeEffectComposer({
   try {
     return (
       <Suspense fallback={null}>
-        <EffectComposer multisampling={multisampling} disableNormalPass={disableNormalPass}>
+        <EffectComposer multisampling={multisampling}>
           {children as React.ReactElement}
         </EffectComposer>
       </Suspense>

@@ -14,11 +14,11 @@
  * @version 1.0.0 — OMEGA SUPREME EDITION
  */
 
-import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/app/_lib/utils'
-import { useTheme, useFeedback } from '@/app/hooks/useSupremeSystems'
-import { Check, Sun, Moon, Sparkles, Waves, CloudMoon, Monitor, Palette } from 'lucide-react'
 import type { ThemeMode } from '@/app/_lib/systems/SupremeSystemsHub'
+import { cn } from '@/app/_lib/utils'
+import { useFeedback, useTheme } from '@/app/hooks/useSupremeSystems'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Check, CloudMoon, Monitor, Moon, Palette, Sparkles, Sun, Waves } from 'lucide-react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // THEME CONFIGURATIONS
@@ -314,7 +314,7 @@ export function ThemeToggle({ className, showLabel = false }: ThemeToggleProps) 
   const { theme, toggleTheme } = useTheme()
   const feedback = useFeedback()
 
-  const currentOption = THEME_OPTIONS.find(o => o.id === theme) || THEME_OPTIONS[0]
+  const currentOption = (THEME_OPTIONS.find(o => o.id === theme) || THEME_OPTIONS[0])!
 
   const handleToggle = () => {
     feedback.tabSwitch()

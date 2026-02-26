@@ -33,7 +33,8 @@ export function withSupremeIntegration<P extends object>(
   _options: SupremeIntegrationOptions = {}
 ) {
   const WithSupremeIntegration = forwardRef<unknown, P>((props, ref) => {
-    return <WrappedComponent {...props} ref={ref} />
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return <WrappedComponent {...(props as any)} ref={ref} />
   })
 
   WithSupremeIntegration.displayName = `WithSupremeIntegration(${WrappedComponent.displayName || WrappedComponent.name || "Component"})`

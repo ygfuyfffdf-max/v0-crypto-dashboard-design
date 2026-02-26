@@ -70,7 +70,7 @@ export const useGesture = (
     // Touch start
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 1) {
-        const touch = e.touches[0]
+        const touch = e.touches[0]!
         touchStartRef.current = {
           x: touch.clientX,
           y: touch.clientY,
@@ -85,8 +85,8 @@ export const useGesture = (
         lastTapRef.current = now
       } else if (e.touches.length === 2) {
         // Iniciar pinch/rotate
-        const distance = getDistance(e.touches[0], e.touches[1])
-        const angle = getAngle(e.touches[0], e.touches[1])
+        const distance = getDistance(e.touches[0]!, e.touches[1]!)
+        const angle = getAngle(e.touches[0]!, e.touches[1]!)
         initialPinchRef.current = { distance, angle }
       }
     }
@@ -97,12 +97,12 @@ export const useGesture = (
         e.preventDefault()
 
         // Pinch to zoom
-        const currentDistance = getDistance(e.touches[0], e.touches[1])
+        const currentDistance = getDistance(e.touches[0]!, e.touches[1]!)
         const scale = currentDistance / initialPinchRef.current.distance
         const newScale = Math.max(minScale, Math.min(maxScale, gestureState.scale * scale))
 
         // Rotation
-        const currentAngle = getAngle(e.touches[0], e.touches[1])
+        const currentAngle = getAngle(e.touches[0]!, e.touches[1]!)
         const rotation = currentAngle - initialPinchRef.current.angle
 
         setGestureState((prev) => ({
@@ -116,7 +116,7 @@ export const useGesture = (
 
         initialPinchRef.current = { distance: currentDistance, angle: currentAngle }
       } else if (e.touches.length === 1 && touchStartRef.current) {
-        const touch = e.touches[0]
+        const touch = e.touches[0]!
         const dx = touch.clientX - touchStartRef.current.x
         const dy = touch.clientY - touchStartRef.current.y
 

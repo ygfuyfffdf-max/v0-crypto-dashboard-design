@@ -20,32 +20,31 @@
 
 'use client'
 
-import React, { useEffect, useState, useCallback } from 'react'
-import { WebSocketProvider } from '@/app/providers/WebSocketProvider'
-import { NotificationPanel } from '@/app/_components/notifications/NotificationPanel'
 import { AdvancedMetricsDashboard } from '@/app/_components/dashboards/AdvancedMetricsDashboard'
-import { WorkflowSystem } from '@/app/_components/workflows/WorkflowSystem'
-import { ScheduledReportsSystem } from '@/app/_components/reports/ScheduledReportsSystem'
 import { FilterSystem } from '@/app/_components/filters/FilterSystem'
+import { NotificationPanel } from '@/app/_components/notifications/NotificationPanel'
+import { ScheduledReportsSystem } from '@/app/_components/reports/ScheduledReportsSystem'
 import { ThemeEditor } from '@/app/_components/theme/ThemeEditor'
-import { 
-  useWebSocket, 
-  useWebSocketEvent, 
-  WebSocketEventType 
-} from '@/app/lib/hooks/useWebSocket'
-import { AnimatePresence, motion } from 'motion/react'
+import { WorkflowSystem } from '@/app/_components/workflows/WorkflowSystem'
 import {
-  LayoutDashboard,
-  Workflow,
-  FileText,
-  Filter,
-  Palette,
-  Settings,
-  ChevronRight,
-  Activity,
-  TrendingUp,
-} from 'lucide-react'
+    useWebSocket,
+    useWebSocketEvent,
+} from '@/app/lib/hooks/useWebSocket'
+import { WebSocketEventType } from '@/app/lib/services/websocket-service'
 import { cn } from '@/app/lib/utils'
+import { WebSocketProvider } from '@/app/providers/WebSocketProvider'
+import {
+    Activity,
+    ChevronRight,
+    FileText,
+    Filter,
+    LayoutDashboard,
+    Palette,
+    TrendingUp,
+    Workflow
+} from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import React, { useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
 // TIPOS

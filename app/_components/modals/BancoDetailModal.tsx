@@ -11,15 +11,15 @@
  * - Estadísticas avanzadas con glassmorphism iOS
  */
 
-import { AnimatePresence, motion } from 'motion/react'
 import { Activity, ArrowDownLeft, ArrowUpRight, Calendar, TrendingDown, TrendingUp, X } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
-import { iOSGlassCard, iOSSegmentedControl, iOSButton, iOSScrollView, iOSMetricCard, iOSProgress } from '../ui/ios'
+import { AnimatePresence, motion } from 'motion/react'
 import dynamic from 'next/dynamic'
+import { useEffect, useMemo, useState } from 'react'
+import { EnhancedAuroraCard as AuroraGlassCard } from '../ui/EnhancedAuroraSystem'
 
 // Lazy load charts
 const AuroraLineChart = dynamic(
-  () => import('../charts/AuroraPremiumCharts').then((mod) => mod.AuroraLineChart),
+  () => import('../charts/AuroraPremiumCharts').then((mod) => mod.AuroraAreaChart),
   { ssr: false, loading: () => <div className="h-[200px] animate-pulse rounded-xl bg-white/5" /> },
 )
 
@@ -320,9 +320,9 @@ export function BancoDetailModal({ banco, isOpen, onClose }: BancoDetailModalPro
                           <AuroraGlassCard className="p-4">
                             <h3 className="mb-4 text-sm font-medium text-white/70">Tendencia Semanal</h3>
                             <AuroraLineChart
-                              data={trendData}
+                              data={trendData as any}
                               height={200}
-                              color={banco.color}
+                              color={'violet'}
                               showGrid
                               showTooltip
                             />
@@ -333,7 +333,7 @@ export function BancoDetailModal({ banco, isOpen, onClose }: BancoDetailModalPro
                             <AuroraAreaChart
                               data={cumulativeData}
                               height={200}
-                              color={banco.color}
+                              color={'violet'}
                               showGrid
                             />
                           </AuroraGlassCard>

@@ -149,7 +149,7 @@ export function VentaFormPremium({
     reset,
     formState: { errors, isValid },
   } = useForm<VentaFormData>({
-    resolver: zodResolver(VentaFormSchema),
+    resolver: zodResolver(VentaFormSchema) as any,
     defaultValues: {
       clienteId: initialData?.clienteId || '',
       producto: initialData?.producto || '',

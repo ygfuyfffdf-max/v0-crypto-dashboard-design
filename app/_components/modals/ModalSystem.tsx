@@ -173,6 +173,7 @@ export function Modal({
       stackContext?.register(id)
       return () => stackContext?.unregister(id)
     }
+    return undefined
   }, [isOpen, id, stackContext])
 
   // Handle escape key
@@ -198,6 +199,7 @@ export function Modal({
         document.body.style.overflow = originalOverflow
       }
     }
+    return undefined
   }, [isOpen])
 
   // Focus trap
@@ -209,7 +211,7 @@ export function Modal({
     )
 
     if (focusableElements.length > 0) {
-      focusableElements[0].focus()
+      focusableElements[0]!.focus()
     }
   }, [isOpen])
 
@@ -408,7 +410,7 @@ const drawerPositions: Record<DrawerPosition, string> = {
   bottom: 'bottom-0 left-0 w-full',
 }
 
-const drawerAnimations: Record<DrawerPosition, { initial: object; animate: object; exit: object }> = {
+const drawerAnimations: Record<DrawerPosition, { initial: Record<string, unknown>; animate: Record<string, unknown>; exit: Record<string, unknown> }> = {
   left: { initial: { x: '-100%' }, animate: { x: 0 }, exit: { x: '-100%' } },
   right: { initial: { x: '100%' }, animate: { x: 0 }, exit: { x: '100%' } },
   top: { initial: { y: '-100%' }, animate: { y: 0 }, exit: { y: '-100%' } },
@@ -452,6 +454,7 @@ export function Drawer({
         document.body.style.overflow = originalOverflow
       }
     }
+    return undefined
   }, [isOpen])
 
   if (!mounted) return null
@@ -481,12 +484,12 @@ export function Drawer({
               position === 'top' && 'border-b',
               position === 'bottom' && 'border-t',
               drawerPositions[position],
-              drawerSizes[size][position],
+              drawerSizes[size]?.[position],
               className
             )}
-            initial={prefersReducedMotion ? { opacity: 0 } : animations.initial}
-            animate={prefersReducedMotion ? { opacity: 1 } : animations.animate}
-            exit={prefersReducedMotion ? { opacity: 0 } : animations.exit}
+            initial={prefersReducedMotion ? { opacity: 0 } : animations.initial as any}
+            animate={prefersReducedMotion ? { opacity: 1 } : animations.animate as any}
+            exit={prefersReducedMotion ? { opacity: 0 } : animations.exit as any}
             transition={{ type: 'spring', stiffness: 400, damping: 40 }}
           >
             {showCloseButton && (

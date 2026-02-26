@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * API Route: PROFIT Casa de Cambio - Alertas
  * GET: Obtener alertas activas

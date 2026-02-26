@@ -18,25 +18,22 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
-import {
-  AnimatePresence,
-  motion,
-  PanInfo,
-  useMotionValue,
-  useSpring,
-  useTransform,
-} from 'motion/react'
 import { Loader2, X } from 'lucide-react'
 import {
-  createContext,
-  forwardRef,
-  memo,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
+    AnimatePresence,
+    motion,
+    PanInfo,
+    useMotionValue,
+    useSpring,
+    useTransform,
+} from 'motion/react'
+import {
+    memo,
+    ReactNode,
+    useCallback,
+    useEffect,
+    useRef,
+    useState
 } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -315,7 +312,6 @@ export const iOSModal = memo(function iOSModal({
               dragConstraints={{ top: 0 }}
               dragElastic={0.3}
               onDragEnd={handleDragEnd}
-              style={{ y: smoothDragY }}
               className={cn(
                 'relative w-full overflow-hidden',
                 'bg-[#1C1C1E]/98 backdrop-blur-xl',
@@ -327,7 +323,7 @@ export const iOSModal = memo(function iOSModal({
                 variant === 'fullscreen' && 'h-full',
                 className
               )}
-              style={{ maxHeight: config.maxHeight }}
+              style={{ y: smoothDragY, maxHeight: config.maxHeight }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Drag indicator for sheets */}
@@ -587,8 +583,11 @@ export const iOSConfirmationSheet = memo(function iOSConfirmationSheet({
     }
   }, [onConfirm, onClose])
 
+  // PascalCase alias required for JSX (React treats lowercase tags as HTML elements)
+  const IOSModal = iOSModal
+
   return (
-    <iOSModal
+    <IOSModal
       isOpen={isOpen}
       onClose={onClose}
       variant="sheet"
@@ -641,7 +640,7 @@ export const iOSConfirmationSheet = memo(function iOSConfirmationSheet({
           </p>
         )}
       </div>
-    </iOSModal>
+    </IOSModal>
   )
 })
 
@@ -652,7 +651,7 @@ export const iOSConfirmationSheet = memo(function iOSConfirmationSheet({
 export { ModalScrollContainer }
 
 export type {
-  iOSModalProps,
-  iOSAlertProps,
-  iOSConfirmationSheetProps,
+    iOSAlertProps,
+    iOSConfirmationSheetProps, iOSModalProps
 }
+

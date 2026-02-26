@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ElevenLabsClient } from 'elevenlabs'
 
 export interface VoiceConfig {

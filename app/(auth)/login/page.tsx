@@ -4,12 +4,12 @@
 "use client"
 
 import { KocmocLogo } from "@/app/_components/chronos-2026/branding/KocmocLogo"
-import { SignIn, SignedIn, SignedOut } from "@clerk/nextjs"
-import { CheckCircle } from "lucide-react"
+import { SignIn } from "@clerk/nextjs"
 import { motion } from "motion/react"
-import React, { useCallback, useRef } from "react"
 
 // ─── Animation variants ────────────────────────────────────────────────────────
+
+const easeCurve = [0.25, 0.46, 0.45, 0.94] as const
 
 const fadeSlideUp = {
   hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
@@ -20,7 +20,7 @@ const fadeSlideUp = {
     transition: {
       duration: 0.8,
       delay,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: easeCurve as unknown as [number, number, number, number],
     },
   }),
 }
@@ -33,7 +33,7 @@ const scaleIn = {
     transition: {
       duration: 0.7,
       delay,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: easeCurve as unknown as [number, number, number, number],
     },
   }),
 }
@@ -43,8 +43,6 @@ const scaleIn = {
 const clerkAppearance = {
   elements: {
     rootBox: "mx-auto w-full",
-    card: "bg-transparent shadow-none border-none p-0 w-full",
-    cardBox: "bg-transparent shadow-none border-none w-full",
     header: "hidden",
     headerTitle: "text-white text-lg font-medium tracking-wide",
     headerSubtitle: "text-white/40 text-sm",
@@ -78,62 +76,6 @@ const clerkAppearance = {
     socialButtonsPlacement: "bottom" as const,
     socialButtonsVariant: "blockButton" as const,
   },
-}
-
-// ─── Glass Card with mouse-tracking shine ───────────────────────────────────────
-
-function GlassCard({ children }: { children: React.ReactNode }) {
-  const cardRef = useRef<HTMLDivElement>(null)
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const card = cardRef.current
-    if (!card) return
-    const rect = card.getBoundingClientRect()
-    const x = ((e.clientX - rect.left) / rect.width) * 100
-    const y = ((e.clientY - rect.top) / rect.height) * 100
-    card.style.setProperty("--mx", `${x}%`)
-    card.style.setProperty("--my", `${y}%`)
-  }, [])
-
-  const handleMouseLeave = useCallback(() => {
-    const card = cardRef.current
-    if (!card) return
-    card.style.setProperty("--mx", "50%")
-    card.style.setProperty("--my", "50%")
-  }, [])
-
-  return (
-    <motion.div
-      ref={cardRef}
-      variants={scaleIn}
-      custom={0.5}
-      initial="hidden"
-      animate="visible"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="glass-card group relative w-full max-w-[420px] rounded-3xl border border-white/8 bg-white/3 px-8 py-10 backdrop-blur-xl transition-all duration-500 hover:border-violet-500/30"
-      style={
-        {
-          "--mx": "50%",
-          "--my": "50%",
-          boxShadow:
-            "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.03) inset, 0 -2px 16px rgba(139, 92, 246, 0.04) inset",
-        } as React.CSSProperties
-      }
-    >
-      {/* Mouse-tracking inner shine */}
-      <div
-        className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{
-          background:
-            "radial-gradient(400px circle at var(--mx) var(--my), rgba(139, 92, 246, 0.06), transparent 60%)",
-        }}
-      />
-      {/* Top edge highlight */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-3xl bg-linear-to-r from-transparent via-white/12 to-transparent" />
-      <div className="relative z-10">{children}</div>
-    </motion.div>
-  )
 }
 
 // ─── Main Login Page ────────────────────────────────────────────────────────────
@@ -323,23 +265,7 @@ export default function LoginPage() {
           will-change: transform, opacity;
         }
 
-        /* Pulse animation for redirect bar */
-        @keyframes progressPulse {
-          0% {
-            width: 0%;
-            opacity: 0.6;
-          }
-          50% {
-            opacity: 1;
-          }
-          100% {
-            width: 100%;
-            opacity: 0.8;
-          }
-        }
-        .redirect-bar {
-          animation: progressPulse 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        }
+
       `}</style>
 
       <div className="mesh-gradient-bg relative flex min-h-screen items-center justify-center overflow-hidden">
@@ -395,44 +321,21 @@ export default function LoginPage() {
             Chronos Infinity
           </motion.p>
 
-          {/* Liquid glass card with SignIn */}
-          <GlassCard>
-            <SignedOut>
-              <SignIn
-                routing="hash"
-                fallbackRedirectUrl="/dashboard"
-                appearance={clerkAppearance}
-              />
-            </SignedOut>
-
-            <SignedIn>
-              <motion.div
-                className="flex flex-col items-center py-6"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              >
-                <motion.div
-                  className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-linear-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/25"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 260,
-                    damping: 20,
-                    delay: 0.2,
-                  }}
-                >
-                  <CheckCircle className="h-7 w-7 text-white" />
-                </motion.div>
-                <h3 className="mb-1 text-lg font-semibold text-white">Authentication Successful</h3>
-                <p className="mb-6 text-sm text-white/40">Redirecting to dashboard…</p>
-                <div className="h-0.5 w-full overflow-hidden rounded-full bg-white/6">
-                  <div className="redirect-bar h-full rounded-full bg-linear-to-r from-violet-500 to-emerald-500" />
-                </div>
-              </motion.div>
-            </SignedIn>
-          </GlassCard>
+          {/* Clerk Sign-In */}
+          <motion.div
+            variants={scaleIn}
+            custom={0.5}
+            initial="hidden"
+            animate="visible"
+            className="w-full max-w-105"
+          >
+            <SignIn
+              appearance={clerkAppearance}
+              routing="hash"
+              fallbackRedirectUrl="/dashboard"
+              signUpUrl="/register"
+            />
+          </motion.div>
 
           {/* Footer */}
           <motion.footer

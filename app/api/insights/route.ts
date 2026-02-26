@@ -3,9 +3,9 @@
  * Análisis inteligente de métricas
  */
 
-import { checkBotId } from 'botid/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { checkBotId } from '@/app/lib/utils/botid'
 import { logger } from '@/app/lib/utils/logger'
+import { NextRequest, NextResponse } from 'next/server'
 
 interface DashboardMetrics {
   ventasTotales: number

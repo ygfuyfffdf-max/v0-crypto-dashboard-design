@@ -8,13 +8,13 @@
 import { formatCurrency } from '@/app/_lib/utils/formatters'
 import { logger } from '@/app/lib/utils/logger'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { motion } from 'motion/react'
 import { ArrowDown, Loader2, Sparkles, User } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { iOSModal, iOSButton, iOSGlassCard, iOSInput, iOSSelect, iOSProgress } from '../ui/ios'
+import { iOSModal as IOSModal } from '../ui/ios'
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SCHEMA
@@ -275,7 +275,7 @@ export function AbonoClienteModal({
   })
 
   return (
-    <Modal
+    <IOSModal
       isOpen={isOpen}
       onClose={onClose}
       title="Cobrar a Cliente"
@@ -410,20 +410,20 @@ export function AbonoClienteModal({
           </motion.div>
         )}
 
-        <ModalFooter>
-          <Button type="button" variant="ghost" onClick={onClose}>
+        <div className="flex gap-3 pt-4 border-t border-white/10">
+          <button type="button" onClick={onClose} className="flex-1 rounded-xl bg-white/10 px-4 py-3 text-sm font-medium text-white hover:bg-white/20 transition-colors">
             Cancelar
-          </Button>
-          <Button
+          </button>
+          <button
             type="submit"
-            isLoading={isPending}
-            disabled={!watchedValues.clienteId || !montoValido || (watchedValues.monto || 0) <= 0}
-            icon={<ArrowDown className="h-4 w-4" />}
+            disabled={isPending || !watchedValues.clienteId || !montoValido || (watchedValues.monto || 0) <= 0}
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-3 text-sm font-medium text-white hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
+            {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowDown className="h-4 w-4" />}
             Cobrar Abono
-          </Button>
-        </ModalFooter>
+          </button>
+        </div>
       </form>
-    </Modal>
+    </IOSModal>
   )
 }

@@ -19,7 +19,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════════════
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
 // USE DEBOUNCE — Debounce de valores
@@ -48,7 +48,7 @@ export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
   callback: T,
   delay: number
 ): (...args: Parameters<T>) => void {
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   return useCallback(
     (...args: Parameters<T>) => {
@@ -169,9 +169,9 @@ export function useIntersectionObserver(
   const updateEntry = ([entry]: IntersectionObserverEntry[]) => {
     if (frozen.current) return
     setEntry(entry)
-    setIsIntersecting(entry.isIntersecting)
+    setIsIntersecting(entry!.isIntersecting)
     
-    if (freezeOnceVisible && entry.isIntersecting) {
+    if (freezeOnceVisible && entry!.isIntersecting) {
       frozen.current = true
     }
   }
@@ -358,7 +358,7 @@ export function useClipboard(options: UseClipboardOptions = {}) {
   const { timeout = 2000, onCopy, onError } = options
   const [hasCopied, setHasCopied] = useState(false)
   const [copiedText, setCopiedText] = useState<string | null>(null)
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const copy = useCallback(
     async (text: string) => {
@@ -506,7 +506,7 @@ export function useWindowSize(): WindowSize {
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
 export function usePrevious<T>(value: T): T | undefined {
-  const ref = useRef<T>()
+  const ref = useRef<T | undefined>(undefined)
   
   useEffect(() => {
     ref.current = value

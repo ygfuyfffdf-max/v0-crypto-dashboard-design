@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
     const salidaId = crypto.randomUUID()
 
     // Crear registro de salida

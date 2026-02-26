@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * API Route: PROFIT Casa de Cambio - Caja
  * GET: Estado actual de la caja

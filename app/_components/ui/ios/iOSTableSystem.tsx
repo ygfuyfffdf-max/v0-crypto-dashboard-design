@@ -1,10 +1,10 @@
 'use client'
 
-import { memo, useState, useRef } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/app/_lib/utils'
-import { ChevronLeft, ChevronRight, Search, Filter, ArrowUpDown, ArrowUp, ArrowDown, Download } from 'lucide-react'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Download, Filter, Search } from 'lucide-react'
+import { motion } from 'motion/react'
+import { memo, useRef, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -202,6 +202,7 @@ export const iOSVirtualizedTable = memo(function iOSVirtualizedTable<T extends R
 
           {rowVirtualizer.getVirtualItems().map((virtualRow) => {
             const item = data[virtualRow.index]
+            if (!item) return null
             return (
               <div
                 key={String(item[keyField])}
@@ -426,9 +427,9 @@ export const iOSTable = <T extends Record<string, any>>({
                 {/* Primeras 2 columnas como Header de la card */}
                 <div className="flex justify-between items-start border-b border-white/[0.05] pb-3 mb-3">
                   <div className="space-y-1">
-                    <span className="text-xs text-white/40 uppercase tracking-wider">{columns[0].header}</span>
+                    <span className="text-xs text-white/40 uppercase tracking-wider">{columns[0]?.header}</span>
                     <div className="font-semibold text-white">
-                      {columns[0].render ? columns[0].render(item) : item[columns[0].key as string]}
+                      {columns[0]?.render ? columns[0].render(item) : item[(columns[0]?.key ?? '') as string]}
                     </div>
                   </div>
                   {columns[1] && (

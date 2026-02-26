@@ -20,8 +20,8 @@
 
 'use client'
 
-import { useCallback, useEffect, useRef, useState, useMemo } from 'react'
-import { useMotionValue, useSpring, useTransform, MotionValue, animate } from 'motion/react'
+import { MotionValue, animate, useMotionValue, useSpring } from 'motion/react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TIPOS
@@ -174,7 +174,7 @@ export function useAdvancedScroll(config: AdvancedScrollConfig = {}): UseAdvance
   const lastScrollY = useRef(0)
   const lastScrollX = useRef(0)
   const lastScrollTime = useRef(Date.now())
-  const scrollbarTimeoutRef = useRef<NodeJS.Timeout>()
+  const scrollbarTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const isLockedRef = useRef(false)
   const isTouchingRef = useRef(false)
   const touchStartY = useRef(0)
@@ -316,14 +316,14 @@ export function useAdvancedScroll(config: AdvancedScrollConfig = {}): UseAdvance
   // Touch handlers para rubber band y pull-to-refresh
   const handleTouchStart = useCallback((e: TouchEvent) => {
     isTouchingRef.current = true
-    touchStartY.current = e.touches[0].clientY
-    touchStartX.current = e.touches[0].clientX
+    touchStartY.current = e.touches[0]!.clientY
+    touchStartX.current = e.touches[0]!.clientX
   }, [])
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
     if (!isTouchingRef.current || !scrollRef.current) return
 
-    const currentY = e.touches[0].clientY
+    const currentY = e.touches[0]!.clientY
     const deltaY = currentY - touchStartY.current
     const container = scrollRef.current
 
@@ -488,7 +488,7 @@ export function useAdvancedScroll(config: AdvancedScrollConfig = {}): UseAdvance
   // ═══════════════════════════════════════════════════════════════════════════════════════════════
 
   return {
-    scrollRef,
+    scrollRef: scrollRef as React.RefObject<HTMLDivElement>,
     state,
     motionValues: {
       scrollY,

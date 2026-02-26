@@ -18,7 +18,7 @@
 
 import { cn } from '@/app/_lib/utils'
 import { AnimatePresence, motion } from 'motion/react'
-import { ReactNode, memo, useCallback, useEffect, useState, createContext, useContext } from 'react'
+import { ReactNode, createContext, memo, useContext, useEffect, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // CONTEXTO DE LAYOUT MÓVIL
@@ -127,6 +127,20 @@ export const MobileLayoutProvider = memo(function MobileLayoutProvider({
         window.removeEventListener('resize', updateOrientation)
         window.removeEventListener('orientationchange', updateOrientation)
       }
+    }
+
+    // Fallback when visualViewport API is not available
+    window.addEventListener('resize', updateOrientation)
+    window.addEventListener('orientationchange', updateOrientation)
+    setLayoutState(prev => ({
+      ...prev,
+      safeAreaInsets,
+      orientation: window.innerWidth > window.innerHeight ? 'landscape' : 'portrait',
+      isStandalone,
+    }))
+    return () => {
+      window.removeEventListener('resize', updateOrientation)
+      window.removeEventListener('orientationchange', updateOrientation)
     }
   }, [])
 
@@ -442,11 +456,7 @@ export const MobileLoadingState = memo(function MobileLoadingState({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export type {
-  MobileLayoutContext,
-  MobileScreenProps,
-  MobileHeaderProps,
-  MobileSectionProps,
-  MobileCardContainerProps,
-  MobileEmptyStateProps,
-  MobileLoadingStateProps,
+    MobileCardContainerProps,
+    MobileEmptyStateProps, MobileHeaderProps, MobileLayoutContext, MobileLoadingStateProps, MobileScreenProps, MobileSectionProps
 }
+

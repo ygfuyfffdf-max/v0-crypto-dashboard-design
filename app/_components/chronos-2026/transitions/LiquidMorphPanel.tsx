@@ -329,8 +329,8 @@ export const LiquidMorphTabs = memo(function LiquidMorphTabs({
           )}
         >
           {/* Liquid Indicator */}
-          {variant === "liquid" && tabRects[activeTab] && (
-            <LiquidIndicator rect={tabRects[activeTab]} color={activeColor} />
+          {variant === "liquid" && activeTab && tabRects[activeTab] && (
+            <LiquidIndicator rect={tabRects[activeTab]!} color={activeColor} />
           )}
 
           {/* Tabs */}

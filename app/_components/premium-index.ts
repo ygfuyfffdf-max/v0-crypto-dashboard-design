@@ -156,7 +156,7 @@ export {
   useiOS,
   iOSCard,
   iOSSheet,
-  iOSBadge as iOSBadgeUltimate,
+  iOSBadgeUltimate,
 } from './ui/ios'
 
 // Advanced Scroll System

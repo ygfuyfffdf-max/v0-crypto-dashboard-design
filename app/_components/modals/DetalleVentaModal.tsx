@@ -13,26 +13,27 @@ import { safeNumber, toDate } from '@/app/_lib/utils'
 import { formatCurrency } from '@/app/_lib/utils/formatters'
 import { useChronosStore } from '@/app/lib/store'
 import { logger } from '@/app/lib/utils/logger'
-import { motion } from 'motion/react'
 import {
-  Box,
-  Building2,
-  Calendar,
-  CheckCircle2,
-  Clock,
-  DollarSign,
-  FileText,
-  Hash,
-  Package,
-  PiggyBank,
-  ShieldCheck,
-  ShoppingCart,
-  Sparkles,
-  Truck,
-  User,
+    Box,
+    Building2,
+    Calendar,
+    CheckCircle2,
+    Clock,
+    DollarSign,
+    FileText,
+    Hash,
+    Package,
+    PiggyBank,
+    ShieldCheck,
+    ShoppingCart,
+    Sparkles,
+    Truck,
+    User,
 } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useEffect, useMemo, useState } from 'react'
-import { iOSModal, iOSGlassCard, iOSSkeleton, iOSProgress } from '../ui/ios'
+import { Modal } from '../ui/Modal'
+import { QuantumGlassCard } from '../ui/QuantumElevatedUI'
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES

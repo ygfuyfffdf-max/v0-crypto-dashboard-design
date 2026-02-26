@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { QuantumPredictionEngine } from '../ai/QuantumPredictionEngine';
 import { UltraHighPerformanceObservabilityEngine } from '../observability/UltraHighPerformanceObservabilityEngine';
 

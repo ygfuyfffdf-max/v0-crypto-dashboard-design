@@ -228,7 +228,7 @@ export async function pagarDistribuidor(
     }
 
     const nuevoSaldo = (distribuidor.saldoPendiente ?? 0) - monto
-    const ahora = new Date()
+    const ahora = Math.floor(Date.now() / 1000)
 
     // Ejecutar transacción atómica
     await db.transaction(async (tx) => {

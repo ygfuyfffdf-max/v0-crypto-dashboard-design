@@ -119,7 +119,7 @@ export async function crearOrdenCompraCompleta(
 
     logger.info('✅ Input validado correctamente', { context: 'FlujoOC' })
 
-    const ahora = new Date()
+    const ahora = Math.floor(Date.now() / 1000)
     let distribuidorId = validated.distribuidorId
     let productoId = validated.productoId
     let distribuidorNuevo = false
@@ -458,7 +458,7 @@ export async function crearVentaCompleta(
     // Validar input
     const validated = VentaCompletaSchema.parse(input)
 
-    const ahora = new Date()
+    const ahora = Math.floor(Date.now() / 1000)
     let clienteId = validated.clienteId
     let clienteNuevo = false
 
@@ -804,7 +804,7 @@ export async function registrarAbonoVenta(
       }
     }
 
-    const ahora = new Date()
+    const ahora = Math.floor(Date.now() / 1000)
     const nuevoMontoPagado = (venta.montoPagado ?? 0) + monto
     const nuevoMontoRestante = montoRestante - monto
     const nuevoEstado = nuevoMontoRestante <= 0 ? 'completo' : 'parcial'

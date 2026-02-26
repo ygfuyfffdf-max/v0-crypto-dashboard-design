@@ -24,13 +24,13 @@ import { cn } from '@/app/_lib/utils'
 import { AlertCircle, Check, ChevronDown, Eye, EyeOff, Loader2, Search } from 'lucide-react'
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'motion/react'
 import React, {
-  forwardRef,
-  InputHTMLAttributes,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
+    forwardRef,
+    InputHTMLAttributes,
+    ReactNode,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
 } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -981,7 +981,7 @@ export function PremiumSparkline({
       {/* End point dot */}
       <motion.circle
         cx={width}
-        cy={height - ((data[data.length - 1] - min) / range) * height}
+        cy={height - (((data.at(-1) ?? 0) - min) / range) * height}
         r="3"
         fill={color}
         initial={{ scale: 0 }}

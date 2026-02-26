@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
     logger.info('TEST OC - Body recibido', { context: 'TestOC', data: body })
 
-    const ahora = new Date()
+    const ahora = Math.floor(Date.now() / 1000)
     let distribuidorId = body.distribuidorId
     let productoId = body.productoId
     let distribuidorNuevo = false

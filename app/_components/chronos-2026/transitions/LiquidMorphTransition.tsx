@@ -270,7 +270,7 @@ const LiquidMorphTransition = memo(function LiquidMorphTransition({
   const clipVariant = clipPathVariants[variant]
   const transition = {
     duration: prefersReducedMotion ? 0.3 : duration,
-    ease: [0.16, 1, 0.3, 1], // Expo out
+    ease: [0.16, 1, 0.3, 1] as any, // Expo out
   }
 
   return (

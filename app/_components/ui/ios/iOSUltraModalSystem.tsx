@@ -22,32 +22,28 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
+import {
+    AlertCircle,
+    AlertTriangle,
+    Check,
+    Info,
+    LucideIcon,
+    X
+} from 'lucide-react'
 import { AnimatePresence, motion, PanInfo, useDragControls } from 'motion/react'
 import {
-  X,
-  Loader2,
-  Check,
-  AlertTriangle,
-  Info,
-  AlertCircle,
-  ChevronLeft,
-  LucideIcon,
-} from 'lucide-react'
-import {
-  createContext,
-  forwardRef,
-  memo,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-  createRef,
+    createContext,
+    memo,
+    ReactNode,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState
 } from 'react'
 import { createPortal } from 'react-dom'
-import { CleanScrollContainer, CleanButton, useCleanDesign } from './iOSCleanDesignSystem'
+import { CleanButton, CleanScrollContainer, useCleanDesign } from './iOSCleanDesignSystem'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TIPOS Y CONFIGURACIONES
@@ -92,7 +88,7 @@ const mobileHeights: Record<ModalVariant, string> = {
 interface UltraModalProps {
   isOpen: boolean
   onClose: () => void
-  children: ReactNode
+  children?: ReactNode
 
   // Apariencia
   title?: string
@@ -1013,13 +1009,7 @@ export const UltraDetailModal = memo(function UltraDetailModal({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export {
-  type UltraModalProps,
-  type UltraAlertProps,
-  type UltraConfirmationSheetProps,
-  type UltraFormModalProps,
-  type UltraDetailModalProps,
-  type ConfirmationOption,
-  type ModalVariant,
-  type ModalSize,
-  type DrawerPosition,
+    type ConfirmationOption, type DrawerPosition, type ModalSize, type ModalVariant, type UltraAlertProps,
+    type UltraConfirmationSheetProps, type UltraDetailModalProps, type UltraFormModalProps, type UltraModalProps
 }
+

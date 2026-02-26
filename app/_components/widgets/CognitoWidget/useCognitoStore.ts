@@ -7,14 +7,14 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type {
-  AudioState,
-  CognitoContext,
-  CognitoMessage,
-  CognitoMetrics,
-  CognitoMode,
-  CognitoPreferences,
-  CognitoState,
-  ProactiveSuggestion,
+    AudioState,
+    CognitoContext,
+    CognitoMessage,
+    CognitoMetrics,
+    CognitoMode,
+    CognitoPreferences,
+    CognitoState,
+    ProactiveSuggestion,
 } from './types'
 
 interface CognitoStore {
@@ -157,7 +157,7 @@ export const useCognitoStore = create<CognitoStore>()(
           const history = [...s.context.history]
           const lastIndex = history.length - 1
           if (lastIndex >= 0) {
-            history[lastIndex] = { ...history[lastIndex], ...updates }
+            history[lastIndex] = { ...history[lastIndex]!, ...updates }
           }
           return {
             context: { ...s.context, history },

@@ -16,29 +16,22 @@
  */
 
 import { cn } from '@/app/_lib/utils'
-import { formatCurrency } from '@/app/_lib/utils/formatters'
 import { useQuery } from '@tanstack/react-query'
 import {
-  ArrowDown,
-  ArrowRight,
-  ArrowUp,
-  ArrowUpDown,
-  Bell,
-  Calculator,
-  ChevronDown,
-  DollarSign,
-  History,
-  Loader2,
-  RefreshCw,
-  Settings,
-  Sparkles,
-  TrendingDown,
-  TrendingUp,
-  Activity,
-  AlertTriangle,
-  CheckCircle2,
+    Activity,
+    ArrowDown,
+    ArrowUp,
+    ArrowUpDown,
+    Bell,
+    Calculator,
+    DollarSign,
+    History,
+    RefreshCw,
+    TrendingDown,
+    TrendingUp,
+    X
 } from 'lucide-react'
-import { AnimatePresence, motion } from 'motion/react'
+import { motion } from 'motion/react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -312,8 +305,8 @@ const HistoryChartMini = memo(function HistoryChartMini({ history }: HistoryChar
 
   if (!history.length) return null
 
-  const lastRate = history[history.length - 1].rate
-  const firstRate = history[0].rate
+  const lastRate = history.at(-1)?.rate ?? 0
+  const firstRate = history[0]!.rate
   const trendUp = lastRate >= firstRate
 
   return (
@@ -388,8 +381,8 @@ const HistoryChartMini = memo(function HistoryChartMini({ history }: HistoryChar
 
       {/* Date range */}
       <div className="flex items-center justify-between mt-2 text-xs text-white/40">
-        <span>{new Date(history[0].date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })}</span>
-        <span>{new Date(history[history.length - 1].date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })}</span>
+        <span>{new Date(history[0]!.date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })}</span>
+        <span>{new Date(history.at(-1)?.date ?? Date.now()).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })}</span>
       </div>
     </div>
   )
@@ -693,4 +686,5 @@ export function ExchangeRateWidget({ className, compact = false }: ExchangeRateW
 }
 
 export default ExchangeRateWidget
-export { RateDisplay, Converter, HistoryChartMini, AlertSettings }
+export { AlertSettings, Converter, HistoryChartMini, RateDisplay }
+

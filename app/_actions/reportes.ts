@@ -3,13 +3,13 @@
 import { logger } from '@/app/lib/utils/logger'
 import { db } from '@/database'
 import {
-  almacen,
-  bancos,
-  clientes,
-  distribuidores,
-  movimientos,
-  ordenesCompra,
-  ventas,
+    almacen,
+    bancos,
+    clientes,
+    distribuidores,
+    movimientos,
+    ordenesCompra,
+    ventas,
 } from '@/database/schema'
 import { and, between, desc, eq, gte, sql } from 'drizzle-orm'
 import { type FiltrosReporte } from './types'
@@ -31,12 +31,11 @@ export async function getDashboardResumen() {
         gastosHistoricos: sql<number>`sum(${bancos.historicoGastos})`,
       })
       .from(bancos)
-      .where(eq(bancos.activo, true))
+      .where(eq(bancos.activo, 1))
 
     // Ventas del mes actual
-    const inicioMes = new Date()
-    inicioMes.setDate(1)
-    inicioMes.setHours(0, 0, 0, 0)
+    const _ahora = new Date()
+    const inicioMes = Math.floor(new Date(_ahora.getFullYear(), _ahora.getMonth(), 1).getTime() / 1000)
 
     const [ventasMes] = await db
       .select({
@@ -118,7 +117,9 @@ export async function getDashboardResumen() {
  */
 export async function getReporteVentas(filtros: FiltrosReporte) {
   try {
-    const conditions = [between(ventas.fecha, filtros.fechaInicio, filtros.fechaFin)]
+    const inicioUnix = Math.floor(filtros.fechaInicio.getTime() / 1000)
+    const finUnix = Math.floor(filtros.fechaFin.getTime() / 1000)
+    const conditions = [between(ventas.fecha, inicioUnix, finUnix)]
 
     if (filtros.clienteId) {
       conditions.push(eq(ventas.clienteId, filtros.clienteId))
@@ -204,12 +205,14 @@ export async function getReporteBancos(filtros: FiltrosReporte) {
   try {
     // Estado actual de los bancos
     const bancosActuales = await db.query.bancos.findMany({
-      where: eq(bancos.activo, true),
+      where: eq(bancos.activo, 1),
       orderBy: [bancos.orden],
     })
 
     // Movimientos por banco en el período
-    const conditions = [between(movimientos.fecha, filtros.fechaInicio, filtros.fechaFin)]
+    const inicioUnix = Math.floor(filtros.fechaInicio.getTime() / 1000)
+    const finUnix = Math.floor(filtros.fechaFin.getTime() / 1000)
+    const conditions = [between(movimientos.fecha, inicioUnix, finUnix)]
 
     if (filtros.bancoId) {
       conditions.push(eq(movimientos.bancoId, filtros.bancoId))
@@ -329,7 +332,9 @@ export async function getReporteClientes() {
  */
 export async function getReporteDistribuidores(filtros: FiltrosReporte) {
   try {
-    const conditions = [between(ordenesCompra.fecha, filtros.fechaInicio, filtros.fechaFin)]
+    const inicioUnix = Math.floor(filtros.fechaInicio.getTime() / 1000)
+    const finUnix = Math.floor(filtros.fechaFin.getTime() / 1000)
+    const conditions = [between(ordenesCompra.fecha, inicioUnix, finUnix)]
 
     if (filtros.distribuidorId) {
       conditions.push(eq(ordenesCompra.distribuidorId, filtros.distribuidorId))
@@ -456,7 +461,9 @@ export async function getReporteAlmacen() {
  */
 export async function getResumenFinanciero(filtros: FiltrosReporte) {
   try {
-    const conditions = [between(movimientos.fecha, filtros.fechaInicio, filtros.fechaFin)]
+    const inicioUnix = Math.floor(filtros.fechaInicio.getTime() / 1000)
+    const finUnix = Math.floor(filtros.fechaFin.getTime() / 1000)
+    const conditions = [between(movimientos.fecha, inicioUnix, finUnix)]
 
     // Ingresos vs gastos
     const [flujo] = await db
@@ -475,7 +482,7 @@ export async function getResumenFinanciero(filtros: FiltrosReporte) {
         cobrado: sql<number>`sum(${ventas.montoPagado})`,
       })
       .from(ventas)
-      .where(between(ventas.fecha, filtros.fechaInicio, filtros.fechaFin))
+      .where(between(ventas.fecha, inicioUnix, finUnix))
 
     // Compras del período
     const [comprasPeriodo] = await db
@@ -484,7 +491,7 @@ export async function getResumenFinanciero(filtros: FiltrosReporte) {
         pagado: sql<number>`sum(${ordenesCompra.montoPagado})`,
       })
       .from(ordenesCompra)
-      .where(between(ordenesCompra.fecha, filtros.fechaInicio, filtros.fechaFin))
+      .where(between(ordenesCompra.fecha, inicioUnix, finUnix))
 
     // Capital actual
     const [capitalActual] = await db
@@ -492,7 +499,7 @@ export async function getResumenFinanciero(filtros: FiltrosReporte) {
         total: sql<number>`sum(${bancos.capitalActual})`,
       })
       .from(bancos)
-      .where(eq(bancos.activo, true))
+      .where(eq(bancos.activo, 1))
 
     return {
       success: true,

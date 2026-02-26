@@ -1,5 +1,9 @@
 "use client"
 
+import {
+  LiquidGlassButton,
+  LiquidGlassSearchField,
+} from "@/app/_components/chronos-2026/primitives/LiquidGlassSystem"
 import { ModalShell } from "@/app/_components/modals/ModalShell"
 import { GlassCurrencyInput, GlassInput, GlassSelect } from "@/app/_components/ui/GlassFormSystem"
 import { cn } from "@/app/_lib/utils"
@@ -298,14 +302,9 @@ export default function AuroraVentasPanelUnified({ className }: { className?: st
           >
             <RefreshCw className="h-4 w-4" />
           </motion.button>
-          <motion.button
-            onClick={openModal}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-violet-500 px-4 py-2.5 text-sm font-medium shadow-lg shadow-violet-500/25 transition hover:shadow-violet-500/40"
-          >
-            <Plus className="h-4 w-4" /> Nueva Venta
-          </motion.button>
+          <LiquidGlassButton variant="primary" icon={<Plus className="h-4 w-4" />} onClick={openModal}>
+            Nueva Venta
+          </LiquidGlassButton>
         </div>
       </motion.header>
 
@@ -342,7 +341,7 @@ export default function AuroraVentasPanelUnified({ className }: { className?: st
       >
         <Filter className="hidden h-4 w-4 text-white/25 sm:block" />
         <div className="relative min-w-[200px] flex-1">
-          <GlassInput
+          <LiquidGlassSearchField
             placeholder="Buscar venta..."
             value={search}
             onChange={(e) => setF("search", e.target.value)}
@@ -467,9 +466,7 @@ export default function AuroraVentasPanelUnified({ className }: { className?: st
                             <button
                               title="Eliminar"
                               onClick={() => handleDelete(v.id)}
-                              className={cn(
-                                "rounded-lg p-1.5 text-white/30 transition hover:bg-white/[0.06] hover:text-red-400"
-                              )}
+                              className="rounded-lg p-1.5 text-red-400/90 ring-1 ring-red-500/30 transition-colors hover:bg-red-500/20 hover:text-red-400 focus-visible:ring-2 focus-visible:ring-red-500/50"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>

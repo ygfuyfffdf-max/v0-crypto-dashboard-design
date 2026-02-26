@@ -52,7 +52,6 @@ export function TransactionDetailsModal({ isOpen, onClose, transaction, type }: 
       onClose={onClose}
       title="Detalle de Transacción"
       subtitle={`ID: ${transaction.id?.slice(0, 8).toUpperCase()}`}
-      hideFooter
     >
       <div className="space-y-8 py-2">
         {/* Header Amount */}

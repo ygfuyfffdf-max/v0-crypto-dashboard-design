@@ -94,7 +94,7 @@ export async function createMovimiento(input: {
       bancoId: input.bancoId,
       tipo: input.tipo,
       monto: input.monto,
-      fecha: new Date(),
+      fecha: Math.floor(Date.now() / 1000),
       concepto: input.concepto,
       referencia: input.referencia,
     })

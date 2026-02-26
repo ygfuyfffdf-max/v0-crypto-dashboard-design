@@ -1,5 +1,5 @@
-import { cookies } from 'next/headers'
 import { logger } from '@/app/lib/utils/logger'
+import { cookies } from 'next/headers'
 
 export interface UserSession {
   id: string
@@ -41,3 +41,12 @@ export async function requireAdmin() {
   }
   return user
 }
+
+/**
+ * Re-export HMAC session utilities from root lib for alias compatibility.
+ * The tsconfig @/lib/* alias resolves to app/lib/* in Turbopack dev mode.
+ */
+export {
+    COOKIE_NAME, createSessionToken, getSessionFromRequest, SESSION_MAX_AGE, verifySessionToken, type SessionPayload
+} from '../../../lib/auth/session'
+

@@ -17,79 +17,70 @@
 
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Bell,
-  BellOff,
-  Check,
-  CheckCircle,
-  XCircle,
-  AlertTriangle,
-  Info,
-  MessageSquare,
-  Settings,
-  ShieldCheck,
-  DollarSign,
-  ClipboardList,
-  Archive,
-  Pin,
-  PinOff,
-  Trash2,
-  MoreVertical,
-  ChevronDown,
-  ChevronRight,
-  ExternalLink,
-  Clock,
-  Filter,
-  Search,
-  X,
-  Volume2,
-  VolumeX
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
+    notificacionesService,
+    type CategoriaNotificacion,
+    type Notificacion,
+    type PreferenciasNotificacion
+} from '@/app/_lib/services/notifications-supreme.service'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Switch } from '@/components/ui/switch'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/button'
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+    Sheet,
+    SheetContent,
+    SheetTrigger
+} from '@/components/ui/sheet'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
-  notificacionesService,
-  type Notificacion,
-  type PreferenciasNotificacion,
-  type CategoriaNotificacion
-} from '@/app/_lib/services/notifications-supreme.service'
+    AlertTriangle,
+    Archive,
+    Bell,
+    BellOff,
+    Check,
+    CheckCircle,
+    ChevronDown,
+    ChevronRight,
+    ClipboardList,
+    DollarSign,
+    Info,
+    MessageSquare,
+    MoreVertical,
+    Pin,
+    PinOff,
+    Search,
+    Settings,
+    ShieldCheck,
+    Trash2,
+    Volume2,
+    VolumeX,
+    X,
+    XCircle,
+    type LucideIcon
+} from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // ICONOS Y COLORES
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
-const iconosTipo: Record<string, React.ElementType> = {
+const iconosTipo: Record<string, LucideIcon> = {
   info: Info,
   success: CheckCircle,
   warning: AlertTriangle,
@@ -139,8 +130,8 @@ function NotificacionItem({
   expandible = true
 }: NotificacionItemProps) {
   const [expandido, setExpandido] = useState(false)
-  const Icono = iconosTipo[notificacion.tipo] || Bell
-  const colores = coloresTipo[notificacion.tipo] || coloresTipo.info
+  const Icono = iconosTipo[notificacion.tipo] ?? Bell
+  const colores = coloresTipo[notificacion.tipo] ?? coloresTipo['info'] ?? { bg: 'bg-slate-900/30', text: 'text-slate-300', border: 'border-slate-800/50' }
 
   const tiempoRelativo = useCallback((timestamp: number) => {
     const segundos = Math.floor((Date.now() - timestamp) / 1000)
@@ -383,8 +374,7 @@ export default function NotificationsPanelSupreme({
     const filtros: Parameters<typeof notificacionesService.obtenerNotificaciones>[1] = {}
 
     if (tab === 'noLeidas') filtros.leida = false
-    if (tab === 'archivadas') filtros.archivada = true
-    else if (tab !== 'archivadas') filtros.archivada = false
+    filtros.archivada = tab === 'archivadas'
 
     if (filtroCategoria !== 'todas') {
       filtros.categoria = filtroCategoria
@@ -704,3 +694,4 @@ export default function NotificationsPanelSupreme({
 }
 
 export { NotificacionItem }
+

@@ -71,7 +71,7 @@ export function EnhancedModal({
   }, [isOpen, play])
 
   const handleClose = () => {
-    play('swoosh')
+    play('modal-close')
     navigator.vibrate?.(5)
     onClose()
   }
@@ -273,7 +273,7 @@ export function EnhancedModalButton({
       )}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.95 }}
-      {...props}
+      {...(props as any)}
     >
       {children}
     </motion.button>

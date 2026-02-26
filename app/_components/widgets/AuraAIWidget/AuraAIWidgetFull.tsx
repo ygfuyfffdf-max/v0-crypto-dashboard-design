@@ -54,6 +54,7 @@ import {
     VolumeX,
     X,
     Zap,
+    type LucideIcon,
 } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
@@ -217,7 +218,7 @@ function ProactiveSuggestionCard({ suggestion, onDismiss, onAction }: ProactiveS
 // 🎯 MODE SELECTOR
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
-const MODE_ICONS: Record<CognitoMode, React.ElementType> = {
+const MODE_ICONS: Record<CognitoMode, LucideIcon> = {
   chat: Bot,
   analysis: BarChart3,
   predictions: TrendingUp,
@@ -237,7 +238,7 @@ function ModeSelector({
   return (
     <div className={cn('flex gap-1 rounded-xl bg-white/5 p-1', className)}>
       {(Object.keys(MODE_COLORS) as CognitoMode[]).map((mode) => {
-        const Icon = MODE_ICONS[mode]
+        const Icon: LucideIcon = MODE_ICONS[mode]!
         const isActive = mode === currentMode
         const colors = MODE_COLORS[mode]
 

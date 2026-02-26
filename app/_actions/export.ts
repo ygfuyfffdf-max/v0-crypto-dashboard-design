@@ -51,24 +51,21 @@ async function obtenerDatosVentas(fechaDesde?: string, fechaHasta?: string) {
   const whereConditions = []
 
   if (fechaDesde) {
-    whereConditions.push(gte(ventas.createdAt, new Date(fechaDesde)))
+    whereConditions.push(gte(ventas.createdAt, Math.floor(new Date(fechaDesde).getTime() / 1000)))
   }
   if (fechaHasta) {
-    whereConditions.push(lte(ventas.createdAt, new Date(fechaHasta)))
+    whereConditions.push(lte(ventas.createdAt, Math.floor(new Date(fechaHasta).getTime() / 1000)))
   }
 
   const data = await db.query.ventas.findMany({
     where: whereConditions.length > 0 ? and(...whereConditions) : undefined,
-    with: {
-      cliente: true,
-    },
     orderBy: desc(ventas.createdAt),
   })
 
   return data.map((v) => ({
     id: v.id,
-    fecha: v.createdAt?.toISOString().split('T')[0],
-    cliente: v.cliente?.nombre || 'N/A',
+    fecha: v.createdAt ? new Date(v.createdAt * 1000).toISOString().split('T')[0] : undefined,
+    cliente: 'N/A',
     cantidad: v.cantidad,
     precioVenta: v.precioVentaUnidad,
     precioCompra: v.precioCompraUnidad,
@@ -94,7 +91,7 @@ async function obtenerDatosClientes() {
     limiteCredito: c.limiteCredito,
     saldoPendiente: c.saldoPendiente,
     estado: c.estado,
-    fechaRegistro: c.createdAt?.toISOString().split('T')[0],
+    fechaRegistro: c.createdAt ? new Date(c.createdAt * 1000).toISOString().split('T')[0] : undefined,
   }))
 }
 
@@ -119,24 +116,21 @@ async function obtenerDatosOrdenes(fechaDesde?: string, fechaHasta?: string) {
   const whereConditions = []
 
   if (fechaDesde) {
-    whereConditions.push(gte(ordenesCompra.createdAt, new Date(fechaDesde)))
+    whereConditions.push(gte(ordenesCompra.createdAt, Math.floor(new Date(fechaDesde).getTime() / 1000)))
   }
   if (fechaHasta) {
-    whereConditions.push(lte(ordenesCompra.createdAt, new Date(fechaHasta)))
+    whereConditions.push(lte(ordenesCompra.createdAt, Math.floor(new Date(fechaHasta).getTime() / 1000)))
   }
 
   const data = await db.query.ordenesCompra.findMany({
     where: whereConditions.length > 0 ? and(...whereConditions) : undefined,
-    with: {
-      distribuidor: true,
-    },
     orderBy: desc(ordenesCompra.createdAt),
   })
 
   return data.map((o) => ({
     id: o.id,
-    fecha: o.createdAt?.toISOString().split('T')[0],
-    distribuidor: o.distribuidor?.nombre || 'N/A',
+    fecha: o.createdAt ? new Date(o.createdAt * 1000).toISOString().split('T')[0] : undefined,
+    distribuidor: 'N/A',
     cantidad: o.cantidad,
     precioUnidad: o.precioUnitario,
     total: o.total,
@@ -155,7 +149,7 @@ async function obtenerDatosBancos() {
     capitalActual: b.capitalActual,
     historicoIngresos: b.historicoIngresos,
     historicoGastos: b.historicoGastos,
-    ultimaActualizacion: b.updatedAt?.toISOString().split('T')[0],
+    ultimaActualizacion: b.updatedAt ? new Date(b.updatedAt * 1000).toISOString().split('T')[0] : undefined,
   }))
 }
 
@@ -163,10 +157,10 @@ async function obtenerDatosMovimientos(fechaDesde?: string, fechaHasta?: string)
   const whereConditions = []
 
   if (fechaDesde) {
-    whereConditions.push(gte(movimientos.createdAt, new Date(fechaDesde)))
+    whereConditions.push(gte(movimientos.createdAt, Math.floor(new Date(fechaDesde).getTime() / 1000)))
   }
   if (fechaHasta) {
-    whereConditions.push(lte(movimientos.createdAt, new Date(fechaHasta)))
+    whereConditions.push(lte(movimientos.createdAt, Math.floor(new Date(fechaHasta).getTime() / 1000)))
   }
 
   const data = await db.query.movimientos.findMany({
@@ -177,7 +171,7 @@ async function obtenerDatosMovimientos(fechaDesde?: string, fechaHasta?: string)
 
   return data.map((m) => ({
     id: m.id,
-    fecha: m.createdAt?.toISOString().split('T')[0],
+    fecha: m.createdAt ? new Date(m.createdAt * 1000).toISOString().split('T')[0] : undefined,
     tipo: m.tipo,
     concepto: m.concepto,
     monto: m.monto,

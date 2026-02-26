@@ -22,13 +22,13 @@
 import { logger } from '@/app/lib/utils/logger'
 import { db } from '@/database'
 import {
-  almacen,
-  bancos,
-  clientes,
-  distribuidores,
-  movimientos,
-  ordenesCompra,
-  ventas,
+    almacen,
+    bancos,
+    clientes,
+    distribuidores,
+    movimientos,
+    ordenesCompra,
+    ventas,
 } from '@/database/schema'
 import { eq, sql } from 'drizzle-orm'
 
@@ -38,7 +38,7 @@ import { eq, sql } from 'drizzle-orm'
 
 export async function actualizarMetricasCliente(clienteId: string): Promise<void> {
   try {
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     // Obtener todas las ventas del cliente
     const ventasCliente = await db.select().from(ventas).where(eq(ventas.clienteId, clienteId))
@@ -61,23 +61,17 @@ export async function actualizarMetricasCliente(clienteId: string): Promise<void
 
     // Encontrar última compra
     const ultimaVenta = ventasCliente.reduce((latest, v) => {
-      const fechaV = v.fecha ? new Date(v.fecha) : new Date(0)
-      const fechaLatest = latest?.fecha ? new Date(latest.fecha) : new Date(0)
-      return fechaV > fechaLatest ? v : latest
+      return (v.fecha ?? 0) > (latest?.fecha ?? 0) ? v : latest
     }, ventasCliente[0])
 
-    const ultimaCompra = ultimaVenta?.fecha ? new Date(ultimaVenta.fecha) : null
-    const diasSinComprar = ultimaCompra
-      ? Math.floor((now.getTime() - ultimaCompra.getTime()) / (1000 * 60 * 60 * 24))
+    const ultimaCompra = ultimaVenta?.fecha ?? null
+    const diasSinComprar = ultimaCompra !== null
+      ? Math.floor((now - ultimaCompra) / (60 * 60 * 24))
       : 0
 
     // Calcular frecuencia de compra (ventas/mes en últimos 6 meses)
-    const hace6Meses = new Date()
-    hace6Meses.setMonth(hace6Meses.getMonth() - 6)
-    const ventasRecientes = ventasCliente.filter((v) => {
-      const fecha = v.fecha ? new Date(v.fecha) : new Date(0)
-      return fecha >= hace6Meses
-    })
+    const hace6MesesUnix = Math.floor((Date.now() - 6 * 30 * 24 * 60 * 60 * 1000) / 1000)
+    const ventasRecientes = ventasCliente.filter((v) => (v.fecha ?? 0) >= hace6MesesUnix)
     const frecuenciaCompra = ventasRecientes.length / 6
 
     // Calcular % de pago puntual (pagado completo en menos de 30 días)
@@ -147,7 +141,7 @@ export async function actualizarMetricasCliente(clienteId: string): Promise<void
 
 export async function actualizarMetricasDistribuidor(distribuidorId: string): Promise<void> {
   try {
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     // Obtener todas las OC del distribuidor
     const ocsDistribuidor = await db
@@ -216,7 +210,7 @@ export async function actualizarMetricasDistribuidor(distribuidorId: string): Pr
 
 export async function actualizarMetricasOC(ocId: string): Promise<void> {
   try {
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     // Obtener la OC
     const [oc] = await db.select().from(ordenesCompra).where(eq(ordenesCompra.id, ocId))
@@ -244,8 +238,8 @@ export async function actualizarMetricasOC(ocId: string): Promise<void> {
     const margenPromedio = ingresoVentas > 0 ? (utilidadGenerada / ingresoVentas) * 100 : 0
 
     // Calcular rotación en días
-    const fechaOC = oc.fecha ? new Date(oc.fecha) : now
-    const diasDesdeOC = Math.floor((now.getTime() - fechaOC.getTime()) / (1000 * 60 * 60 * 24))
+    const fechaOC = oc.fecha ?? now
+    const diasDesdeOC = Math.floor((now - fechaOC) / (60 * 60 * 24))
     const _rotacionDias =
       stockVendido > 0 ? diasDesdeOC / (stockVendido / (oc.cantidad ?? 1)) : null
 
@@ -458,14 +452,14 @@ export async function actualizarMetricasProducto(productoId: string): Promise<vo
     })
 
     // Calcular métricas de ventas
-    const ahora = new Date()
-    const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1)
-    const inicioSemana = new Date(ahora)
-    inicioSemana.setDate(ahora.getDate() - ahora.getDay())
+    const ahora = Math.floor(Date.now() / 1000)
+    const _ahoraDate = new Date()
+    const inicioMesUnix = Math.floor(new Date(_ahoraDate.getFullYear(), _ahoraDate.getMonth(), 1).getTime() / 1000)
+    const inicioSemanaUnix = Math.floor((Date.now() - _ahoraDate.getDay() * 86400000) / 1000)
 
     const ventasCompletas = ventasProducto.filter((v) => v.estado === 'pagada')
-    const ventasMes = ventasProducto.filter((v) => new Date(v.fecha) >= inicioMes)
-    const ventasSemana = ventasProducto.filter((v) => new Date(v.fecha) >= inicioSemana)
+    const ventasMes = ventasProducto.filter((v) => (v.fecha ?? 0) >= inicioMesUnix)
+    const ventasSemana = ventasProducto.filter((v) => (v.fecha ?? 0) >= inicioSemanaUnix)
 
     // Totales de ventas
     const totalVentas = ventasCompletas.reduce((sum, v) => sum + v.precioTotalVenta, 0)
@@ -593,7 +587,7 @@ export async function actualizarMetricasProducto(productoId: string): Promise<vo
         scoreRentabilidad,
         scoreRotacion,
         scoreDemanda,
-        clasificacionABC,
+        clasificacionAbc: clasificacionABC,
 
         // Metadata
         ultimaActualizacionMetricas: new Date().toISOString(),
@@ -646,20 +640,20 @@ export async function actualizarMetricasBanco(bancoId: string): Promise<void> {
     })
 
     // Fechas de referencia
-    const ahora = new Date()
-    const inicioHoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate())
-    const inicioSemana = new Date(ahora)
-    inicioSemana.setDate(ahora.getDate() - ahora.getDay())
-    const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1)
-    const inicioMesAnterior = new Date(ahora.getFullYear(), ahora.getMonth() - 1, 1)
-    const finMesAnterior = new Date(ahora.getFullYear(), ahora.getMonth(), 0)
+    const ahora = Math.floor(Date.now() / 1000)
+    const _bd = new Date()
+    const inicioHoyUnix = Math.floor(new Date(_bd.getFullYear(), _bd.getMonth(), _bd.getDate()).getTime() / 1000)
+    const inicioSemanaUnix = Math.floor((Date.now() - _bd.getDay() * 86400000) / 1000)
+    const inicioMesUnix = Math.floor(new Date(_bd.getFullYear(), _bd.getMonth(), 1).getTime() / 1000)
+    const inicioMesAnteriorUnix = Math.floor(new Date(_bd.getFullYear(), _bd.getMonth() - 1, 1).getTime() / 1000)
+    const finMesAnteriorUnix = Math.floor(new Date(_bd.getFullYear(), _bd.getMonth(), 0, 23, 59, 59).getTime() / 1000)
 
     // Filtrar por períodos
-    const movHoy = movimientosBanco.filter((m) => new Date(m.fecha) >= inicioHoy)
-    const movSemana = movimientosBanco.filter((m) => new Date(m.fecha) >= inicioSemana)
-    const movMes = movimientosBanco.filter((m) => new Date(m.fecha) >= inicioMes)
+    const movHoy = movimientosBanco.filter((m) => (m.fecha ?? 0) >= inicioHoyUnix)
+    const movSemana = movimientosBanco.filter((m) => (m.fecha ?? 0) >= inicioSemanaUnix)
+    const movMes = movimientosBanco.filter((m) => (m.fecha ?? 0) >= inicioMesUnix)
     const movMesAnterior = movimientosBanco.filter(
-      (m) => new Date(m.fecha) >= inicioMesAnterior && new Date(m.fecha) <= finMesAnterior,
+      (m) => (m.fecha ?? 0) >= inicioMesAnteriorUnix && (m.fecha ?? 0) <= finMesAnteriorUnix,
     )
 
     // Calcular flujos por período
@@ -728,7 +722,7 @@ export async function actualizarMetricasBanco(bancoId: string): Promise<void> {
     // Proyecciones
     const capitalActual = banco.capitalActual || 0
     const promedioFlujoMensual = flujoMes.flujoNeto // Usamos el mes actual como referencia
-    const proyeccionFinMes = capitalActual + promedioFlujoMensual * ((30 - ahora.getDate()) / 30)
+    const proyeccionFinMes = capitalActual + promedioFlujoMensual * ((30 - _bd.getDate()) / 30)
     const proyeccionTresMeses = capitalActual + promedioFlujoMensual * 3
 
     // Días hasta agotamiento (si flujo negativo)
@@ -775,7 +769,7 @@ export async function actualizarMetricasBanco(bancoId: string): Promise<void> {
         porcentajeVentas: Math.round(porcentajeVentas * 100) / 100,
         porcentajeTransferencias: Math.round(porcentajeTransferencias * 100) / 100,
         porcentajeManual: Math.round(porcentajeManual * 100) / 100,
-        porcentajeDistribucionGYA: Math.round(porcentajeDistribucionGYA * 100) / 100,
+        porcentajeDistribucionGya: Math.round(porcentajeDistribucionGYA * 100) / 100,
 
         // Tendencias
         tendenciaCapital,
@@ -833,11 +827,9 @@ export async function actualizarMetricasRotacionOC(ocId: string): Promise<void> 
     if (!oc) return
 
     // Calcular días desde compra
-    const fechaCompra = new Date(oc.fecha)
-    const ahora = new Date()
-    const diasDesdeCompra = Math.round(
-      (ahora.getTime() - fechaCompra.getTime()) / (1000 * 60 * 60 * 24),
-    )
+    const ahora = Math.floor(Date.now() / 1000)
+    const fechaCompra = oc.fecha ?? ahora
+    const diasDesdeCompra = Math.round((ahora - fechaCompra) / (60 * 60 * 24))
 
     // Obtener ventas asociadas a esta OC
     const ventasOC = await db.query.ventas.findMany({

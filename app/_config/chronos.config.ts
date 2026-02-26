@@ -179,8 +179,8 @@ export const chronosConfig: ChronosConfig = {
     encryption: {
       algorithm: 'AES-256-GCM',
       keySize: 256,
-      saltRounds: 12
-    }
+      saltRounds: 12,
+    },
   },
 
   security: {
@@ -190,6 +190,101 @@ export const chronosConfig: ChronosConfig = {
     passwordPolicy: {
       minLength: 12,
       requireUppercase: true,
-      requireSpecialChar: true,
-    }
+      requireLowercase: true,
+      requireNumbers: true,
+      requireSpecialChars: true,
+    },
+    biometric: {
+      enabled: false,
+      methods: ['fingerprint', 'face'],
+      confidenceThreshold: 0.9,
+    },
+    blockchain: {
+      enabled: false,
+      network: 'ethereum',
+      auditContract: '',
+    },
   },
+
+  permissions: {
+    quantumEngine: {
+      enabled: true,
+      riskWeights: {
+        userRisk: 0.3,
+        actionRisk: 0.3,
+        resourceRisk: 0.2,
+        contextualRisk: 0.1,
+        timeRisk: 0.05,
+        locationRisk: 0.05,
+      },
+      thresholds: {
+        low: 0.3,
+        medium: 0.6,
+        high: 0.8,
+        critical: 0.95,
+      },
+    },
+    panels: {
+      profit: { name: 'Profit', description: 'Panel de ganancias y rentabilidad', permissions: ['view', 'edit', 'export'] },
+      bancos: { name: 'Bancos', description: 'Panel de bancos y cuentas', permissions: ['view', 'edit', 'admin'] },
+      usuarios: { name: 'Usuarios', description: 'Panel de gestión de usuarios', permissions: ['view', 'edit', 'admin', 'delete'] },
+      seguridad: { name: 'Seguridad', description: 'Panel de seguridad y auditoría', permissions: ['view', 'admin'] },
+      ventas: { name: 'Ventas', description: 'Panel de ventas y pedidos', permissions: ['view', 'edit', 'export'] },
+      almacen: { name: 'Almacén', description: 'Panel de inventario y almacén', permissions: ['view', 'edit'] },
+      clientes: { name: 'Clientes', description: 'Panel de gestión de clientes', permissions: ['view', 'edit', 'export'] },
+      ia: { name: 'IA', description: 'Panel de inteligencia artificial', permissions: ['view', 'interact'] },
+      reportes: { name: 'Reportes', description: 'Panel de reportes y análisis', permissions: ['view', 'export'] },
+    },
+  },
+
+  compliance: {
+    sox: { enabled: false, auditRetention: 365 },
+    gdpr: { enabled: true, dataRetention: 730 },
+    pci: { enabled: false, encryptionRequired: true },
+    hipaa: { enabled: false, accessLogging: true },
+    soc2: { enabled: false, monitoringInterval: 60 },
+  },
+
+  monitoring: {
+    realTime: {
+      enabled: true,
+      updateInterval: 30,
+      metrics: ['cpu', 'memory', 'requests', 'errors', 'latency'],
+    },
+    forensics: {
+      enabled: true,
+      logLevel: 'info',
+      retentionPeriod: 90,
+    },
+    alerts: {
+      enabled: true,
+      channels: ['email', 'slack', 'webhook'],
+      severityLevels: ['low', 'medium', 'high', 'critical'],
+    },
+  },
+
+  api: {
+    rateLimiting: {
+      enabled: true,
+      windowMs: 900000,
+      maxRequests: 100,
+    },
+    cors: {
+      enabled: true,
+      origins: ['*'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+      headers: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    },
+    authentication: {
+      jwt: {
+        secret: process.env['JWT_SECRET'] ?? 'chronos-infinity-dev-secret-2026',
+        expiresIn: '24h',
+        algorithm: 'HS256',
+      },
+      clerk: {
+        publishableKey: process.env['NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY'] ?? '',
+        secretKey: process.env['CLERK_SECRET_KEY'] ?? '',
+      },
+    },
+  },
+}

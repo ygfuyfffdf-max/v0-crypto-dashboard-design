@@ -95,6 +95,8 @@ export interface ChronosHeader2026Props {
   onOpenHelp?: () => void
   /** Callback para cerrar sesión */
   onLogout?: () => void
+  /** Slot opcional para reemplazar UserMenu (ej: Clerk UserButton) */
+  userSlot?: React.ReactNode
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -362,7 +364,7 @@ function NavDropdown({
         <ChevronDown
           className={`h-3 w-3 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
         />
-        
+
         {/* Active indicator for parent */}
         {isChildActive && (
           <motion.div
@@ -750,6 +752,7 @@ export function ChronosHeader2026({
   onOpenSettings,
   onOpenHelp,
   onLogout,
+  userSlot,
 }: ChronosHeader2026Props) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -840,15 +843,17 @@ export function ChronosHeader2026({
             {/* Theme Switcher */}
             {onThemeChange && <ThemeSwitcher currentTheme={theme} onThemeChange={onThemeChange} />}
 
-            {/* User Menu */}
-            <UserMenu
-              userName={userName}
-              userAvatar={userAvatar}
-              onOpenProfile={onOpenProfile}
-              onOpenSettings={onOpenSettings}
-              onOpenHelp={onOpenHelp}
-              onLogout={onLogout}
-            />
+            {/* User Menu or custom slot (e.g. Clerk UserButton) */}
+            {userSlot ?? (
+              <UserMenu
+                userName={userName}
+                userAvatar={userAvatar}
+                onOpenProfile={onOpenProfile}
+                onOpenSettings={onOpenSettings}
+                onOpenHelp={onOpenHelp}
+                onLogout={onLogout}
+              />
+            )}
           </div>
         </div>
 

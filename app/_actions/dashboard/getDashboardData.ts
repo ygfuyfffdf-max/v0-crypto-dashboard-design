@@ -18,13 +18,13 @@ import { and, desc, eq, gte, lte, sql } from 'drizzle-orm'
 export async function getDashboardKPIs() {
   try {
     // Capital total de todos los bancos
-    const bancosData = await db.select().from(bancos).where(eq(bancos.activo, true))
+    const bancosData = await db.select().from(bancos).where(eq(bancos.activo, 1))
     const capitalTotal = bancosData.reduce((sum, banco) => sum + banco.capitalActual, 0)
 
     // Ventas del mes actual
     const now = new Date()
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+    const startOfMonth = Math.floor(new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000)
+    const endOfMonth = Math.floor(new Date(now.getFullYear(), now.getMonth() + 1, 0).getTime() / 1000)
 
     const ventasMes = await db
       .select()
@@ -104,7 +104,7 @@ export async function getDashboardKPIs() {
 export async function getVentasMensuales() {
   try {
     const now = new Date()
-    const hace12Meses = new Date(now.getFullYear(), now.getMonth() - 11, 1)
+    const hace12Meses = Math.floor(new Date(now.getFullYear(), now.getMonth() - 11, 1).getTime() / 1000)
 
     const ventasData = await db
       .select()
@@ -161,7 +161,7 @@ export async function getDistribucionBancos() {
     const bancosData = await db
       .select()
       .from(bancos)
-      .where(eq(bancos.activo, true))
+      .where(eq(bancos.activo, 1))
       .orderBy(desc(bancos.capitalActual))
 
     const distribucion = bancosData.map((banco) => ({
@@ -319,8 +319,7 @@ export async function getAlertas() {
     })
 
     // Ventas sin abono > 30 días
-    const hace30Dias = new Date()
-    hace30Dias.setDate(hace30Dias.getDate() - 30)
+    const hace30Dias = Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60
 
     const ventasSinAbono = await db
       .select()

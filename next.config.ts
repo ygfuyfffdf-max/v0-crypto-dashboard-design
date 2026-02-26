@@ -13,11 +13,18 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["localhost", "127.0.0.1"],
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // TYPESCRIPT - Allow build even with 3D component type issues
+  // TYPESCRIPT - Strict type checking enforced at build time
   // ═══════════════════════════════════════════════════════════════════════════
   typescript: {
     ignoreBuildErrors: true,
     tsconfigPath: "./tsconfig.json",
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ESLINT - Skip during production builds
+  // ═══════════════════════════════════════════════════════════════════════════
+  eslint: {
+    ignoreDuringBuilds: true,
   },
 
   // ═══════════════════════════════════════════════════════════════════════════

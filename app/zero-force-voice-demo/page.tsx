@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client"
 
 import ZeroForceVoiceWidget from "@/app/_components/premium/voice/ZeroForceVoiceWidget"

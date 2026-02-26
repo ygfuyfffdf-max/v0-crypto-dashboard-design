@@ -17,8 +17,8 @@
 
 import Spline from '@splinetool/react-spline'
 import type { SPEObject, Application as SplineApplication } from '@splinetool/runtime'
-import { AnimatePresence, motion } from 'motion/react'
 import { Loader2 } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -146,7 +146,7 @@ const EMOTION_CONFIGS: Record<
   },
   stress: {
     eyeGlow: '#EF4444',
-    eyescale: 1.02,
+    eyeScale: 1.02,
     bodyTilt: -3,
     breathingSpeed: 1.8,
     blinkRate: 1000,

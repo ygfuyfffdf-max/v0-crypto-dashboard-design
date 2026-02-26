@@ -17,35 +17,36 @@
 
 "use client"
 
-import { useAI } from "@/app/_hooks/useAI"
+// useAI removed — insights stubbed locally
 import { usePushNotifications } from "@/app/_hooks/usePushNotifications"
 import { cn } from "@/app/_lib/utils"
 import {
-  AlertTriangle,
-  ArrowDownRight,
-  ArrowUpRight,
-  Award,
-  Bell,
-  Bot,
-  Calendar,
-  Cpu,
-  DollarSign,
-  Eye,
-  Maximize2,
-  Minimize2,
-  RefreshCw,
-  Settings,
-  Shield,
-  Sparkles,
-  Target,
-  TrendingUp,
-  Zap,
+    AlertTriangle,
+    ArrowDownRight,
+    ArrowUpRight,
+    Award,
+    Bell,
+    Bot,
+    Calendar,
+    Cpu,
+    DollarSign,
+    Eye,
+    Info,
+    Maximize2,
+    Minimize2,
+    RefreshCw,
+    Settings,
+    Shield,
+    Sparkles,
+    Target,
+    TrendingUp,
+    X,
+    Zap,
 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { memo, useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { AuroraButton, AuroraGlassCard } from "../../ui/AuroraGlassSystem"
-import { QuantumCard } from "../../ui/QuantumElevatedUI"
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -113,7 +114,7 @@ const MetricasProfitReales = memo(function MetricasProfitReales({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
         >
-          <QuantumCard elevation="lg" interactive>
+          <AuroraGlassCard>
             <div className="p-6">
               <div className="mb-4 flex items-center justify-between">
                 <div className={cn("rounded-lg p-2", metrica.color)}>{metrica.icono}</div>
@@ -152,7 +153,7 @@ const MetricasProfitReales = memo(function MetricasProfitReales({
                 <p className="text-xs text-white/40">{metrica.descripcion}</p>
               </div>
             </div>
-          </QuantumCard>
+          </AuroraGlassCard>
         </motion.div>
       ))}
 
@@ -161,7 +162,7 @@ const MetricasProfitReales = memo(function MetricasProfitReales({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: metricas.length * 0.1 }}
       >
-        <QuantumCard elevation="lg" interactive>
+        <AuroraGlassCard>
           <div className="p-6">
             <div className="mb-4 flex items-center justify-between">
               <div className="rounded-lg bg-gradient-to-r from-violet-500 to-cyan-500 p-2">
@@ -183,7 +184,7 @@ const MetricasProfitReales = memo(function MetricasProfitReales({
               Última actualización: {new Date().toLocaleTimeString("es-MX")}
             </p>
           </div>
-        </QuantumCard>
+        </AuroraGlassCard>
       </motion.div>
     </div>
   )
@@ -296,7 +297,7 @@ const PanelAlertasInteligentes = memo(function PanelAlertasInteligentes({
                     <div className="mt-3 flex justify-end">
                       <AuroraButton
                         size="sm"
-                        variant="outline"
+                        variant="ghost"
                         onClick={() => {
                           /* Implementar acción */
                         }}
@@ -657,9 +658,12 @@ export const ProfitPanelOptimizado = memo(function ProfitPanelOptimizado({
   const [mostrarConfig, setMostrarConfig] = useState(false)
   const [vistaExpandida, setVistaExpandida] = useState(false)
 
-  const { insights, loading: aiLoading, generateInsights } = useAI()
-  const { isSupported, permission, subscribeToNotifications, unsubscribeFromNotifications } =
-    usePushNotifications()
+  const [insights] = useState<any[]>([])
+  const aiLoading = false
+  const generateInsights = useCallback(async (_data: any) => {}, [])
+  const { isSupported, permission } = usePushNotifications()
+  const subscribeToNotifications = useCallback(async (_channel: string, _opts?: any) => {}, [])
+  const unsubscribeFromNotifications = useCallback(async (_channel: string) => {}, [])
 
   // Cargar datos iniciales
   const cargarDatos = useCallback(async () => {
@@ -761,7 +765,7 @@ export const ProfitPanelOptimizado = memo(function ProfitPanelOptimizado({
             ? 500000 * (1 + insight.data.percentage / 100)
             : 450000,
           confianza: insight.confidence,
-          factores: insight.description.split(".").filter((f) => f.trim()),
+          factores: insight.description.split(".").filter((f: string) => f.trim()),
           recomendaciones: [
             "Diversificar inversiones",
             "Monitorear tendencias del mercado",

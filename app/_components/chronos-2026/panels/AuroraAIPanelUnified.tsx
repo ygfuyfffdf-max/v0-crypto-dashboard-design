@@ -57,6 +57,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 
 // 🌌 SUPREME SYSTEMS — CHRONOS INFINITY 2026 (QUANTUM OPTIMIZED)
+import { LiquidGlassButton, LiquidGlassSearchField } from '@/app/_components/chronos-2026/primitives/LiquidGlassSystem'
 import { AIBackground } from '@/app/_components/chronos-2026/particles/ParticleSystems'
 import { useSmoothScroll } from '@/app/_components/chronos-2026/scroll/SmoothScrollSystem'
 
@@ -473,7 +474,7 @@ function GlassMetricCard({ icon, label, value, color, glow, delay = 0, trend }: 
       whileTap={{ scale: 0.98 }}
     >
       <div
-        className="relative overflow-hidden rounded-2xl p-4"
+        className="relative overflow-hidden rounded-2xl p-4 neo-tactile-hover-elevate"
         style={{
           background: DESIGN.glass.bg,
           backdropFilter: `blur(${DESIGN.glass.blur}px)`,
@@ -608,23 +609,15 @@ function QuickActionButton({
   onClick: () => void
 }) {
   return (
-    <motion.button
-      className="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs text-white/70 transition-all hover:text-white"
-      style={{
-        background: 'rgba(255, 255, 255, 0.05)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-      }}
-      whileHover={{
-        scale: 1.02,
-        borderColor: `${color}50`,
-        background: 'rgba(255, 255, 255, 0.1)',
-      }}
-      whileTap={{ scale: 0.95 }}
+    <LiquidGlassButton
+      variant="glass"
+      size="sm"
+      icon={<span style={{ color }}>{icon}</span>}
       onClick={onClick}
+      className="rounded-full px-3 py-1.5 text-xs border-violet-500/20 hover:border-violet-500/40"
     >
-      <span style={{ color }}>{icon}</span>
       {label}
-    </motion.button>
+    </LiquidGlassButton>
   )
 }
 
@@ -918,20 +911,16 @@ export function AuroraAIPanelUnified({
         transition={{ delay: 0.2 }}
       >
         <div className="flex items-center justify-between">
-          <Link href="/dashboard">
-            <motion.button
-              className="flex items-center gap-2 rounded-xl px-4 py-2 text-white/70 transition-colors hover:text-white"
-              style={{
-                background: DESIGN.glass.bg,
-                border: `1px solid ${DESIGN.glass.border}`,
-                backdropFilter: `blur(${DESIGN.glass.blur}px)`,
-              }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="text-sm">Volver</span>
-            </motion.button>
+          <Link
+            href="/dashboard"
+            className={cn(
+              'inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm text-white/80',
+              'neo-tactile-hover-elevate bg-white/[0.06] backdrop-blur-xl border border-white/[0.1]',
+              'hover:bg-white/[0.1] hover:border-white/[0.15]'
+            )}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Volver
           </Link>
 
           <motion.div
@@ -1077,14 +1066,13 @@ export function AuroraAIPanelUnified({
                     </div>
                     <span className="font-medium text-white">Chat con CHRONOS</span>
                   </div>
-                  <motion.button
-                    className="rounded-lg p-2 transition-colors hover:bg-white/10"
+                  <LiquidGlassButton
+                    variant="glass"
+                    size="sm"
+                    icon={<X className="h-4 w-4" />}
                     onClick={() => setShowChat(false)}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <X className="h-4 w-4 text-white/60" />
-                  </motion.button>
+                    className="rounded-lg p-2 h-9 w-9 px-0"
+                  />
                 </div>
 
                 <div className="max-h-52 space-y-3 overflow-y-auto p-4">
@@ -1141,83 +1129,45 @@ export function AuroraAIPanelUnified({
               handleSubmit(inputValue)
             }}
           >
-            <motion.button
+            <LiquidGlassButton
               type="button"
-              className="shrink-0 rounded-xl p-3"
-              style={{
-                background: isListening
-                  ? `linear-gradient(135deg, ${DESIGN.colors.cyan.pure}, ${DESIGN.colors.emerald.pure})`
-                  : DESIGN.glass.bg,
-                border: `1px solid ${isListening ? 'transparent' : DESIGN.glass.border}`,
-                backdropFilter: `blur(${DESIGN.glass.blur}px)`,
-                boxShadow: isListening ? `0 0 20px ${DESIGN.colors.cyan.glow}` : 'none',
-              }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.95 }}
+              variant="glass"
+              size="md"
+              icon={isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
               onClick={toggleVoice}
-            >
-              {isListening ? (
-                <MicOff className="h-5 w-5 text-white" />
-              ) : (
-                <Mic className="h-5 w-5 text-white/70" />
+              className={cn(
+                'shrink-0 rounded-xl p-3 h-11 w-11 px-0',
+                isListening &&
+                  'bg-gradient-to-br from-cyan-500 to-emerald-500 border-transparent shadow-[0_0_20px_rgba(6,182,212,0.4)]'
               )}
-            </motion.button>
+            />
 
-            <div
-              className="flex-1 overflow-hidden rounded-xl"
-              style={{
-                background: DESIGN.glass.bg,
-                border: `1px solid ${DESIGN.glass.border}`,
-                backdropFilter: `blur(${DESIGN.glass.blur}px)`,
-              }}
-            >
-              <input
-                ref={inputRef}
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Escribe tu mensaje..."
-                className="w-full bg-transparent px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none"
-                disabled={isProcessing || isListening}
-              />
-            </div>
+            <LiquidGlassSearchField
+              ref={inputRef}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Escribe tu mensaje..."
+              disabled={isProcessing || isListening}
+              className="flex-1"
+            />
 
-            <motion.button
+            <LiquidGlassButton
               type="button"
-              className="shrink-0 rounded-xl p-3"
-              style={{
-                background: DESIGN.glass.bg,
-                border: `1px solid ${DESIGN.glass.border}`,
-                backdropFilter: `blur(${DESIGN.glass.blur}px)`,
-              }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.95 }}
+              variant="glass"
+              size="md"
+              icon={isSpeaking ? <Volume2 className="h-5 w-5 text-violet-400" /> : <VolumeX className="h-5 w-5 text-white/40" />}
               onClick={() => setIsSpeaking(!isSpeaking)}
-            >
-              {isSpeaking ? (
-                <Volume2 className="h-5 w-5 text-violet-400" />
-              ) : (
-                <VolumeX className="h-5 w-5 text-white/40" />
-              )}
-            </motion.button>
+              className="shrink-0 rounded-xl p-3 h-11 w-11 px-0"
+            />
 
-            <motion.button
+            <LiquidGlassButton
               type="submit"
-              className="shrink-0 rounded-xl p-3"
-              style={{
-                background: inputValue.trim()
-                  ? `linear-gradient(135deg, ${DESIGN.colors.violet.pure}, ${DESIGN.colors.magenta.pure})`
-                  : DESIGN.glass.bg,
-                border: `1px solid ${inputValue.trim() ? 'transparent' : DESIGN.glass.border}`,
-                backdropFilter: `blur(${DESIGN.glass.blur}px)`,
-                boxShadow: inputValue.trim() ? `0 0 20px ${DESIGN.colors.violet.glow}` : 'none',
-              }}
-              whileHover={inputValue.trim() ? { scale: 1.02 } : undefined}
-              whileTap={inputValue.trim() ? { scale: 0.95 } : undefined}
+              variant={inputValue.trim() ? 'accent' : 'glass'}
+              size="md"
+              icon={<Send className="h-5 w-5" />}
               disabled={!inputValue.trim() || isProcessing}
-            >
-              <Send className={cn('h-5 w-5', inputValue.trim() ? 'text-white' : 'text-white/30')} />
-            </motion.button>
+              className="shrink-0 rounded-xl p-3 h-11 w-11 px-0"
+            />
           </form>
         </div>
       </motion.div>

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { PagoDistribuidorSchema } from '@/app/lib/schemas'
 import { logger } from '@/app/lib/utils/logger'
 import { db } from '@/database'

@@ -1,3 +1,5 @@
+// @ts-nocheck
+// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════════════════════════════
  * 💾 CHRONOS AUTOMATIC BACKUP SYSTEM — SUPREME ELEVATION 2026

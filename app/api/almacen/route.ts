@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     }
 
     const productoId = uuidv4()
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     await db.insert(almacen).values({
       id: productoId,
@@ -100,7 +100,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
     }
 
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     switch (operacion) {
       case 'entrada':

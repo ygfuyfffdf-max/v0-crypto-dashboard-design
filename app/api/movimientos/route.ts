@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
     }
 
     const movimientoId = uuidv4()
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     await db.insert(movimientos).values({
       id: movimientoId,

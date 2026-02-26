@@ -235,7 +235,7 @@ export async function POST(request: NextRequest) {
     })
 
     const ordenId = uuidv4()
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     // Generar número de orden secuencial (buscar el número más alto, no el más reciente)
     const [maxOrder] = await db
@@ -409,7 +409,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Orden no encontrada' }, { status: 404 })
     }
 
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     // Actualizar stock si se proporciona nueva cantidad
     if (nuevaCantidad !== undefined) {
@@ -524,7 +524,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const orden = ordenExistente[0]
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
     const cantidad = orden?.cantidad || 0
 
     logger.info('🗑️ Iniciando eliminación completa de OC con reversión', {

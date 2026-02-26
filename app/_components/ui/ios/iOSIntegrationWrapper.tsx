@@ -17,26 +17,29 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
-import { memo, ReactNode, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { usePathname } from 'next/navigation'
+import { memo, ReactNode, useEffect, useState } from 'react'
 
 // Import iOS Systems
-import { iOSProvider } from './iOSUltimatePremiumSystem'
-import { iOSToastProvider } from './iOSToastSystem'
-import { iOSTabBar, iOSMobileHeader, type NavItem } from './iOSMobileNavigation'
 import {
-  Home,
-  DollarSign,
-  Landmark,
-  Users,
-  Package,
-  BarChart3,
-  Settings,
-  Truck,
-  Receipt,
-  Sparkles,
+    BarChart3,
+    DollarSign,
+    Home,
+    Landmark,
+    Package,
+    Receipt,
+    Settings,
+    Sparkles,
+    Truck,
+    Users,
 } from 'lucide-react'
+import { iOSMobileHeader, iOSTabBar, type NavItem } from './iOSMobileNavigation'
+import { iOSToastProvider } from './iOSToastSystem'
+import { iOSProvider as IOSProvider } from './iOSUltimatePremiumSystem'
+
+const IOSToastProvider = iOSToastProvider
+const IOSMobileHeader = iOSMobileHeader
+const IOSTabBar = iOSTabBar
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // NAVIGATION CONFIG
@@ -157,12 +160,12 @@ export const iOSIntegrationWrapper = memo(function iOSIntegrationWrapper({
   }, [])
 
   return (
-    <iOSProvider accentColor="#8B5CF6" blurIntensity="high">
-      <iOSToastProvider position={toastPosition}>
+    <IOSProvider accentColor="#8B5CF6" blurIntensity="high">
+      <IOSToastProvider position={toastPosition}>
         <KocmocUIWrapper className={className} transparent={true} showParticles={false}>
           {/* Mobile Header */}
           {showHeader && isMobile && headerTitle && (
-            <iOSMobileHeader
+            <IOSMobileHeader
               title={headerTitle}
               subtitle={headerSubtitle}
               showBackButton={headerShowBack}
@@ -183,7 +186,7 @@ export const iOSIntegrationWrapper = memo(function iOSIntegrationWrapper({
 
           {/* Mobile Tab Bar */}
           {showTabBar && isMobile && (
-            <iOSTabBar
+            <IOSTabBar
               items={navItems}
               variant={tabBarVariant}
               showLabels
@@ -191,8 +194,8 @@ export const iOSIntegrationWrapper = memo(function iOSIntegrationWrapper({
             />
           )}
         </KocmocUIWrapper>
-      </iOSToastProvider>
-    </iOSProvider>
+      </IOSToastProvider>
+    </IOSProvider>
   )
 })
 
@@ -257,7 +260,7 @@ export const iOSPageLayout = memo(function iOSPageLayout({
     <div className={cn('min-h-screen', className)}>
       {/* Mobile Header */}
       {showHeader && isMobile && title && (
-        <iOSMobileHeader
+        <IOSMobileHeader
           title={title}
           subtitle={subtitle}
           showBackButton={showBackButton}
@@ -281,7 +284,7 @@ export const iOSPageLayout = memo(function iOSPageLayout({
               <p className="text-white/50">{subtitle}</p>
             )}
           </motion.div>
-          
+
           {headerRightAction && (
             <div className="flex items-center gap-3">
               {headerRightAction}
@@ -521,15 +524,12 @@ export const iOSLoading = memo(function iOSLoading({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export {
-  defaultNavItems,
-  extendedNavItems,
+    defaultNavItems,
+    extendedNavItems
 }
 
 export type {
-  iOSIntegrationWrapperProps,
-  iOSPageLayoutProps,
-  iOSSectionProps,
-  iOSGridProps,
-  iOSEmptyStateProps,
-  iOSLoadingProps,
+    iOSEmptyStateProps, iOSGridProps, iOSIntegrationWrapperProps, iOSLoadingProps, iOSPageLayoutProps,
+    iOSSectionProps
 }
+

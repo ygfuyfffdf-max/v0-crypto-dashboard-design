@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     const { nombre, email, telefono, direccion, rfc, limiteCredito } = validation.data
 
     const clienteId = uuidv4()
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     await db.insert(clientes).values({
       id: clienteId,
@@ -162,7 +162,7 @@ export async function PUT(request: NextRequest) {
       .update(clientes)
       .set({
         ...updateData,
-        updatedAt: new Date(),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(eq(clientes.id, id))
 

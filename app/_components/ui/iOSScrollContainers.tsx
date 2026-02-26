@@ -19,9 +19,9 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform, useScroll } from 'motion/react'
-import { Loader2, RefreshCw, ChevronUp, ArrowUp } from 'lucide-react'
-import { memo, ReactNode, useCallback, useEffect, useRef, useState, forwardRef } from 'react'
+import { ArrowUp, Loader2, RefreshCw } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { forwardRef, memo, ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // iOS SCROLL VIEW - Contenedor principal con scroll premium
@@ -208,15 +208,19 @@ export const iOSPullToRefresh = memo(function iOSPullToRefresh({
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     const container = containerRef.current
     if (!container || container.scrollTop > 0 || isRefreshing) return
+    const touch = e.touches[0]
+    if (!touch) return
 
-    touchStartY.current = e.touches[0].clientY
+    touchStartY.current = touch.clientY
     isDragging.current = true
   }, [isRefreshing])
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!isDragging.current || isRefreshing) return
+    const touch = e.touches[0]
+    if (!touch) return
 
-    const deltaY = e.touches[0].clientY - touchStartY.current
+    const deltaY = touch.clientY - touchStartY.current
     if (deltaY > 0) {
       e.preventDefault()
       // Apply resistance
@@ -641,12 +645,8 @@ export const iOSSectionList = memo(function iOSSectionList<T>({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export type {
-  iOSScrollViewProps,
-  iOSPullToRefreshProps,
-  iOSHorizontalScrollProps,
-  iOSCarouselItemProps,
-  iOSCollapsibleHeaderProps,
-  iOSInfiniteScrollProps,
-  iOSSectionListProps,
-  Section,
+    iOSCarouselItemProps,
+    iOSCollapsibleHeaderProps, iOSHorizontalScrollProps, iOSInfiniteScrollProps, iOSPullToRefreshProps, iOSScrollViewProps, iOSSectionListProps,
+    Section
 }
+

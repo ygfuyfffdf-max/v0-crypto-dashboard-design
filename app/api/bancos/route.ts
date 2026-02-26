@@ -64,7 +64,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Banco no encontrado' }, { status: 404 })
     }
 
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     switch (operacion) {
       case 'ingreso':

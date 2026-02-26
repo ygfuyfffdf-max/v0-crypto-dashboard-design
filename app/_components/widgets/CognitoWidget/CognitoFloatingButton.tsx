@@ -17,6 +17,7 @@ import { cn } from '@/app/_lib/utils'
 import { Bot, Sparkles, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { lazy, Suspense, useEffect, useState } from 'react'
+import CognitoWidget from './CognitoWidget'
 import { STATE_COLORS } from './types'
 import { useCognitoState, useCognitoStore, useCognitoSuggestions } from './useCognitoStore'
 
@@ -49,6 +50,7 @@ export function CognitoFloatingButton({
       return () => clearTimeout(timer)
     } else {
       setShowTooltip(false)
+      return undefined
     }
   }, [isOpen, suggestions.length])
 

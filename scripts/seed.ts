@@ -1,30 +1,26 @@
 import { BANCOS_ORDENADOS } from "@/app/_lib/constants/bancos"
 import { db } from "@/database"
 import {
-  almacen,
-  bancos,
-  clientes,
-  distribuidores,
-  movimientos,
-  ordenesCompra,
-  usuarios,
-  ventas,
+    almacen,
+    bancos,
+    clientes,
+    distribuidores,
+    movimientos,
+    ordenesCompra,
+    usuarios,
+    ventas,
 } from "@/database/schema"
+import { hashPassword } from "@/lib/auth/password"
 import { nanoid } from "nanoid"
 
 /**
  * Script de seed para inicializar la base de datos con datos de prueba
  * Ejecutar con: pnpm tsx scripts/seed.ts
+ *
+ * Passwords se hashean con PBKDF2-SHA256 (compatible con /api/auth/login)
+ * Admin:    admin@chronos.com  / chronos2025
+ * Operador: operador@chronos.com / operador123
  */
-
-// Hash simple para demo (en producción usar bcrypt)
-async function hashPassword(password: string): Promise<string> {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(password + "chronos_salt_2025")
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
-}
 
 async function seed() {
   console.log("🌱 Iniciando seed de la base de datos...")

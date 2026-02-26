@@ -23,37 +23,31 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
-import { AnimatePresence, motion, PanInfo, useMotionValue, useSpring, useTransform } from 'motion/react'
 import {
-  ArrowLeft,
-  Check,
-  ChevronDown,
-  ChevronRight,
-  ChevronUp,
-  Loader2,
-  LucideIcon,
-  MoreHorizontal,
-  Search,
-  X,
-  ArrowUp,
-  RefreshCw,
-  TrendingUp,
-  TrendingDown,
-  Minus,
+    ArrowUp,
+    ChevronRight,
+    Loader2,
+    LucideIcon,
+    Minus,
+    RefreshCw,
+    Search,
+    TrendingDown,
+    TrendingUp,
+    X
 } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import {
-  createContext,
-  forwardRef,
-  memo,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
+    createContext,
+    forwardRef,
+    memo,
+    ReactNode,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
 } from 'react'
-import { createPortal } from 'react-dom'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // 🎨 DESIGN TOKENS iOS 18+ Clean Edition
@@ -130,10 +124,10 @@ export const CleanDesignTokens = {
 
   // Animaciones suaves, sin tilt/3D problemático
   transitions: {
-    instant: { duration: 0.1, ease: [0.25, 0.1, 0.25, 1] },
-    fast: { duration: 0.15, ease: [0.25, 0.1, 0.25, 1] },
-    normal: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] },
-    slow: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+    instant: { duration: 0.1, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] },
+    fast: { duration: 0.15, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] },
+    normal: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+    slow: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
     spring: { type: 'spring' as const, stiffness: 400, damping: 30 },
     springGentle: { type: 'spring' as const, stiffness: 300, damping: 35 },
     springBouncy: { type: 'spring' as const, stiffness: 500, damping: 25 },
@@ -869,14 +863,14 @@ export const CleanScrollContainer = memo(forwardRef<HTMLDivElement, CleanScrollC
     // Pull to refresh
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
       if (!enablePullToRefresh || !scrollState.isAtTop) return
-      touchStartY.current = e.touches[0].clientY
+      touchStartY.current = e.touches[0]?.clientY ?? 0
       isPulling.current = true
     }, [enablePullToRefresh, scrollState.isAtTop])
 
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
       if (!isPulling.current || isRefreshing) return
 
-      const touchY = e.touches[0].clientY
+      const touchY = e.touches[0]?.clientY ?? 0
       const distance = Math.max(0, (touchY - touchStartY.current) * 0.4)
 
       if (distance > 0 && scrollState.isAtTop) {
@@ -1181,10 +1175,6 @@ export const CleanInput = memo(forwardRef<HTMLInputElement, CleanInputProps>(
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export {
-  CleanDesignTokens as tokens,
-  type CleanGlassCardProps,
-  type CleanMetricCardProps,
-  type CleanButtonProps,
-  type CleanScrollContainerProps,
-  type CleanInputProps,
+    CleanDesignTokens as tokens, type CleanButtonProps, type CleanGlassCardProps, type CleanInputProps, type CleanMetricCardProps, type CleanScrollContainerProps
 }
+

@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}))
     const { limpiarPrimero = true, soloFaltantes = false } = body
 
-    const ahora = new Date()
+    const ahora = Math.floor(Date.now() / 1000)
     const resultados = {
       entradasCreadas: 0,
       salidasCreadas: 0,
@@ -237,7 +237,7 @@ export async function DELETE() {
         stockActual: 0,
         totalEntradas: 0,
         totalSalidas: 0,
-        updatedAt: new Date(),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
 
     logger.info('Datos de almacén limpiados', { context: 'API/almacen/reconstruir' })

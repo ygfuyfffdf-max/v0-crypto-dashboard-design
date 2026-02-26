@@ -12,13 +12,15 @@ import React, { useCallback, useRef } from "react"
 
 // ─── Animation variants ────────────────────────────────────────────────────────
 
+const easeCurve = [0.25, 0.46, 0.45, 0.94] as const
+
 const fadeSlideUp = {
   hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
   visible: (delay: number) => ({
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.8, delay, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.8, delay, ease: easeCurve as unknown as [number, number, number, number] },
   }),
 }
 
@@ -27,7 +29,7 @@ const scaleIn = {
   visible: (delay: number) => ({
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.7, delay, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.7, delay, ease: easeCurve as unknown as [number, number, number, number] },
   }),
 }
 

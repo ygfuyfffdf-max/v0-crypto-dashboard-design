@@ -13,10 +13,10 @@
  * - Shortcut keyboard (Ctrl+Shift+T)
  */
 
+import { useTheme, type ThemeMode } from '@/app/_components/providers/ThemeProvider'
 import { Monitor, Moon, Sun } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import React, { useEffect, useState } from 'react'
-import { useTheme, type ThemeMode } from '@/app/_components/providers/ThemeProvider'
 
 interface ThemeToggleProps {
   variant?: 'icon' | 'full' | 'compact'
@@ -48,8 +48,8 @@ export function ThemeToggle({
 
   const cycleMode = () => {
     const modes: ThemeMode[] = ['light', 'dark', 'system']
-    const currentIndex = modes.indexOf(theme.mode)
-    const nextMode = modes[(currentIndex + 1) % modes.length]
+    const currentIndex = modes.indexOf((theme.mode ?? 'system') as ThemeMode)
+    const nextMode = modes[(currentIndex + 1) % modes.length]!
     setThemeMode(nextMode)
   }
 

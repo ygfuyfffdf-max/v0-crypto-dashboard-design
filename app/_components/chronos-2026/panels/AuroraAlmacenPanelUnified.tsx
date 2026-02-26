@@ -1,24 +1,26 @@
 "use client"
 
-import { GlassInput } from "@/app/_components/ui/GlassFormSystem"
+import {
+    LiquidGlassSearchField
+} from "@/app/_components/chronos-2026/primitives/LiquidGlassSystem"
 import { cn } from "@/app/_lib/utils"
 import { useAlmacenData as useAlmacen } from "@/app/hooks/useDataHooks"
 import {
-  AlertTriangle,
-  ArrowDown,
-  ArrowUp,
-  BarChart3,
-  Check,
-  Clock,
-  DollarSign,
-  Eye,
-  Filter,
-  Layers,
-  Package,
-  Plus,
-  RefreshCw,
-  TrendingUp,
-  X,
+    AlertTriangle,
+    ArrowDown,
+    ArrowUp,
+    BarChart3,
+    Check,
+    Clock,
+    DollarSign,
+    Eye,
+    Filter,
+    Layers,
+    Package,
+    Plus,
+    RefreshCw,
+    TrendingUp,
+    X,
 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import React, { useMemo, useState } from "react"
@@ -116,7 +118,7 @@ function ProductCard({ producto, onSelect }: { producto: ProductoView; onSelect:
       whileHover={{ y: -4, scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
       onClick={onSelect}
-      className="cursor-pointer rounded-xl border border-white/6 bg-white/3 p-4 backdrop-blur-sm transition-all hover:border-white/12"
+      className="cursor-pointer rounded-xl border border-white/6 bg-white/3 p-4 backdrop-blur-sm transition-all hover:border-white/12 neo-tactile-hover-elevate"
     >
       <div className="mb-3 flex items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">
@@ -324,7 +326,7 @@ export function AuroraAlmacenPanelUnified({
   onNavigate,
   className,
 }: AuroraAlmacenPanelUnifiedProps) {
-  const { data, isLoading: loading, error, refetch } = useAlmacen()
+  const { data, loading, error, refetch } = useAlmacen()
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<(typeof STATUS_FILTERS)[number]>("todos")
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid")
@@ -463,7 +465,7 @@ export function AuroraAlmacenPanelUnified({
             icon: AlertTriangle,
             label: "Productos Críticos",
             value: stats.criticos.toString(),
-            color: (stats.criticos > 0 ? "plasma" : "emerald") as const,
+            color: (stats.criticos > 0 ? "plasma" : "emerald") as "plasma" | "emerald",
           },
         ].map((s) => (
           <PremiumKPICard
@@ -500,10 +502,10 @@ export function AuroraAlmacenPanelUnified({
         )}
       </AnimatePresence>
 
-      {/* SEARCH + FILTERS — GlassInput */}
+      {/* SEARCH + FILTERS (Liquid Glass) */}
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="flex-1">
-          <GlassInput
+          <LiquidGlassSearchField
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar producto..."

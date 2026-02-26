@@ -353,12 +353,12 @@ export class ZeroForceVoice {
 
   getAudioLevel(): number {
     if (!this.analyser || !this.dataArray) return 0
-    this.analyser.getByteFrequencyData(this.dataArray)
+    this.analyser.getByteFrequencyData(this.dataArray as Uint8Array<ArrayBuffer>)
     
     // Calcular promedio
     let sum = 0
     for (let i = 0; i < this.dataArray.length; i++) {
-      sum += this.dataArray[i]
+      sum += this.dataArray[i] ?? 0
     }
     // Normalizar a 0-1
     return (sum / this.dataArray.length) / 255

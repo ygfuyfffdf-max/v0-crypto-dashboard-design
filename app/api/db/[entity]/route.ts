@@ -1,16 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/app/lib/utils/logger'
 import { db } from '@/database'
 import {
-  bancos,
-  ventas,
-  clientes,
-  distribuidores,
-  ordenesCompra,
-  movimientos,
-  almacen,
+    almacen,
+    bancos,
+    clientes,
+    distribuidores,
+    movimientos,
+    ordenesCompra,
+    ventas,
 } from '@/database/schema'
-import { eq, desc } from 'drizzle-orm'
-import { logger } from '@/app/lib/utils/logger'
+import { desc, eq } from 'drizzle-orm'
+import { NextRequest, NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
@@ -51,7 +51,7 @@ export async function GET(
     switch (entity) {
       case 'bancos':
         result = await db.query.bancos.findMany({
-          where: eq(bancos.activo, true),
+          where: eq(bancos.activo, 1),
           orderBy: [bancos.orden],
         })
         break
@@ -60,9 +60,6 @@ export async function GET(
         result = await db.query.ventas.findMany({
           orderBy: [desc(ventas.fecha)],
           limit: 100,
-          with: {
-            cliente: true,
-          },
         })
         break
 
@@ -82,9 +79,6 @@ export async function GET(
         result = await db.query.ordenesCompra.findMany({
           orderBy: [desc(ordenesCompra.fecha)],
           limit: 100,
-          with: {
-            distribuidor: true,
-          },
         })
         break
 
@@ -92,10 +86,6 @@ export async function GET(
         result = await db.query.movimientos.findMany({
           orderBy: [desc(movimientos.fecha)],
           limit: 100,
-          with: {
-            banco: true,
-            cliente: true,
-          },
         })
         break
 

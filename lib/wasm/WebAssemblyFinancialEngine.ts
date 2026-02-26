@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * WebAssembly Financial Engine - Ultra-High Performance Calculations
  * Implementa WebAssembly + WebGPU para cálculos financieros complejos

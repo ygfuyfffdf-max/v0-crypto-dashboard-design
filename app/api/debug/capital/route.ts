@@ -9,7 +9,7 @@ export async function GET() {
     const capitalResult = await db
       .select({ total: sum(bancos.capitalActual) })
       .from(bancos)
-      .where(eq(bancos.activo, true))
+      .where(eq(bancos.activo, 1))
 
     // Consulta de todos los bancos
     const allBancos = await db.select().from(bancos)

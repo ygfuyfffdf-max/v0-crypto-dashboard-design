@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════════════════════════════
  * 🔐 CHRONOS FORGOT PASSWORD PAGE — QUANTUM RECOVERY GATEWAY

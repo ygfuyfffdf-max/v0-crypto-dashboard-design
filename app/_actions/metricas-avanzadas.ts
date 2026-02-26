@@ -79,8 +79,7 @@ export interface AlertaFinanciera {
 
 export async function calcularROCE(): Promise<{ success: boolean; data?: number; error?: string }> {
   try {
-    const hace12Meses = new Date()
-    hace12Meses.setFullYear(hace12Meses.getFullYear() - 1)
+    const hace12Meses = Math.floor(Date.now() / 1000) - 365 * 24 * 60 * 60
 
     // Ganancia operativa anualizada (utilidades de los últimos 12 meses)
     const utilidadesResult = await db
@@ -100,7 +99,7 @@ export async function calcularROCE(): Promise<{ success: boolean; data?: number;
     const capitalResult = await db
       .select({ total: sql<number>`COALESCE(SUM(${bancos.capitalActual}), 0)` })
       .from(bancos)
-      .where(eq(bancos.activo, true))
+      .where(eq(bancos.activo, 1))
 
     const capitalEmpleado = Number(capitalResult[0]?.total) || 1
 
@@ -129,14 +128,13 @@ export async function calcularLiquidezDias(): Promise<{
   error?: string
 }> {
   try {
-    const hace30Dias = new Date()
-    hace30Dias.setDate(hace30Dias.getDate() - 30)
+    const hace30Dias = Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60
 
     // Capital total actual
     const capitalResult = await db
       .select({ total: sql<number>`COALESCE(SUM(${bancos.capitalActual}), 0)` })
       .from(bancos)
-      .where(eq(bancos.activo, true))
+      .where(eq(bancos.activo, 1))
 
     const capitalTotal = Number(capitalResult[0]?.total) || 0
 
@@ -168,8 +166,7 @@ export async function calcularMargenNeto(): Promise<{
   error?: string
 }> {
   try {
-    const hace30Dias = new Date()
-    hace30Dias.setDate(hace30Dias.getDate() - 30)
+    const hace30Dias = Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60
 
     // Total de utilidades del mes
     const utilidadesResult = await db
@@ -206,8 +203,7 @@ export async function calcularEficienciaGYA(): Promise<{
   error?: string
 }> {
   try {
-    const hace30Dias = new Date()
-    hace30Dias.setDate(hace30Dias.getDate() - 30)
+    const hace30Dias = Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60
 
     const ventasResult = await db
       .select({
@@ -251,8 +247,7 @@ export async function calcularBurnRate(): Promise<{
   error?: string
 }> {
   try {
-    const hace30Dias = new Date()
-    hace30Dias.setDate(hace30Dias.getDate() - 30)
+    const hace30Dias = Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60
 
     // Gastos operativos últimos 30 días
     const gastosResult = await db
@@ -290,7 +285,7 @@ export async function calcularRunway(): Promise<{
       db
         .select({ total: sql<number>`COALESCE(SUM(${bancos.capitalActual}), 0)` })
         .from(bancos)
-        .where(eq(bancos.activo, true)),
+        .where(eq(bancos.activo, 1)),
       calcularBurnRate(),
     ])
 
@@ -328,8 +323,7 @@ export async function calcularCicloConversionEfectivo(): Promise<{
   error?: string
 }> {
   try {
-    const hace30Dias = new Date()
-    hace30Dias.setDate(hace30Dias.getDate() - 30)
+    const hace30Dias = Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60
 
     // Cálculo de días inventario (promedio de inventario / costo ventas diario)
     // Simplificado: usamos orden de compra promedio como proxy de inventario
@@ -400,8 +394,7 @@ export async function calcularVolatilidadCapital(): Promise<{
   error?: string
 }> {
   try {
-    const hace30Dias = new Date()
-    hace30Dias.setDate(hace30Dias.getDate() - 30)
+    const hace30Dias = Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60
 
     // Obtener todos los movimientos de los últimos 30 días
     const movimientosResult = await db
@@ -448,8 +441,7 @@ export async function calcularRotacionCapital(): Promise<{
   error?: string
 }> {
   try {
-    const hace12Meses = new Date()
-    hace12Meses.setFullYear(hace12Meses.getFullYear() - 1)
+    const hace12Meses = Math.floor(Date.now() / 1000) - 365 * 24 * 60 * 60
 
     // Ventas de los últimos 12 meses
     const ventasResult = await db
@@ -461,7 +453,7 @@ export async function calcularRotacionCapital(): Promise<{
     const capitalResult = await db
       .select({ total: sql<number>`COALESCE(SUM(${bancos.capitalActual}), 0)` })
       .from(bancos)
-      .where(eq(bancos.activo, true))
+      .where(eq(bancos.activo, 1))
 
     const ventasAnuales = Number(ventasResult[0]?.total) || 0
     const capitalPromedio = Number(capitalResult[0]?.total) || 1
@@ -498,7 +490,7 @@ export async function calcularConcentracionCapital(): Promise<{
         capitalActual: bancos.capitalActual,
       })
       .from(bancos)
-      .where(eq(bancos.activo, true))
+      .where(eq(bancos.activo, 1))
 
     const capitales = bancosResult.map((b) => Number(b.capitalActual))
     const capitalTotal = capitales.reduce((a, b) => a + b, 0)
@@ -533,14 +525,9 @@ export async function calcularForecast(): Promise<{
   error?: string
 }> {
   try {
-    const hace30Dias = new Date()
-    hace30Dias.setDate(hace30Dias.getDate() - 30)
-
-    const hace60Dias = new Date()
-    hace60Dias.setDate(hace60Dias.getDate() - 60)
-
-    const hace90Dias = new Date()
-    hace90Dias.setDate(hace90Dias.getDate() - 90)
+    const hace30Dias = Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60
+    const hace60Dias = Math.floor(Date.now() / 1000) - 60 * 24 * 60 * 60
+    const hace90Dias = Math.floor(Date.now() / 1000) - 90 * 24 * 60 * 60
 
     // Ventas por período
     const [ventas30, ventas60, ventas90] = await Promise.all([
@@ -652,7 +639,7 @@ export async function calcularRentabilidadPorBanco(): Promise<{
         historicoGastos: bancos.historicoGastos,
       })
       .from(bancos)
-      .where(eq(bancos.activo, true))
+      .where(eq(bancos.activo, 1))
 
     const rentabilidades: Record<string, number> = {}
 
@@ -702,7 +689,7 @@ export async function getMetricasFinancieras(): Promise<{
       db
         .select({ total: sql<number>`COALESCE(SUM(${bancos.capitalActual}), 0)` })
         .from(bancos)
-        .where(eq(bancos.activo, true)),
+        .where(eq(bancos.activo, 1)),
       calcularLiquidezDias(),
       calcularMargenNeto(),
       calcularROCE(),
@@ -731,8 +718,7 @@ export async function getMetricasFinancieras(): Promise<{
       .where(eq(ordenesCompra.estado, 'pendiente'))
 
     // Clientes morosos (más de 60 días)
-    const hace60Dias = new Date()
-    hace60Dias.setDate(hace60Dias.getDate() - 60)
+    const hace60Dias = Math.floor(Date.now() / 1000) - 60 * 24 * 60 * 60
 
     const morososResult = await db
       .select({
@@ -921,7 +907,7 @@ export async function getRecomendacionesIA(): Promise<{
   try {
     const [metricas, bancosData] = await Promise.all([
       getMetricasFinancieras(),
-      db.select().from(bancos).where(eq(bancos.activo, true)),
+      db.select().from(bancos).where(eq(bancos.activo, 1)),
     ])
 
     if (!metricas.success || !metricas.data) {

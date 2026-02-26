@@ -16,17 +16,20 @@
 
 'use client'
 
-import { AnimatePresence, motion } from 'motion/react'
+import { useZeroBrain } from '@/app/_hooks/useZeroBrain'
+import { getZeroForce } from '@/app/_lib/ai/zero-force-voice'
 import {
-  Maximize2,
-  MessageSquare,
-  Mic,
-  MicOff,
-  Settings,
-  Sparkles,
-  Volume2,
-  VolumeX,
+    Maximize2,
+    MessageSquare,
+    Mic,
+    MicOff,
+    Settings,
+    Sparkles,
+    Volume2,
+    VolumeX,
 } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════

@@ -55,13 +55,13 @@ const SIZE_CLASSES: Record<ModalSize, string> = {
 // ANIMATION VARIANTS
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
-const backdropVariants = {
+const backdropVariants: Record<string, any> = {
   hidden: { opacity: 0 },
   visible: { opacity: 1 },
   exit: { opacity: 0 },
 }
 
-const modalVariants = {
+const modalVariants: Record<string, any> = {
   hidden: {
     opacity: 0,
     scale: 0.95,
@@ -153,16 +153,16 @@ export function ModalShell({
             transition={{ duration: 0.2 }}
           />
 
-          {/* ── Modal card ───────────────────────────────────────────────────── */}
+          {/* ── Modal card — Liquid Glass floating aesthetic ───────────────────── */}
           <motion.div
             role="dialog"
             aria-modal="true"
             aria-label={title}
             className={cn(
               "relative z-10 w-full overflow-hidden rounded-2xl",
-              "bg-black/80 backdrop-blur-2xl",
+              "bg-[#0a0a0f]/95 backdrop-blur-2xl",
               "border border-white/[0.08]",
-              "shadow-2xl shadow-black/40",
+              "shadow-[0_24px_80px_-24px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.04),inset_0_1px_0_rgba(255,255,255,0.04)]",
               SIZE_CLASSES[size],
               className
             )}
@@ -171,12 +171,12 @@ export function ModalShell({
             animate="visible"
             exit="exit"
           >
-            {/* ── Inner glow effect ──────────────────────────────────────────── */}
+            {/* ── Iridescent inner glow (Liquid Glass) ────────────────────────── */}
             <div
-              className="pointer-events-none absolute inset-x-0 top-0 h-40"
+              className="pointer-events-none absolute inset-x-0 top-0 h-48"
               style={{
                 background:
-                  "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(139, 92, 246, 0.12) 0%, transparent 70%)",
+                  "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139, 92, 246, 0.15) 0%, rgba(6, 182, 212, 0.06) 40%, transparent 70%)",
               }}
             />
 

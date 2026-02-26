@@ -26,10 +26,10 @@
 import { cn } from '@/app/_lib/utils'
 import { useSoundManager } from '@/app/lib/audio/sound-system'
 import {
-  useDoubleTap,
-  useLongPress,
-  usePinchZoom,
-  useSwipe,
+    useDoubleTap,
+    useLongPress,
+    usePinchZoom,
+    useSwipe,
 } from '@/app/lib/gestures/advanced-gestures'
 import React, { ComponentType, forwardRef, useCallback } from 'react'
 
@@ -105,24 +105,22 @@ export function withSupremeIntegration<P extends object>(
       onSwipeRight: gesturesConfig.onSwipeRight,
       onSwipeUp: gesturesConfig.onSwipeUp,
       onSwipeDown: gesturesConfig.onSwipeDown,
-      threshold: 50,
+      swipeThreshold: 50,
     })
 
     const pinchHandlers = usePinchZoom({
-      onPinch: gesturesConfig.onPinch,
-      minScale: 0.5,
-      maxScale: 3,
+      onPinch: gesturesConfig.onPinch ? (e) => gesturesConfig.onPinch!(e.scale) : undefined,
     })
 
-    const longPressHandlers = useLongPress(gesturesConfig.onLongPress || (() => {}), {
-      delay: 500,
-      onStart: () => enableHaptics && navigator.vibrate?.(10),
-      onCancel: () => {},
+    const longPressHandlers = useLongPress({
+      onLongPress: gesturesConfig.onLongPress ?? (() => {}),
+      longPressDelay: 500,
     })
 
-    const doubleTapHandlers = useDoubleTap(gesturesConfig.onDoubleTap || (() => {}), {
-      delay: 300,
-    })
+    const doubleTapHandlers = useDoubleTap(
+      gesturesConfig.onDoubleTap ?? (() => {}),
+      { doubleTapDelay: 300 },
+    )
 
     // ═════════════════════════════════════════════════════════════════════════════════════════════════
     // SOUND HANDLERS
@@ -173,8 +171,8 @@ export function withSupremeIntegration<P extends object>(
     }
 
     return (
-      <div ref={ref} className={cn('supreme-wrapper', className)} {...combinedHandlers}>
-        <Component {...props} />
+      <div ref={ref} className={cn('supreme-wrapper', className)} {...(combinedHandlers as any)}>
+        <Component {...(props as any)} />
       </div>
     )
   })

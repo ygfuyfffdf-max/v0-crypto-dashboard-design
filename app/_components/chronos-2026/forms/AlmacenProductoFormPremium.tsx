@@ -247,7 +247,7 @@ export function AlmacenProductoFormPremium({
     setValue,
     formState: { errors, isValid, isDirty },
   } = useForm<AlmacenProductoFormData>({
-    resolver: zodResolver(AlmacenProductoFormSchema),
+    resolver: zodResolver(AlmacenProductoFormSchema) as any,
     defaultValues: {
       nombre: initialData?.nombre || '',
       descripcion: initialData?.descripcion || '',

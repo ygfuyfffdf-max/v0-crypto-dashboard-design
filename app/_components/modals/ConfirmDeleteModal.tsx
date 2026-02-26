@@ -9,10 +9,11 @@
  */
 
 import { logger } from '@/app/lib/utils/logger'
-import { motion } from 'motion/react'
 import { AlertTriangle, Trash2 } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useState } from 'react'
-import { iOSAlert, iOSButton, iOSInput } from '../ui/ios'
+import { iOSModal as Modal } from '../ui/iOSModalSystem'
+import { QuantumButton } from '../ui/QuantumElevatedUI'
 
 interface ConfirmDeleteModalProps {
   isOpen: boolean

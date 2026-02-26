@@ -34,24 +34,24 @@ import { AnimatePresence, motion } from 'motion/react'
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 import '@/app/_components/chronos-2026/animations/CinematicAnimations'
 import {
-  AlertTriangle,
-  ArrowDownRight,
-  ArrowLeftRight,
-  ArrowUpRight,
-  Calendar,
-  ChevronDown,
-  Clock,
-  DollarSign,
-  Download,
-  Edit,
-  Eye,
-  FileText,
-  Filter,
-  Plus,
-  RefreshCw,
-  Trash2,
-  Wallet,
-  X,
+    AlertTriangle,
+    ArrowDownRight,
+    ArrowLeftRight,
+    ArrowUpRight,
+    Calendar,
+    ChevronDown,
+    Clock,
+    DollarSign,
+    Download,
+    Edit,
+    Eye,
+    FileText,
+    Filter,
+    Plus,
+    RefreshCw,
+    Trash2,
+    Wallet,
+    X,
 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -61,15 +61,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // Aurora Glass System
 import {
-  AuroraBackground,
-  AuroraBadge,
-  AuroraSearch,
-  AuroraStatWidget,
-  AuroraTabs,
+    AuroraBackground,
+    AuroraBadge,
+    AuroraSearch,
+    AuroraStatWidget,
+    AuroraTabs,
 } from '../../ui/AuroraGlassSystem'
 import {
-  EnhancedAuroraButton as AuroraButton,
-  EnhancedAuroraCard as AuroraGlassCard,
+    EnhancedAuroraButton as AuroraButton,
+    EnhancedAuroraCard as AuroraGlassCard,
 } from '../../ui/EnhancedAuroraSystem'
 
 // Aurora Charts
@@ -324,6 +324,7 @@ function MovimientoTimelineItem({
   const [isExpanded, setIsExpanded] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const { play } = useSoundManager()
 
   const tipoConfig: Record<
     string,

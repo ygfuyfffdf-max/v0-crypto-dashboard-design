@@ -37,7 +37,7 @@ export interface VentaCompleta {
   id: string
   clienteId: string
   clienteNombre?: string
-  fecha: Date
+  fecha: number
   cantidad: number
   precioVentaUnidad: number
   precioCompraUnidad: number
@@ -102,7 +102,7 @@ export async function crearVentaConDistribucion(
     }
 
     const ventaId = `venta_${nanoid(12)}`
-    const ahora = new Date()
+    const ahora = Math.floor(Date.now() / 1000)
 
     // 4. Ejecutar transacción atómica
     await db.transaction(async (tx) => {
@@ -268,7 +268,7 @@ export async function registrarPagoVenta(
     const nuevoEstado: 'pendiente' | 'parcial' | 'completo' =
       nuevoMontoRestante === 0 ? 'completo' : nuevoMontoPagado > 0 ? 'parcial' : 'pendiente'
 
-    const ahora = new Date()
+    const ahora = Math.floor(Date.now() / 1000)
 
     await db.transaction(async (tx) => {
       // Actualizar venta
@@ -320,7 +320,7 @@ export async function registrarPagoVenta(
         ...venta,
         id: venta.id,
         clienteId: venta.clienteId,
-        fecha: venta.fecha as unknown as Date,
+        fecha: venta.fecha ?? 0,
         montoPagado: nuevoMontoPagado,
         montoRestante: nuevoMontoRestante,
         estadoPago: nuevoEstado,
@@ -361,7 +361,7 @@ export async function transferirEntreBancos(
       }
     }
 
-    const ahora = new Date()
+    const ahora = Math.floor(Date.now() / 1000)
     const transferenciaId = `trans_${nanoid(12)}`
 
     await db.transaction(async (tx) => {
@@ -444,6 +444,8 @@ export async function getResumenGYADiario(): Promise<{
   try {
     const hoy = new Date()
     hoy.setHours(0, 0, 0, 0)
+    const hoyTs = Math.floor(hoy.getTime() / 1000)
+    const mañanaTs = hoyTs + 86400
 
     const resumenResult = await db
       .select({
@@ -454,7 +456,7 @@ export async function getResumenGYADiario(): Promise<{
         cantidadVentas: sql<number>`COUNT(*)`,
       })
       .from(ventas)
-      .where(sql`date(${ventas.fecha}) = date(${hoy})`)
+      .where(sql`${ventas.fecha} >= ${hoyTs} AND ${ventas.fecha} < ${mañanaTs}`)
 
     const data = resumenResult[0]
     if (!data) {

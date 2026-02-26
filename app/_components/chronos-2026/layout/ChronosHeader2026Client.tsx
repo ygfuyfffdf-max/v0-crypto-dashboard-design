@@ -10,12 +10,12 @@
  */
 
 import {
-  ChronosHeader2026,
-  type PanelId,
-  type ThemeStyle,
+    ChronosHeader2026,
+    type PanelId,
+    type ThemeStyle,
 } from "@/app/_components/chronos-2026/layout/ChronosHeader2026"
 import { NotificationsPanel } from "@/app/_components/modals/NotificationsPanel"
-import { useClerk } from "@clerk/nextjs"
+import { useClerk, UserButton } from "@clerk/nextjs"
 import { usePathname, useRouter } from "next/navigation"
 import { useCallback, useMemo, useState } from "react"
 
@@ -35,6 +35,12 @@ const PANEL_ROUTES: Record<PanelId, string> = {
   gastosAbonos: "/gastos-abonos",
   reportes: "/reportes",
   configuracion: "/configuracion",
+  // Group / extra IDs
+  showcase: "/",
+  finanzas: "/reportes",
+  comercial: "/ventas",
+  inventario: "/almacen",
+  sistema: "/configuracion",
 }
 
 const ROUTE_TO_PANEL: Record<string, PanelId> = {
@@ -144,6 +150,16 @@ export function ChronosHeader2026Client() {
         onOpenSettings={handleOpenSettings}
         onOpenHelp={handleOpenHelp}
         onLogout={handleLogout}
+        userSlot={
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: "h-8 w-8 ring-2 ring-white/10 ring-offset-1 ring-offset-black/50 rounded-lg",
+                userButtonPopoverCard: "bg-[#0a0a0f] border border-white/10 backdrop-blur-2xl",
+              },
+            }}
+          />
+        }
       />
 
       {/* Panel de Notificaciones */}

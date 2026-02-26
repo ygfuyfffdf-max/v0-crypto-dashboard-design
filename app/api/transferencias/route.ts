@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Banco destino no encontrado' }, { status: 404 })
     }
 
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
     const conceptoFinal =
       concepto || `Transferencia de ${bancoOrigenData.nombre} a ${bancoDestinoData.nombre}`
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Block, Transaction, AuditBlock, BlockchainConfig } from './types';
 import { MerkleTree } from './MerkleTree';
 

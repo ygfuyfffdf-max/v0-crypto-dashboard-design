@@ -4,12 +4,12 @@
 "use client"
 
 import { useVoiceAgent } from "@/app/_hooks/useVoiceAgent"
-import { cn } from "@/lib/utils"
-import { AnimatePresence, motion } from "framer-motion"
+import { cn } from "@/app/_lib/utils"
+import { AnimatePresence, motion } from "motion/react"
 import { Mic, Settings, Volume2, Waves } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
-interface ZeroForceVoiceWidgetProps {
+export interface ZeroForceVoiceWidgetProps {
   className?: string
   position?: "bottom-right" | "bottom-left" | "top-right" | "top-left"
   theme?: "light" | "dark" | "auto"
@@ -68,8 +68,7 @@ export default function ZeroForceVoiceWidget({
   useEffect(() => {
     const initializeVoice = async () => {
       try {
-        await elevenLabs.initialize()
-        await deepgram.initialize()
+        await voiceAgent.initialize()
         setIsConnected(true)
 
         if (autoStart) {
@@ -84,8 +83,6 @@ export default function ZeroForceVoiceWidget({
 
     return () => {
       stopListening()
-      elevenLabs.disconnect()
-      deepgram.disconnect()
     }
   }, [])
 

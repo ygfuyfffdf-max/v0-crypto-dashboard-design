@@ -30,7 +30,9 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { iOSModal, iOSButton, iOSGlassCard, iOSInput, iOSSelect, iOSProgress, iOSPill } from '../ui/ios'
+import { Modal, ModalFooter } from '../ui/Modal'
 import {
+    QuantumButton,
     QuantumGlassCard,
     QuantumInput,
     QuantumSelect,

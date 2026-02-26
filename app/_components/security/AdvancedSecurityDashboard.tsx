@@ -302,7 +302,7 @@ const AdvancedSecurityDashboard: React.FC = () => {
     const mockThreats: ThreatDetection[] = [
       {
         id: 'threat_001',
-        type: 'geo_anomaly',
+        type: 'unusual_access',
         severity: 'high',
         detectedAt: new Date(Date.now() - 1000 * 60 * 30),
         affectedUsers: ['user_789'],

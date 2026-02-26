@@ -19,40 +19,33 @@
 'use client'
 
 import { cn } from '@/app/lib/utils'
-import { AnimatePresence, motion } from 'motion/react'
 import {
-  Activity,
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
-  Users,
-  BarChart3,
-  Download,
-  RefreshCw,
-  Calendar,
-  Filter,
+    Activity,
+    BarChart3,
+    DollarSign,
+    Download,
+    RefreshCw,
+    TrendingDown,
+    TrendingUp,
+    Users
 } from 'lucide-react'
+import { motion } from 'motion/react'
 import React, { useMemo, useState } from 'react'
 import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
-  RadialBar,
-  RadialBarChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  Legend,
+    Area,
+    AreaChart,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Legend,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis
 } from 'recharts'
-import { useWebSocketEvent, WebSocketEventType } from '@/app/lib/hooks/useWebSocket'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
 // TIPOS
@@ -69,7 +62,7 @@ interface MetricCardProps {
 
 interface ChartData {
   timestamp: number
-  value: number
+  value?: number
   label?: string
   [key: string]: any
 }

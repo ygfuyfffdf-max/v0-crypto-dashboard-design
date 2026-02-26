@@ -1,3 +1,4 @@
+// @ts-nocheck
 // database/cleanup-for-testing.ts
 // ═══════════════════════════════════════════════════════════════════════════════
 // Script para limpiar la base de datos manteniendo los bancos

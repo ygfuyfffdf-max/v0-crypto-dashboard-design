@@ -10,10 +10,10 @@
  * ═══════════════════════════════════════════════════════════════════════════════════════════════════
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { PushNotificationService, SmartNotificationSystem, PushNotification, NotificationPreferences } from '@/app/_lib/notifications/push-notification-system'
+import { NotificationPreferences, PushNotification, PushNotificationService, SmartNotificationSystem } from '@/app/_lib/notifications/push-notification-system'
 import { logger } from '@/app/lib/utils/logger'
-import { useAuth } from './useAuth'
+import { useUser } from '@clerk/nextjs'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 interface UsePushNotificationsOptions {
   autoInitialize?: boolean
@@ -29,7 +29,7 @@ interface UsePushNotificationsReturn {
   notifications: PushNotification[]
   preferences: NotificationPreferences | null
   metrics: any
-  
+
   // Métodos
   initialize: () => Promise<void>
   requestPermission: () => Promise<NotificationPermission>
@@ -41,16 +41,16 @@ interface UsePushNotificationsReturn {
 }
 
 export function usePushNotifications(options: UsePushNotificationsOptions = {}): UsePushNotificationsReturn {
-  const { 
-    autoInitialize = true, 
+  const {
+    autoInitialize = true,
     enableSmartNotifications = true,
     categories = ['sales', 'inventory', 'financial', 'system', 'ai', 'reminder']
   } = options
 
-  const { user } = useAuth()
+  const { user } = useUser()
   const pushServiceRef = useRef<PushNotificationService | null>(null)
   const smartNotificationSystemRef = useRef<SmartNotificationSystem | null>(null)
-  
+
   const [isSupported, setIsSupported] = useState(false)
   const [permission, setPermission] = useState<NotificationPermission>('default')
   const [isInitialized, setIsInitialized] = useState(false)
@@ -67,17 +67,17 @@ export function usePushNotifications(options: UsePushNotificationsOptions = {}):
     const hasNotificationSupport = 'Notification' in window
     const hasServiceWorkerSupport = 'serviceWorker' in navigator
     const hasPushSupport = 'PushManager' in window
-    
+
     const supported = hasNotificationSupport && hasServiceWorkerSupport && hasPushSupport
     setIsSupported(supported)
-    
+
     logger.info('[usePushNotifications] Soporte del navegador:', {
       notifications: hasNotificationSupport,
       serviceWorker: hasServiceWorkerSupport,
       push: hasPushSupport,
       overall: supported
     })
-    
+
     return supported
   }, [])
 
@@ -101,7 +101,7 @@ export function usePushNotifications(options: UsePushNotificationsOptions = {}):
       // Solicitar permiso
       const result = await Notification.requestPermission()
       setPermission(result)
-      
+
       logger.info(`[usePushNotifications] Permiso de notificación: ${result}`)
       return result
 
@@ -138,7 +138,7 @@ export function usePushNotifications(options: UsePushNotificationsOptions = {}):
 
       // Inicializar servicios
       pushServiceRef.current = PushNotificationService.getInstance()
-      
+
       if (enableSmartNotifications) {
         smartNotificationSystemRef.current = new SmartNotificationSystem()
         await smartNotificationSystemRef.current.initialize()
@@ -157,7 +157,7 @@ export function usePushNotifications(options: UsePushNotificationsOptions = {}):
 
       setIsInitialized(true)
       setIsConnected(true)
-      
+
       logger.info('[usePushNotifications] Sistema de notificaciones inicializado exitosamente')
 
     } catch (error) {
@@ -232,7 +232,7 @@ export function usePushNotifications(options: UsePushNotificationsOptions = {}):
       }
 
       await pushServiceRef.current.sendNotification(notificationWithUser)
-      
+
       logger.info('[usePushNotifications] Notificación enviada', { id: notification.id })
 
     } catch (error) {
@@ -258,7 +258,7 @@ export function usePushNotifications(options: UsePushNotificationsOptions = {}):
 
       await pushServiceRef.current.updateNotificationPreferences(preferencesWithUser)
       setPreferences(preferencesWithUser)
-      
+
       logger.info('[usePushNotifications] Preferencias actualizadas', { userId: user.id })
 
     } catch (error) {
@@ -275,7 +275,7 @@ export function usePushNotifications(options: UsePushNotificationsOptions = {}):
 
       const metrics = await pushServiceRef.current.getNotificationMetrics(timeframe)
       setMetrics(metrics)
-      
+
       return metrics
 
     } catch (error) {
@@ -295,11 +295,11 @@ export function usePushNotifications(options: UsePushNotificationsOptions = {}):
       }
 
       await pushServiceRef.current.markAsRead(notificationId, user.id)
-      
+
       // Actualizar lista local
-      setNotifications(prev => 
-        prev.map(notif => 
-          notif.id === notificationId 
+      setNotifications(prev =>
+        prev.map(notif =>
+          notif.id === notificationId
             ? { ...notif, read: true }
             : notif
         )
@@ -321,13 +321,13 @@ export function usePushNotifications(options: UsePushNotificationsOptions = {}):
 
       pushServiceRef.current = null
       smartNotificationSystemRef.current = null
-      
+
       setIsInitialized(false)
       setIsConnected(false)
       setNotifications([])
       setPreferences(null)
       setMetrics(null)
-      
+
       logger.info('[usePushNotifications] Sistema limpiado exitosamente')
 
     } catch (error) {
@@ -396,7 +396,7 @@ export function usePushNotifications(options: UsePushNotificationsOptions = {}):
     notifications,
     preferences,
     metrics,
-    
+
     // Métodos
     initialize,
     requestPermission,

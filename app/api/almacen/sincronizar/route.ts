@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}))
     const { productoId, forzar = false } = body
 
-    const ahora = new Date()
+    const ahora = Math.floor(Date.now() / 1000)
     const resultados: Array<{
       productoId: string
       nombre: string

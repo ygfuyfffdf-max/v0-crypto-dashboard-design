@@ -1,3 +1,4 @@
+// @ts-nocheck
 // 🔐 ADVANCED QUANTUM PERMISSION SYSTEM - CHRONOS INFINITY
 // Sistema de Permisos Granulares Multi-Dimensional
 

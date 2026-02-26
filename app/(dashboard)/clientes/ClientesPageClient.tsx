@@ -7,17 +7,17 @@
  * Página completa de gestión de clientes con panel Aurora premium
  */
 
-import { useState } from 'react'
 import { AuroraClientesPanelUnified } from '@/app/_components/chronos-2026/panels/AuroraClientesPanelUnified'
-import { CreateClienteModal } from '@/app/_components/modals/CreateClienteModal'
-import { EditarClienteModal } from '@/app/_components/modals/EditarClienteModal'
-import { DetalleVentaModal } from '@/app/_components/modals/DetalleVentaModal'
-import { HistorialClienteModal } from '@/app/_components/modals/HistorialClienteModal'
 import { AbonoClienteModal } from '@/app/_components/modals/AbonoClienteModal'
 import { ConfirmDeleteModal } from '@/app/_components/modals/ConfirmDeleteModal'
-import { toast } from 'sonner'
+import { CreateClienteModal } from '@/app/_components/modals/CreateClienteModal'
+import { DetalleVentaModal } from '@/app/_components/modals/DetalleVentaModal'
+import { EditarClienteModal } from '@/app/_components/modals/EditarClienteModal'
+import { HistorialClienteModal } from '@/app/_components/modals/HistorialClienteModal'
 import { useClientes } from '@/app/_hooks/useClientes'
 import type { Cliente } from '@/database/schema'
+import { useState } from 'react'
+import { toast } from 'sonner'
 
 export function ClientesPageClient() {
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -107,18 +107,7 @@ export function ClientesPageClient() {
 
   return (
     <>
-      <AuroraClientesPanelUnified
-        clientes={clientes}
-        onNuevoCliente={handleNuevoCliente}
-        onVerDetalle={handleVerDetalle}
-        onEditarCliente={handleEditarCliente}
-        onEliminarCliente={handleEliminarCliente}
-        onRegistrarAbono={handleRegistrarAbono}
-        onVerHistorial={handleVerHistorial}
-        onExportar={handleExportar}
-        onRefresh={refetch}
-        loading={loading}
-      />
+      <AuroraClientesPanelUnified />
 
       {/* Modales */}
       <CreateClienteModal
@@ -166,7 +155,7 @@ export function ClientesPageClient() {
               setSelectedCliente(null)
               refetch()
             }}
-            clienteId={selectedCliente.id}
+            clientePreseleccionado={selectedCliente.id}
           />
         </>
       )}

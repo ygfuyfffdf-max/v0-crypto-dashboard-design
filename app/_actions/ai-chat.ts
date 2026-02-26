@@ -76,8 +76,8 @@ export async function saveAIChatMessage(input: SaveMessageInput) {
       .update(aiChatSessions)
       .set({
         messageCount: sql`${aiChatSessions.messageCount} + 1`,
-        lastMessageAt: new Date(),
-        updatedAt: new Date(),
+        lastMessageAt: Math.floor(Date.now() / 1000),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(eq(aiChatSessions.id, input.sessionId))
 
@@ -139,7 +139,7 @@ export async function createAIChatSession(input: CreateSessionInput) {
         title: input.title || 'Nueva conversación',
         context: input.context ? JSON.stringify(input.context) : null,
         messageCount: 0,
-        isActive: true,
+        isActive: 1,
       })
       .returning()
 
@@ -162,23 +162,23 @@ export async function getAIChatSession(sessionId: string) {
   try {
     const session = await db.query.aiChatSessions.findFirst({
       where: eq(aiChatSessions.id, sessionId),
-      with: {
-        messages: {
-          orderBy: [desc(aiChatMessages.createdAt)],
-          limit: 100,
-        },
-      },
     })
 
     if (!session) {
       return { success: false, error: 'Sesión no encontrada' }
     }
 
+    const messages = await db.query.aiChatMessages.findMany({
+      where: eq(aiChatMessages.sessionId, sessionId),
+      orderBy: [desc(aiChatMessages.createdAt)],
+      limit: 100,
+    })
+
     // Parsear JSON fields
     const parsed = {
       ...session,
       context: session.context ? JSON.parse(session.context) : null,
-      messages: session.messages
+      messages: messages
         .map((m) => ({
           ...m,
           entities: m.entities ? JSON.parse(m.entities) : null,
@@ -201,8 +201,8 @@ export async function getUserSessions(userId?: string, limit = 20) {
   try {
     const sessions = await db.query.aiChatSessions.findMany({
       where: userId
-        ? and(eq(aiChatSessions.userId, userId), eq(aiChatSessions.isActive, true))
-        : eq(aiChatSessions.isActive, true),
+        ? and(eq(aiChatSessions.userId, userId), eq(aiChatSessions.isActive, 1))
+        : eq(aiChatSessions.isActive, 1),
       orderBy: [desc(aiChatSessions.lastMessageAt)],
       limit,
     })
@@ -238,8 +238,8 @@ export async function updateAIChatSession(
         ...(updates.title && { title: updates.title }),
         ...(updates.summary && { summary: updates.summary }),
         ...(updates.context && { context: JSON.stringify(updates.context) }),
-        ...(typeof updates.isActive === 'boolean' && { isActive: updates.isActive }),
-        updatedAt: new Date(),
+        ...(typeof updates.isActive === 'boolean' && { isActive: updates.isActive ? 1 : 0 }),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(eq(aiChatSessions.id, sessionId))
       .returning()
@@ -269,7 +269,7 @@ export async function clearSessionMessages(sessionId: string) {
       .update(aiChatSessions)
       .set({
         messageCount: 0,
-        updatedAt: new Date(),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(eq(aiChatSessions.id, sessionId))
 

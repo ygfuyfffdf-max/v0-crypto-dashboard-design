@@ -44,8 +44,8 @@ export async function POST(
       .where(
         and(
           eq(movimientos.bancoId, bancoId),
-          gte(movimientos.fecha, startDate),
-          lte(movimientos.fecha, endDate),
+          gte(movimientos.fecha, Math.floor(startDate.getTime() / 1000)),
+          lte(movimientos.fecha, Math.floor(endDate.getTime() / 1000)),
         ),
       )
       .orderBy(movimientos.fecha)
@@ -85,7 +85,7 @@ export async function POST(
       .where(
         and(
           eq(movimientos.bancoId, bancoId),
-          sql`${movimientos.fecha} < ${startDate.toISOString()}`,
+          sql`${movimientos.fecha} < ${Math.floor(startDate.getTime() / 1000)}`,
         ),
       )
 

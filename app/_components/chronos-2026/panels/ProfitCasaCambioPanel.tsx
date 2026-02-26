@@ -17,72 +17,52 @@
 
 'use client'
 
+import {
+    DIVISAS_CONFIG,
+    profitCasaCambioService,
+    type Cotizacion,
+    type DivisaId,
+    type OperacionCambio,
+    type TipoCambioConfig
+} from '@/app/_lib/services/profit-casa-cambio.service'
 import { cn } from '@/app/_lib/utils'
 import {
-  profitCasaCambioService,
-  DIVISAS_CONFIG,
-  DENOMINACIONES,
-  type DivisaId,
-  type TipoCambioConfig,
-  type Cotizacion,
-  type OperacionCambio,
-  type DenominacionConteo,
-} from '@/app/_lib/services/profit-casa-cambio.service'
+    AlertCircle,
+    ArrowRight,
+    ArrowUpDown,
+    BarChart3,
+    Calculator,
+    Check,
+    ChevronDown,
+    CircleDollarSign,
+    Coins,
+    Edit,
+    FileText,
+    History,
+    Landmark,
+    Loader2,
+    Lock,
+    LockOpen,
+    Phone,
+    PiggyBank,
+    RotateCcw,
+    Search,
+    Settings,
+    ShieldCheck,
+    ShoppingCart,
+    TrendingDown,
+    TrendingUp,
+    User,
+    Wallet,
+    X
+} from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import {
-  Activity,
-  AlertCircle,
-  ArrowDownUp,
-  ArrowLeftRight,
-  ArrowRight,
-  ArrowUpDown,
-  Banknote,
-  Calculator,
-  Calendar,
-  Check,
-  ChevronDown,
-  ChevronRight,
-  CircleDollarSign,
-  Clock,
-  Coins,
-  CreditCard,
-  DollarSign,
-  Edit,
-  Eye,
-  FileText,
-  History,
-  Info,
-  Landmark,
-  Loader2,
-  Lock,
-  LockOpen,
-  Minus,
-  MoreHorizontal,
-  Phone,
-  Plus,
-  Printer,
-  RefreshCw,
-  RotateCcw,
-  Search,
-  Settings,
-  ShieldCheck,
-  Sparkles,
-  TrendingDown,
-  TrendingUp,
-  User,
-  Wallet,
-  X,
-  Zap,
-  BarChart3,
-  ShoppingCart,
-  PiggyBank,
-} from 'lucide-react'
 import { toast } from 'sonner'
-import ProfitDashboardAnalytics from './ProfitDashboardAnalytics'
-import ProfitComprasVentasPanel from './ProfitComprasVentasPanel'
 import ProfitCalculadoraRentabilidad from './ProfitCalculadoraRentabilidad'
+import ProfitComprasVentasPanel from './ProfitComprasVentasPanel'
 import ProfitConfiguracionPanel from './ProfitConfiguracionPanel'
+import ProfitDashboardAnalytics from './ProfitDashboardAnalytics'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -1301,7 +1281,9 @@ export const ProfitCasaCambioPanel = memo(function ProfitCasaCambioPanel({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <ProfitClientesPanel />
+            <div className="rounded-xl border border-white/10 bg-white/5 p-8 text-center text-white/50">
+              Panel de Clientes — Próximamente
+            </div>
           </motion.div>
         )}
 

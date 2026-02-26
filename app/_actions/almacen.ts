@@ -223,7 +223,7 @@ export async function getAlmacenStats() {
     const productos = await db.query.almacen.findMany()
 
     const total = productos.length
-    const activos = productos.filter((p) => p.activo !== false).length
+    const activos = productos.filter((p) => p.activo !== 0).length
     const bajoStock = productos.filter((p) => {
       const stock = p.cantidad ?? p.stockActual ?? 0
       const minimo = p.minimo ?? p.stockMinimo ?? 0

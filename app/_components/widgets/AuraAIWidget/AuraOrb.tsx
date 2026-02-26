@@ -170,7 +170,7 @@ export function AuraOrb({
         speed: 0.3 + Math.random() * 0.7,
         size: 2 + Math.random() * 3,
         opacity: 0.3 + Math.random() * 0.5,
-        color: colors[Math.floor(Math.random() * colors.length)],
+        color: colors[Math.floor(Math.random() * colors.length)]!,
       })
     }
 

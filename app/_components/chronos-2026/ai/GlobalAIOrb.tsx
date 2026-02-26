@@ -106,7 +106,7 @@ export function GlobalAIOrb({ className }: { className?: string }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const matchedPath = Object.keys(QUICK_ACTIONS).find((k) => pathname.startsWith(k))
-  const chips = matchedPath ? QUICK_ACTIONS[matchedPath] : ["¿Cómo puedo ayudarte?"]
+  const chips = (matchedPath ? QUICK_ACTIONS[matchedPath] : undefined) ?? ["¿Cómo puedo ayudarte?"]
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" })

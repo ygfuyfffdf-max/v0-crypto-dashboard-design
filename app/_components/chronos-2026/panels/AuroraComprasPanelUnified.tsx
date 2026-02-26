@@ -1,5 +1,10 @@
 "use client"
 
+import {
+  LiquidGlassButton,
+  LiquidGlassSegmentedControl,
+  LiquidGlassSearchField,
+} from "@/app/_components/chronos-2026/primitives/LiquidGlassSystem"
 import { ModalShell } from "@/app/_components/modals/ModalShell"
 import { GlassCurrencyInput, GlassInput, GlassSelect } from "@/app/_components/ui/GlassFormSystem"
 import { cn } from "@/app/_lib/utils"
@@ -108,7 +113,7 @@ function LotCard({ orden }: { orden: OrdenDisplay }) {
 
   return (
     <motion.div
-      className={cn(glass, "group cursor-pointer p-5 transition-all hover:border-white/15")}
+      className={cn(glass, "group cursor-pointer p-5 neo-tactile-hover-elevate")}
       whileHover={{ y: -4, scale: 1.01 }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -386,31 +391,24 @@ function CreateOCModal({
           </motion.div>
         </AnimatePresence>
         <div className="flex justify-between pt-2">
-          <button
+          <LiquidGlassButton
+            variant="glass"
+            size="md"
             onClick={() => (step > 0 ? setStep((s) => s - 1) : resetAndClose())}
-            className="rounded-xl bg-white/5 px-4 py-2 text-sm text-white/50 transition-colors hover:bg-white/10 hover:text-white"
           >
             {step > 0 ? "Atrás" : "Cancelar"}
-          </button>
-          <motion.button
+          </LiquidGlassButton>
+          <LiquidGlassButton
+            variant="accent"
+            size="md"
+            loading={submitting}
+            icon={step < 3 ? <ArrowRight size={14} /> : <Check size={14} />}
+            iconPosition={step < 3 ? "right" : "left"}
             onClick={() => (step < 3 ? setStep((s) => s + 1) : handleSubmitOC())}
             disabled={!canAdvance || submitting}
-            className="flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-40"
-            whileHover={canAdvance ? { scale: 1.02 } : undefined}
-            whileTap={canAdvance ? { scale: 0.98 } : undefined}
           >
-            {step < 3 ? (
-              <>
-                Siguiente <ArrowRight size={14} />
-              </>
-            ) : submitting ? (
-              "Creando…"
-            ) : (
-              <>
-                Crear OC <Check size={14} />
-              </>
-            )}
-          </motion.button>
+            {step < 3 ? "Siguiente" : submitting ? "Creando…" : "Crear OC"}
+          </LiquidGlassButton>
         </div>
       </div>
     </ModalShell>
@@ -632,14 +630,13 @@ export function AuroraComprasPanelUnified({
           >
             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
           </motion.button>
-          <motion.button
+          <LiquidGlassButton
+            variant="primary"
+            icon={<Plus size={16} />}
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 rounded-2xl bg-violet-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-violet-500"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
           >
-            <Plus size={16} /> Nueva OC
-          </motion.button>
+            Nueva OC
+          </LiquidGlassButton>
         </div>
       </div>
 
@@ -664,28 +661,19 @@ export function AuroraComprasPanelUnified({
         ))}
       </div>
 
-      {/* ─── VIEW TOGGLE + FILTERS ─── */}
+      {/* ─── VIEW TOGGLE + FILTERS (Liquid Glass / Neo-Tactile) ─── */}
       <div className="flex flex-wrap items-center gap-3">
-        <div className={cn(glass, "inline-flex shrink-0 gap-0.5 p-1")}>
-          {(["tabla", "lotes"] as const).map((mode) => (
-            <button
-              key={mode}
-              onClick={() => setViewMode(mode)}
-              className={cn(
-                "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all",
-                viewMode === mode
-                  ? "bg-violet-600 text-white shadow-lg shadow-violet-500/20"
-                  : "text-white/40 hover:bg-white/5 hover:text-white/70"
-              )}
-            >
-              {mode === "tabla" ? <BarChart3 size={14} /> : <Layers size={14} />}
-              {mode === "tabla" ? "Tabla" : "Lotes"}
-            </button>
-          ))}
-        </div>
+        <LiquidGlassSegmentedControl
+          value={viewMode}
+          onChange={(v) => setViewMode(v)}
+          options={[
+            { value: "tabla", icon: <BarChart3 size={14} />, label: "Tabla" },
+            { value: "lotes", icon: <Layers size={14} />, label: "Lotes" },
+          ]}
+        />
 
         <div className="max-w-xs min-w-[180px] flex-1">
-          <GlassInput
+          <LiquidGlassSearchField
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar orden..."
@@ -824,7 +812,7 @@ export function AuroraComprasPanelUnified({
                             <button
                               onClick={() => handleDeleteOrden(o.id)}
                               aria-label="Eliminar"
-                              className="rounded-lg p-1.5 text-white/40 transition-colors hover:bg-red-500/20 hover:text-red-400"
+                              className="rounded-lg p-1.5 text-red-400/90 ring-1 ring-red-500/30 transition-colors hover:bg-red-500/20 hover:text-red-400 focus-visible:ring-2 focus-visible:ring-red-500/50"
                             >
                               <Trash2 size={14} />
                             </button>

@@ -18,9 +18,9 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'motion/react'
-import { memo, ReactNode, useCallback, useEffect, useRef, useState, forwardRef } from 'react'
 import { ArrowUp, Loader2, RefreshCw } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { forwardRef, memo, ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // ENHANCED SCROLL CONTAINER - Para cualquier contenido scrollable
@@ -135,14 +135,14 @@ export const EnhancedScrollContainer = memo(forwardRef<HTMLDivElement, EnhancedS
     // Pull to refresh handlers
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
       if (!enablePullToRefresh || !scrollState.isAtTop) return
-      touchStartY.current = e.touches[0].clientY
+      touchStartY.current = e.touches[0]!.clientY
       isPulling.current = true
     }, [enablePullToRefresh, scrollState.isAtTop])
 
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
       if (!isPulling.current || isRefreshing) return
 
-      const touchY = e.touches[0].clientY
+      const touchY = e.touches[0]!.clientY
       const distance = Math.max(0, (touchY - touchStartY.current) * 0.5) // 0.5 resistance
 
       if (distance > 0 && scrollState.isAtTop) {
@@ -597,7 +597,8 @@ export const HorizontalScrollContainer = memo(function HorizontalScrollContainer
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export type {
-  EnhancedScrollContainerProps,
-  FormScrollContainerProps,
-  HorizontalScrollContainerProps,
+    EnhancedScrollContainerProps,
+    FormScrollContainerProps,
+    HorizontalScrollContainerProps
 }
+

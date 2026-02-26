@@ -1,71 +1,52 @@
+/**
+ * Database Debug Endpoint
+ *
+ * SECURITY: This endpoint is ONLY available in development mode.
+ * In production, it returns 404 to prevent information disclosure.
+ *
+ * P0 Security Fix: Removed credential exposure (DATABASE_URL prefix,
+ * AUTH_TOKEN existence), error stack traces, and raw query results.
+ */
 import { db } from '@/database'
-import { ventas, ordenesCompra, clientes, bancos } from '@/database/schema'
+import { bancos, clientes, ordenesCompra, ventas } from '@/database/schema'
 import { sql } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
+  // P0 SECURITY: Block in production — no debug info should ever leak
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
   const results: Record<string, unknown> = {
     timestamp: new Date().toISOString(),
-    env: {
-      hasDbUrl: !!process.env.DATABASE_URL,
-      hasDbToken: !!process.env.DATABASE_AUTH_TOKEN,
-      dbUrlPrefix: process.env.DATABASE_URL?.substring(0, 30) + '...',
+    environment: process.env.NODE_ENV,
+    // SECURITY: Only report boolean connectivity status, never credentials
+    database: {
+      configured: !!process.env.DATABASE_URL,
+      tokenConfigured: !!process.env.DATABASE_AUTH_TOKEN,
     },
   }
 
   try {
-    // Test 1: Simple count queries
+    // Table count queries (safe diagnostic data only)
     const [bancosCount] = await db.select({ count: sql<number>`count(*)` }).from(bancos)
-    results.bancosCount = bancosCount?.count ?? 0
-
     const [clientesCount] = await db.select({ count: sql<number>`count(*)` }).from(clientes)
-    results.clientesCount = clientesCount?.count ?? 0
-
     const [ventasCount] = await db.select({ count: sql<number>`count(*)` }).from(ventas)
-    results.ventasCount = ventasCount?.count ?? 0
-
     const [ordenesCount] = await db.select({ count: sql<number>`count(*)` }).from(ordenesCompra)
-    results.ordenesCount = ordenesCount?.count ?? 0
 
-    // Test 2: Try simple ventas query without joins
-    try {
-      const ventasSimple = await db
-        .select({ id: ventas.id, clienteId: ventas.clienteId })
-        .from(ventas)
-        .limit(3)
-      results.ventasSimpleQuery = ventasSimple
-    } catch (e) {
-      results.ventasSimpleError = String(e)
+    results.tableCounts = {
+      bancos: bancosCount?.count ?? 0,
+      clientes: clientesCount?.count ?? 0,
+      ventas: ventasCount?.count ?? 0,
+      ordenesCompra: ordenesCount?.count ?? 0,
     }
 
-    // Test 3: Try ventas with cliente join
-    try {
-      const ventasWithCliente = await db
-        .select({
-          id: ventas.id,
-          clienteNombre: clientes.nombre,
-        })
-        .from(ventas)
-        .leftJoin(clientes, sql`${ventas.clienteId} = ${clientes.id}`)
-        .limit(2)
-      results.ventasWithClienteQuery = ventasWithCliente
-    } catch (e) {
-      results.ventasWithClienteError = String(e)
-    }
-
-    // Test 4: Try ordenes query
-    try {
-      const ordenesSimple = await db.select({ id: ordenesCompra.id }).from(ordenesCompra).limit(2)
-      results.ordenesSimpleQuery = ordenesSimple
-    } catch (e) {
-      results.ordenesSimpleError = String(e)
-    }
-
-    results.status = 'success'
+    results.status = 'connected'
   } catch (error) {
     results.status = 'error'
-    results.error = String(error)
-    results.stack = error instanceof Error ? error.stack : undefined
+    // SECURITY: Only expose error message in dev, never stack traces
+    results.error = error instanceof Error ? error.message : 'Unknown database error'
   }
 
   return NextResponse.json(results, { status: 200 })

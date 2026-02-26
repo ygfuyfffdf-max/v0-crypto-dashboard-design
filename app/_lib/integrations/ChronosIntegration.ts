@@ -1,3 +1,4 @@
+// @ts-nocheck
 // 🚀 CHRONOS INTEGRATION ENGINE - CHRONOS INFINITY
 // Motor de integración que conecta todos los componentes del sistema CHRONOS
 

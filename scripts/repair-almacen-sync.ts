@@ -35,7 +35,7 @@ async function main() {
 
     if (!entradaExistente && oc.cantidad && oc.cantidad > 0) {
       const entradaId = uuidv4()
-      const fechaOC = oc.fecha || new Date()
+      const fechaOC = oc.fecha || Math.floor(Date.now() / 1000)
 
       await db.insert(entradaAlmacen).values({
         id: entradaId,
@@ -71,7 +71,7 @@ async function main() {
 
     if (!salidaExistente && venta.cantidad && venta.cantidad > 0) {
       const salidaId = uuidv4()
-      const fechaVenta = venta.fecha || new Date()
+      const fechaVenta = venta.fecha || Math.floor(Date.now() / 1000)
 
       // Construir origenLotes si hay OC relacionada
       let origenLotes: string | null = null
@@ -126,7 +126,7 @@ async function main() {
       .set({
         totalEntradas,
         totalSalidas,
-        updatedAt: new Date(),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(eq(almacen.id, producto.id))
 

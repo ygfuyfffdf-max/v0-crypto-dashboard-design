@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * 🔐 CHRONOS 2026 — ULTRA LOGIN SYSTEM
@@ -549,3 +550,4 @@ export function UltraLogin({
 }
 
 export default UltraLogin
+

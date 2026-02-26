@@ -19,29 +19,29 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
-import { AnimatePresence, motion, useMotionValue, useTransform, PanInfo, useSpring } from 'motion/react'
 import {
-  ReactNode,
-  memo,
-  useCallback,
-  useEffect,
-  useState,
-  useRef,
-  createContext,
-  useContext
-} from 'react'
-import {
-  Trash2,
-  Edit2,
-  Archive,
-  Pin,
-  MoreHorizontal,
-  Share,
-  Copy,
-  Flag,
-  Bell,
-  LucideIcon
+    Archive,
+    Bell,
+    Copy,
+    Edit2,
+    Flag,
+    LucideIcon,
+    MoreHorizontal,
+    Pin,
+    Share,
+    Trash2
 } from 'lucide-react'
+import { AnimatePresence, PanInfo, motion, useMotionValue, useSpring, useTransform } from 'motion/react'
+import {
+    ReactNode,
+    createContext,
+    memo,
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState
+} from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // HAPTIC FEEDBACK CONTEXT
@@ -334,7 +334,7 @@ export const iOSLongPressMenu = memo(function iOSLongPressMenu({
 }: iOSLongPressMenuProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
-  const longPressTimer = useRef<NodeJS.Timeout>()
+  const longPressTimer = useRef<NodeJS.Timeout | undefined>(undefined)
   const containerRef = useRef<HTMLDivElement>(null)
   const { triggerHaptic } = useHaptic()
 
@@ -700,7 +700,7 @@ export function iOSDraggableList<T extends DraggableItemData>({
 
     const newItems = [...orderedItems]
     const [movedItem] = newItems.splice(fromIndex, 1)
-    newItems.splice(toIndex, 0, movedItem)
+    newItems.splice(toIndex, 0, movedItem!)
 
     setOrderedItems(newItems)
     triggerHaptic('selection')
@@ -786,7 +786,7 @@ export const iOSPeekPreview = memo(function iOSPeekPreview({
 }: iOSPeekPreviewProps) {
   const [isPeeking, setIsPeeking] = useState(false)
   const [showActions, setShowActions] = useState(false)
-  const peekTimer = useRef<NodeJS.Timeout>()
+  const peekTimer = useRef<NodeJS.Timeout | undefined>(undefined)
   const { triggerHaptic } = useHaptic()
 
   const handlePointerDown = useCallback(() => {

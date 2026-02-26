@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { PostQuantumCryptography } from '../crypto/PostQuantumCryptography';
 
 export interface BiometricData {

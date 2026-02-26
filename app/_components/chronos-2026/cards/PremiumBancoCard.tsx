@@ -71,7 +71,6 @@ export function PremiumBancoCard({
         boxShadow: isHovered
           ? `0 20px 50px ${color}40, 0 0 80px ${color}20, inset 0 1px 1px rgba(255,255,255,0.1)`
           : '0 8px 30px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.05)',
-        focusRingColor: color,
       }}
       whileHover={{ scale: 1.03, y: -8 }}
       whileTap={{ scale: 0.98 }}

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * 🔍 VERIFICACIÓN DE MIGRACIÓN A MOVIMIENTOS UNIFICADO

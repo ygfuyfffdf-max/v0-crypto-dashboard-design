@@ -20,29 +20,27 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
-import { AnimatePresence, motion, PanInfo, useMotionValue, useSpring, useTransform } from 'motion/react'
 import {
-  ArrowLeft,
-  Check,
-  ChevronDown,
-  ChevronRight,
-  ChevronUp,
-  Loader2,
-  LucideIcon,
-  MoreHorizontal,
-  Search,
-  X,
+    Check,
+    ChevronDown,
+    ChevronRight,
+    ChevronUp,
+    Loader2,
+    LucideIcon,
+    Search,
+    X
 } from 'lucide-react'
+import { AnimatePresence, motion, PanInfo } from 'motion/react'
 import {
-  createContext,
-  forwardRef,
-  memo,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
+    createContext,
+    forwardRef,
+    memo,
+    ReactNode,
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
 } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -97,10 +95,10 @@ const iOS = {
     inner: 'inset 0 1px 2px rgba(0,0,0,0.2)',
   },
   transitions: {
-    fast: { duration: 0.15, ease: [0.25, 0.1, 0.25, 1] },
-    normal: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] },
-    slow: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
-    spring: { type: 'spring', stiffness: 400, damping: 30 },
+    fast: { duration: 0.15, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] },
+    normal: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+    slow: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+    spring: { type: 'spring' as const, stiffness: 400, damping: 30 },
   },
 }
 
@@ -398,13 +396,13 @@ export const iOSScrollView = memo(forwardRef<HTMLDivElement, iOSScrollViewProps>
     // Pull to refresh
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
       if (!enablePullToRefresh || !scrollState.isAtTop) return
-      touchStartY.current = e.touches[0].clientY
+      touchStartY.current = e.touches[0]?.clientY ?? 0
       isPulling.current = true
     }, [enablePullToRefresh, scrollState.isAtTop])
 
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
       if (!isPulling.current || isRefreshing) return
-      const touchY = e.touches[0].clientY
+      const touchY = e.touches[0]?.clientY ?? 0
       const distance = Math.max(0, (touchY - touchStartY.current) * 0.4)
       if (distance > 0 && scrollState.isAtTop) {
         setPullDistance(Math.min(distance, 120))
@@ -565,6 +563,8 @@ export const iOSScrollView = memo(forwardRef<HTMLDivElement, iOSScrollViewProps>
     )
   }
 ))
+
+const IOSScrollView = iOSScrollView
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // 🪟 iOS SHEET MODAL — Modal deslizable estilo iOS
@@ -775,9 +775,9 @@ export const iOSSheet = memo(function iOSSheet({
               {/* Content */}
               <div className={cn('relative', contentClassName)}>
                 {scrollable ? (
-                  <iOSScrollView maxHeight={maxContentHeight} showFadeEdges>
+                  <IOSScrollView maxHeight={maxContentHeight} showFadeEdges>
                     <div className="p-5">{children}</div>
-                  </iOSScrollView>
+                  </IOSScrollView>
                 ) : (
                   <div className="p-5">{children}</div>
                 )}
@@ -1081,10 +1081,13 @@ export const iOSToastProvider = memo(function iOSToastProvider({ children }: { c
     setToasts(prev => prev.filter(t => t.id !== id))
   }, [])
 
+  // Local uppercase alias so JSX sees it as a component (not HTML element)
+  const IOSToastContainer = iOSToastContainer
+
   return (
     <ToastContext.Provider value={{ toasts, addToast, removeToast }}>
       {children}
-      <iOSToastContainer toasts={toasts} onRemove={removeToast} />
+      <IOSToastContainer toasts={toasts} onRemove={removeToast} />
     </ToastContext.Provider>
   )
 })
@@ -1466,6 +1469,7 @@ export const iOSBadge = memo(function iOSBadge({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export {
-  iOS,
-  iOSContext,
+    iOS,
+    iOSContext
 }
+

@@ -57,7 +57,7 @@ interface SharedElementImageProps extends SharedElementProps {
   height?: number
 }
 
-interface SharedElementTextProps extends SharedElementProps {
+interface SharedElementTextProps extends Omit<SharedElementProps, 'as'> {
   as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span"
 }
 

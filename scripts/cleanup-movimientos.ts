@@ -27,7 +27,7 @@ async function cleanupExtraMovimientos() {
       capitalActual: 3150,
       historicoIngresos: 3150,
       historicoGastos: 0,
-      updatedAt: new Date(),
+      updatedAt: Math.floor(Date.now() / 1000),
     })
     .where(eq(bancos.id, "boveda_monte"))
   console.log("✅ boveda_monte: $3150")
@@ -38,7 +38,7 @@ async function cleanupExtraMovimientos() {
       capitalActual: 2500,
       historicoIngresos: 2500,
       historicoGastos: 0,
-      updatedAt: new Date(),
+      updatedAt: Math.floor(Date.now() / 1000),
     })
     .where(eq(bancos.id, "flete_sur"))
   console.log("✅ flete_sur: $2500")
@@ -49,7 +49,7 @@ async function cleanupExtraMovimientos() {
       capitalActual: 350,
       historicoIngresos: 350,
       historicoGastos: 0,
-      updatedAt: new Date(),
+      updatedAt: Math.floor(Date.now() / 1000),
     })
     .where(eq(bancos.id, "utilidades"))
   console.log("✅ utilidades: $350")

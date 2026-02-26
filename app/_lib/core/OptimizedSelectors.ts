@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════════════════
  * 🎯 CHRONOS INFINITY 2030 — SELECTORS OPTIMIZADOS PARA STORES

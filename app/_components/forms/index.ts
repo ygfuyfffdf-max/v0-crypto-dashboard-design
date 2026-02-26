@@ -4,30 +4,22 @@
 // ═══════════════════════════════════════════════════════════════
 
 export { OrdenCompraForm } from './OrdenCompraForm'
-export { VentaForm } from './VentaForm'
-export { TransferenciaForm } from './TransferenciaForm'
-export { GastoForm } from './GastoForm'
+// VentaForm, VentaFormGen5, WizardVentaPremium — modules not found, removed
 export { AbonoClienteForm, PagoDistribuidorForm } from './AbonoForm'
-export { VentaFormGen5 } from './VentaFormGen5'
-export { WizardVentaPremium } from './WizardVentaPremium'
+export { GastoForm } from './GastoForm'
+export { TransferenciaForm } from './TransferenciaForm'
 
 // Re-exportar componentes iOS de formularios clásicos
 export {
-  iOSInput,
-  iOSTextArea,
-  iOSSelect,
-  iOSCheckbox,
-  iOSRadioGroup,
-  iOSNumberInput,
-  iOSFormContainer,
-  iOSFormSection,
+    iOSCheckbox, iOSFormContainer,
+    iOSFormSection, iOSInput, iOSNumberInput, iOSRadioGroup, iOSSelect, iOSTextArea
 } from '../ui/ios'
 
 // Re-exportar componentes iOS de formularios avanzados
 export {
-  iOSForm,
-  iOSFormGroup,
-  iOSTextInput,
-  iOSToggleField,
-  useFormAdvanced,
+    iOSForm,
+    iOSFormGroup,
+    iOSTextInput,
+    iOSToggleField,
+    useFormAdvanced
 } from '../ui/ios'

@@ -20,11 +20,11 @@ import { db } from '@/database'
 import { bancos, clientes, distribuidores, ordenesCompra, ventas } from '@/database/schema'
 import { and, count, desc, eq, gte, lte, sql, sum } from 'drizzle-orm'
 import type {
-  CognitoAction,
-  CognitoMessage,
-  CognitoMode,
-  KPIData,
-  ProactiveSuggestion,
+    CognitoAction,
+    CognitoMessage,
+    CognitoMode,
+    KPIData,
+    ProactiveSuggestion,
 } from './types'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -471,8 +471,8 @@ async function handleVentasQuery(
 
   // Construir condiciones
   const conditions = []
-  if (fechaInicio) conditions.push(gte(ventas.fecha, fechaInicio))
-  if (fechaFin) conditions.push(lte(ventas.fecha, fechaFin))
+  if (fechaInicio) conditions.push(gte(ventas.fecha, fechaInicio.getTime()))
+  if (fechaFin) conditions.push(lte(ventas.fecha, fechaFin.getTime()))
 
   // Consultar ventas
   const ventasData = await db.query.ventas.findMany({
@@ -515,7 +515,7 @@ ${ventasData
   .slice(0, 5)
   .map(
     (v) =>
-      `• ${v.cliente?.nombre || 'Sin cliente'}: $${(v.precioTotalVenta || 0).toLocaleString()} (${v.estadoPago})`,
+      `• ${(v as Record<string, any>).cliente?.nombre || 'Sin cliente'}: $${(v.precioTotalVenta || 0).toLocaleString()} (${v.estadoPago})`,
   )
   .join('\n')}`
     : ''
@@ -762,7 +762,7 @@ ${ordenesData
   .slice(0, 5)
   .map(
     (o) =>
-      `• **${o.distribuidor?.nombre || 'Sin distribuidor'}**: ${o.stockActual || 0}/${o.cantidad || 0} unidades (${o.estado})`,
+      `• **${(o as Record<string, any>).distribuidor?.nombre || 'Sin distribuidor'}**: ${o.stockActual || 0}/${o.cantidad || 0} unidades (${o.estado})`,
   )
   .join('\n')}`
     : 'No hay órdenes registradas.'

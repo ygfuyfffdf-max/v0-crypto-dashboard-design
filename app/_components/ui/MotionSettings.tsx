@@ -15,21 +15,25 @@
 
 'use client'
 
+import { useMotionPreferencesStandalone } from '@/app/_hooks/useMotionPreferences'
 import { cn } from '@/app/_lib/utils'
-import { motion } from 'motion/react'
 import {
-  Accessibility,
-  Eye,
-  Gauge,
-  MonitorSmartphone,
-  RotateCcw,
-  Settings,
-  Sparkles,
-  Zap,
+    Accessibility,
+    Eye,
+    MonitorSmartphone,
+    RotateCcw,
+    Settings,
+    Sparkles,
+    Zap
 } from 'lucide-react'
+import { motion } from 'motion/react'
 import { memo, useState } from 'react'
-import { iOSToggle, iOSListGroup, iOSListItem, iOSButton, iOSProgress, iOSModal } from './ios'
-import { useMotionPreferencesStandalone, type MotionPreferences } from '@/app/_hooks/useMotionPreferences'
+import { iOSListGroup, iOSModal, iOSToggle } from './ios'
+
+// PascalCase aliases required for JSX (React treats lowercase-first names as HTML elements)
+const IOSModal = iOSModal
+const IOSListGroup = iOSListGroup
+const IOSToggle = iOSToggle
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // COMPONENTES INTERNOS
@@ -117,7 +121,7 @@ export const MotionSettingsModal = memo(function MotionSettingsModal({
   } = useMotionPreferencesStandalone()
 
   return (
-    <iOSModal
+    <IOSModal
       isOpen={isOpen}
       onClose={onClose}
       title="Configuración de Movimiento"
@@ -158,7 +162,7 @@ export const MotionSettingsModal = memo(function MotionSettingsModal({
       </div>
 
       {/* Configuraciones principales */}
-      <iOSListGroup header="Efectos de Movimiento">
+      <IOSListGroup header="Efectos de Movimiento">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Eye className="h-5 w-5 text-white/50" />
@@ -167,7 +171,7 @@ export const MotionSettingsModal = memo(function MotionSettingsModal({
               <p className="text-[13px] text-white/50">Minimizar animaciones</p>
             </div>
           </div>
-          <iOSToggle checked={reducedMotion} onChange={toggleReducedMotion} />
+          <IOSToggle checked={reducedMotion} onChange={toggleReducedMotion} />
         </div>
 
         <div className="px-4 py-3 flex items-center justify-between border-t border-white/[0.06]">
@@ -178,7 +182,7 @@ export const MotionSettingsModal = memo(function MotionSettingsModal({
               <p className="text-[13px] text-white/50">Tilt y profundidad</p>
             </div>
           </div>
-          <iOSToggle checked={!disable3DEffects} onChange={toggle3DEffects} />
+          <IOSToggle checked={!disable3DEffects} onChange={toggle3DEffects} />
         </div>
 
         <div className="px-4 py-3 flex items-center justify-between border-t border-white/[0.06]">
@@ -189,7 +193,7 @@ export const MotionSettingsModal = memo(function MotionSettingsModal({
               <p className="text-[13px] text-white/50">Movimiento con scroll</p>
             </div>
           </div>
-          <iOSToggle checked={!disableParallax} onChange={toggleParallax} />
+          <IOSToggle checked={!disableParallax} onChange={toggleParallax} />
         </div>
 
         <div className="px-4 py-3 flex items-center justify-between border-t border-white/[0.06]">
@@ -200,9 +204,9 @@ export const MotionSettingsModal = memo(function MotionSettingsModal({
               <p className="text-[13px] text-white/50">Partículas y glows</p>
             </div>
           </div>
-          <iOSToggle checked={!disableDecorativeEffects} onChange={toggleDecorativeEffects} />
+          <IOSToggle checked={!disableDecorativeEffects} onChange={toggleDecorativeEffects} />
         </div>
-      </iOSListGroup>
+      </IOSListGroup>
 
       {/* Slider de intensidad */}
       <div className="mt-6 p-4 rounded-xl bg-white/[0.04] border border-white/[0.08]">
@@ -233,7 +237,7 @@ export const MotionSettingsModal = memo(function MotionSettingsModal({
         <RotateCcw className="h-4 w-4" />
         Restaurar Configuración Predeterminada
       </motion.button>
-    </iOSModal>
+    </IOSModal>
   )
 })
 
@@ -288,6 +292,6 @@ export const MotionSettingsCompact = memo(function MotionSettingsCompact({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export type {
-  MotionSettingsModalProps,
-  MotionSettingsCompactProps,
+    MotionSettingsCompactProps, MotionSettingsModalProps
 }
+

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Performance Optimizations - Sistema de optimización para CHRONOS
  * Incluye memoización, virtualización, debounce, throttle

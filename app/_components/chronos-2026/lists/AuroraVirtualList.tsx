@@ -14,11 +14,11 @@
  * @version 1.0.0 — OMEGA SUPREME EDITION
  */
 
-import React, { useRef, useState, useEffect, useCallback, useMemo, ReactNode } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/app/_lib/utils'
 import { useFeedback } from '@/app/hooks/useSupremeSystems'
-import { Loader2, ArrowUp, Search, Filter } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ArrowUp, Filter, Loader2, Search } from 'lucide-react'
+import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -125,7 +125,7 @@ export function AuroraVirtualList<T extends VirtualListItem>({
       if (items[i]) {
         visible.push({
           index: i,
-          item: items[i],
+          item: items[i]!,
           style: {
             position: 'absolute' as const,
             top: i * itemHeight,
@@ -395,9 +395,6 @@ export function AuroraVirtualTable<T extends VirtualListItem>({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export { SearchBar }
-export type { 
-  VirtualListItem, 
-  AuroraVirtualListProps, 
-  Column, 
-  AuroraVirtualTableProps 
+export type {
+    AuroraVirtualListProps, AuroraVirtualTableProps, Column, VirtualListItem
 }

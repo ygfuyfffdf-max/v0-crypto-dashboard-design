@@ -9,7 +9,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react"
 import "./GlassWidget.css"
 
 // 🔧 Interfaces premium
-interface GlassWidgetProps {
+export interface GlassWidgetProps {
   isExpanded?: boolean
   defaultExpanded?: boolean
   onToggle?: (expanded: boolean) => void
@@ -20,7 +20,7 @@ interface GlassWidgetProps {
   style?: React.CSSProperties
 }
 
-interface AICapabilities {
+export interface AICapabilities {
   predictive: boolean
   voiceControl: boolean
   realTimeValidation: boolean
@@ -285,7 +285,7 @@ export const GlassWidget: React.FC<GlassWidgetProps> = ({
     []
   )
 
-  const contentVariants = {
+  const contentVariants: Record<string, any> = {
     initial: { opacity: 0, height: 0 },
     animate: {
       opacity: 1,
@@ -332,7 +332,7 @@ export const GlassWidget: React.FC<GlassWidgetProps> = ({
       {/* 🎨 Header Premium */}
       <motion.div
         className="glass-widget-header"
-        animate={animationState}
+        animate={animationState as any}
         transition={{ duration: 0.2 }}
       >
         {/* 🤖 AI Icon con animación */}

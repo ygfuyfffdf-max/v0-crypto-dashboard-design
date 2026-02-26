@@ -37,7 +37,8 @@ interface PageTransitionWrapperProps {
 // VARIANTS — Animaciones de transición cinematográficas
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
-const pageVariants = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const pageVariants: Record<string, any> = {
   slide: {
     initial: {
       opacity: 0,
@@ -472,7 +473,8 @@ interface StaggerItemProps {
   variant?: "default" | "card" | "stat" | "row"
 }
 
-const variantMap = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const variantMap: Record<string, any> = {
   default: childVariants,
   card: cardVariants,
   stat: statVariants,

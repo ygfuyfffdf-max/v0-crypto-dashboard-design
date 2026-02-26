@@ -21,6 +21,7 @@ import { FieldErrors, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { iOSModal, iOSButton, iOSGlassCard, iOSInput, iOSSelect, iOSProgress } from '../ui/ios'
+import { Modal, ModalFooter, Button } from '../ui/Modal'
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SCHEMA

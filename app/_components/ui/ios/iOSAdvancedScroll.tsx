@@ -20,20 +20,20 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform, PanInfo } from 'motion/react'
+import { ArrowUp, ChevronUp, Loader2, RefreshCw } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import {
-  memo,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  forwardRef,
-  createContext,
-  useContext,
-  useMemo
+    createContext,
+    forwardRef,
+    memo,
+    ReactNode,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState
 } from 'react'
-import { ArrowUp, ChevronDown, ChevronUp, Loader2, RefreshCw } from 'lucide-react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TIPOS
@@ -220,14 +220,14 @@ export const iOSScrollContainer = memo(forwardRef<HTMLDivElement, iOSScrollConta
     // Pull to refresh handlers
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
       if (!enablePullToRefresh || !scrollState.isAtTop || isRefreshing) return
-      touchStartY.current = e.touches[0].clientY
+      touchStartY.current = e.touches[0]!.clientY
       isPulling.current = true
     }, [enablePullToRefresh, scrollState.isAtTop, isRefreshing])
 
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
       if (!isPulling.current || isRefreshing) return
 
-      const touchY = e.touches[0].clientY
+      const touchY = e.touches[0]!.clientY
       const distance = Math.max(0, (touchY - touchStartY.current) * 0.4) // Resistance factor
 
       if (distance > 0 && scrollState.isAtTop) {
@@ -472,6 +472,8 @@ export const iOSScrollContainer = memo(forwardRef<HTMLDivElement, iOSScrollConta
   }
 ))
 
+const IOSScrollContainer = iOSScrollContainer
+
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // FORM SCROLL CONTAINER - Especializado para formularios
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -509,7 +511,7 @@ export const FormScrollContainer = memo(forwardRef<HTMLDivElement, FormScrollCon
         className={cn('relative', className)}
         onKeyDown={handleKeyDown}
       >
-        <iOSScrollContainer
+        <IOSScrollContainer
           ref={ref}
           maxHeight={maxHeight}
           showFadeEdges={showFadeEdges}
@@ -519,7 +521,7 @@ export const FormScrollContainer = memo(forwardRef<HTMLDivElement, FormScrollCon
           contentClassName="space-y-4 p-1"
         >
           {children}
-        </iOSScrollContainer>
+        </IOSScrollContainer>
       </div>
     )
   }
@@ -541,7 +543,7 @@ export const ModalScrollContainer = memo(function ModalScrollContainer({
   maxHeight = '65vh',
 }: ModalScrollContainerProps) {
   return (
-    <iOSScrollContainer
+    <IOSScrollContainer
       maxHeight={maxHeight}
       showFadeEdges={true}
       showScrollToTop={false}
@@ -552,7 +554,7 @@ export const ModalScrollContainer = memo(function ModalScrollContainer({
       contentClassName="p-1"
     >
       {children}
-    </iOSScrollContainer>
+    </IOSScrollContainer>
   )
 })
 
@@ -724,10 +726,6 @@ export const ScrollSnapItem = memo(function ScrollSnapItem({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export type {
-  ScrollState,
-  iOSScrollContainerProps,
-  FormScrollContainerProps,
-  ModalScrollContainerProps,
-  HorizontalScrollProps,
-  ScrollSnapItemProps,
+    FormScrollContainerProps, HorizontalScrollProps, iOSScrollContainerProps, ModalScrollContainerProps, ScrollSnapItemProps, ScrollState
 }
+

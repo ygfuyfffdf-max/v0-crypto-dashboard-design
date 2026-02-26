@@ -20,21 +20,19 @@
 'use client'
 
 import { cn } from '@/app/lib/utils'
-import { AnimatePresence, motion } from 'motion/react'
 import {
-  CheckCircle2,
-  XCircle,
-  Clock,
-  AlertCircle,
-  User,
-  Users,
-  ArrowRight,
-  MessageSquare,
-  FileText,
-  Calendar,
-  Filter,
+    AlertCircle,
+    ArrowRight,
+    Calendar,
+    CheckCircle2,
+    Clock,
+    FileText,
+    User,
+    Users,
+    XCircle
 } from 'lucide-react'
-import React, { useState, useMemo } from 'react'
+import { motion } from 'motion/react'
+import { useMemo, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
 // TIPOS
@@ -305,6 +303,7 @@ function WorkflowApprovalActions({
   const [showDelegation, setShowDelegation] = useState(false)
 
   const currentStage = template.stages[instance.currentStageIndex]
+  if (!currentStage) return null
   const canApprove = currentStage?.approvers.includes(currentUserId)
   const hasApproved = instance.approvals.some(
     (a) => a.stageId === currentStage?.id && a.approverId === currentUserId && a.status !== 'pending'

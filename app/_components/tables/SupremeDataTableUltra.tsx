@@ -164,7 +164,7 @@ export interface FilaExpansible<T> {
 export interface AccionTabla<T> {
   id: string
   label: string
-  icono: React.ElementType
+  icono: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
   variante?: 'default' | 'destructive' | 'outline'
   onClick: (filas: T[]) => void
   mostrarSi?: (filas: T[]) => boolean
@@ -372,7 +372,7 @@ export interface SupremeDataTableUltraProps<T extends Record<string, unknown>> {
   accionesFilaIndividual?: {
     id: string
     label: string
-    icono: React.ElementType
+    icono: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
     onClick: (fila: T) => void
     disabled?: (fila: T) => boolean
     danger?: boolean
@@ -388,7 +388,7 @@ export interface SupremeDataTableUltraProps<T extends Record<string, unknown>> {
   vacio?: {
     titulo: string
     descripcion: string
-    icono?: React.ElementType
+    icono?: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
   }
 
   // Callbacks
@@ -508,8 +508,8 @@ export default function SupremeDataTableUltra<T extends Record<string, unknown>>
   }, [datosProcesados.length, tamanioPagina])
 
   // Handlers
-  const handleSeleccionTodas = useCallback((checked: boolean) => {
-    if (checked) {
+  const handleSeleccionTodas = useCallback((checked: boolean | 'indeterminate') => {
+    if (checked === true) {
       setSeleccionadas(new Set(datosPaginados.map((_, i) => (paginaActual - 1) * tamanioPagina + i)))
     } else {
       setSeleccionadas(new Set())
@@ -550,7 +550,7 @@ export default function SupremeDataTableUltra<T extends Record<string, unknown>>
 
   const handleExportar = useCallback(async (formato: FormatoExport) => {
     const datosExport = Array.from(seleccionadas).length > 0
-      ? Array.from(seleccionadas).map(i => datos[i].fila)
+      ? Array.from(seleccionadas).map(i => datos[i]!.fila)
       : datosProcesados.map(d => d.fila)
 
     const columnasExport: ColumnDefinition[] = columnasActivas.map(col => ({

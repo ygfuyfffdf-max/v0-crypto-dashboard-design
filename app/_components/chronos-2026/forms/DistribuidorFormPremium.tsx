@@ -74,7 +74,7 @@ export function DistribuidorFormPremium({
     reset,
     formState: { errors, isValid, isDirty },
   } = useForm<DistribuidorFormData>({
-    resolver: zodResolver(DistribuidorFormSchema),
+    resolver: zodResolver(DistribuidorFormSchema) as any,
     defaultValues: {
       nombre: initialData?.nombre || '',
       empresa: initialData?.empresa || '',

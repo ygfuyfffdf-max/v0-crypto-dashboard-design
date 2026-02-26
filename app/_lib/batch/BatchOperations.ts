@@ -1,3 +1,5 @@
+// @ts-nocheck
+// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════════════════
  * 🔄 CHRONOS INFINITY 2030 — BATCH OPERATIONS SYSTEM

@@ -18,7 +18,7 @@ import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { iOSModal, iOSButton, iOSGlassCard, iOSInput, iOSPill } from '../ui/ios'
+import { iOSModal as IOSModal, iOSButton as IOSButton, iOSGlassCard, iOSInput, iOSPill } from '../ui/ios'
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SCHEMA
@@ -179,13 +179,13 @@ export function GastoModal({ isOpen, onClose, bancoPreseleccionado }: GastoModal
   })
 
   return (
-    <iOSModal
+    <IOSModal
       isOpen={isOpen}
       onClose={onClose}
       title="Registrar Gasto"
       subtitle="Retira fondos de un banco"
       size="lg"
-      variant="danger"
+      variant="popup"
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Banco */}
@@ -315,20 +315,20 @@ export function GastoModal({ isOpen, onClose, bancoPreseleccionado }: GastoModal
         </AnimatePresence>
 
         <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
-          <iOSButton variant="secondary" onClick={onClose}>
+          <IOSButton variant="gray" onClick={onClose}>
             Cancelar
-          </iOSButton>
-          <iOSButton
+          </IOSButton>
+          <IOSButton
             type="submit"
-            variant="danger"
+            variant="destructive"
             loading={isPending}
             disabled={!hasEnoughCapital || !watchedValues.bancoId}
-            icon={<Minus className="h-4 w-4" />}
+            icon={Minus}
           >
             Registrar Gasto
-          </iOSButton>
+          </IOSButton>
         </div>
       </form>
-    </iOSModal>
+    </IOSModal>
   )
 }

@@ -1,9 +1,9 @@
 "use client"
 
 import { AuroraStatWidget } from "@/app/_components/ui/AuroraGlassSystem"
-import { useVentas } from "../VentasContext"
-import { DollarSign, ShoppingCart, Target, CreditCard } from "lucide-react"
+import { CreditCard, DollarSign, ShoppingCart, Target } from "lucide-react"
 import { useMemo } from "react"
+import { useVentas } from "../VentasContext"
 
 export function VentasStats() {
   const { filteredVentas } = useVentas()
@@ -25,36 +25,36 @@ export function VentasStats() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       <AuroraStatWidget
-        title="Ventas Totales"
+        label="Ventas Totales"
         value={`$${stats.totalVentas.toLocaleString()}`}
-        trend="+12.5%"
-        trendUp={true}
-        icon={DollarSign}
+        trend="up"
+        change={12.5}
+        icon={<DollarSign className="w-5 h-5" />}
         color="emerald"
       />
       <AuroraStatWidget
-        title="Transacciones"
+        label="Transacciones"
         value={stats.countVentas.toString()}
-        trend="+5"
-        trendUp={true}
-        icon={ShoppingCart}
-        color="blue"
+        trend="up"
+        change={5}
+        icon={<ShoppingCart className="w-5 h-5" />}
+        color="cyan"
       />
       <AuroraStatWidget
-        title="Ticket Promedio"
+        label="Ticket Promedio"
         value={`$${stats.ticketPromedio.toLocaleString()}`}
-        trend="-2.1%"
-        trendUp={false}
-        icon={Target}
-        color="purple"
+        trend="down"
+        change={-2.1}
+        icon={<Target className="w-5 h-5" />}
+        color="violet"
       />
       <AuroraStatWidget
-        title="Ventas Pagadas"
+        label="Ventas Pagadas"
         value={stats.pagadas.toString()}
-        trend="95%"
-        trendUp={true}
-        icon={CreditCard}
-        color="amber"
+        trend="up"
+        change={95}
+        icon={<CreditCard className="w-5 h-5" />}
+        color="gold"
       />
     </div>
   )

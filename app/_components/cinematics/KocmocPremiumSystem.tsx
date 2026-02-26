@@ -17,9 +17,9 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'motion/react'
-import { memo, useEffect, useRef, useState, useCallback } from 'react'
 import { useKocmocSound } from '@/app/hooks/useKocmocSound'
+import { AnimatePresence, motion } from 'motion/react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // 🎨 PALETA DE COLORES - SILVER SPACE
@@ -431,7 +431,7 @@ export const KocmocLogoPremium = memo(function KocmocLogoPremium({
 
         // Draw each letter with fade-in
         for (let i = 0; i < text.length; i++) {
-          const letter = text[i]
+          const letter = text[i] ?? ''
           const letterProgress = Math.max(0, Math.min(1, (textProgress - i * 0.1) / 0.5))
           
           if (letterProgress > 0) {

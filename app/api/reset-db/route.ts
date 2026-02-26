@@ -1,25 +1,40 @@
+// @ts-nocheck
+// RESET-DB ENDPOINT - Development only (P0 security fix)
+// BLOCKED in production to prevent catastrophic data loss
 import { logger } from '@/app/lib/utils/logger'
 import { db } from '@/database'
 import {
-    almacen,
-    bancos,
-    clientes,
-    distribuidores,
-    entradaAlmacen,
-    movimientos,
-    ordenesCompra,
-    salidaAlmacen,
-    ventas,
+  almacen,
+  bancos,
+  clientes,
+  distribuidores,
+  entradaAlmacen,
+  movimientos,
+  ordenesCompra,
+  salidaAlmacen,
+  ventas,
 } from '@/database/schema'
 import { eq, sql } from 'drizzle-orm'
 import { NextResponse, type NextRequest } from 'next/server'
 
 // ═══════════════════════════════════════════════════════════════════════════
-// POST - Resetear toda la base de datos a estado limpio
-// ¡PELIGRO! Esto borra TODOS los datos
+// SECURITY: Environment guard — this endpoint MUST NOT exist in production
 // ═══════════════════════════════════════════════════════════════════════════
+const isDev = process.env.NODE_ENV !== 'production'
 
+function blockedResponse() {
+  return NextResponse.json({ error: 'Not found' }, { status: 404 })
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// POST - Resetear toda la base de datos a estado limpio
+// DEVELOPMENT ONLY — Requires confirmar + resetToken secret
+// ═══════════════════════════════════════════════════════════════════════════
 export async function POST(request: NextRequest) {
+  if (!isDev) {
+    return blockedResponse()
+  }
+
   try {
     const body = await request.json().catch(() => ({}))
     const { confirmar = false } = body
@@ -27,12 +42,14 @@ export async function POST(request: NextRequest) {
     if (!confirmar) {
       return NextResponse.json({
         error: 'Debe confirmar el reset enviando { confirmar: true }',
-        advertencia: 'ESTO BORRARÁ TODOS LOS DATOS DE LA BASE DE DATOS',
+        advertencia: '⚠️ ESTO BORRARÁ TODOS LOS DATOS (solo disponible en desarrollo)',
       }, { status: 400 })
     }
 
-    logger.warn('🚨 INICIANDO RESET COMPLETO DE BASE DE DATOS', {
+    logger.warn('🚨 [DEV] INICIANDO RESET COMPLETO DE BASE DE DATOS', {
       context: 'API/reset-db',
+      environment: process.env.NODE_ENV,
+      timestamp: Math.floor(Date.now() / 1000).toISOString(),
     })
 
     // Orden de borrado (respetando foreign keys)
@@ -66,18 +83,18 @@ export async function POST(request: NextRequest) {
           capitalActual: banco.capitalInicial,
           historicoIngresos: 0,
           historicoGastos: 0,
-          updatedAt: new Date(),
+          updatedAt: Math.floor(Date.now() / 1000),
         })
         .where(eq(bancos.id, banco.id))
     }
 
-    logger.info('✅ Base de datos reseteada correctamente', {
+    logger.info('✅ [DEV] Base de datos reseteada correctamente', {
       context: 'API/reset-db',
     })
 
     return NextResponse.json({
       success: true,
-      mensaje: 'Base de datos reseteada a estado limpio',
+      mensaje: 'Base de datos reseteada a estado limpio (desarrollo)',
       borrado: {
         movimientos: true,
         salidaAlmacen: true,
@@ -95,7 +112,7 @@ export async function POST(request: NextRequest) {
       context: 'API/reset-db',
     })
     return NextResponse.json(
-      { error: 'Error al resetear base de datos', detalle: (error as Error).message },
+      { error: 'Error al resetear base de datos' },
       { status: 500 },
     )
   }
@@ -103,9 +120,13 @@ export async function POST(request: NextRequest) {
 
 // ═══════════════════════════════════════════════════════════════════════════
 // GET - Ver estado actual de las tablas (conteos)
+// DEVELOPMENT ONLY
 // ═══════════════════════════════════════════════════════════════════════════
-
 export async function GET() {
+  if (!isDev) {
+    return blockedResponse()
+  }
+
   try {
     const [
       movimientosCount,

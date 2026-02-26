@@ -10,7 +10,7 @@ export async function POST() {
       .update(ordenesCompra)
       .set({
         stockActual: sql`${ordenesCompra.cantidad}`,
-        updatedAt: new Date(),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(or(eq(ordenesCompra.stockActual, 0), isNull(ordenesCompra.stockActual)))
 

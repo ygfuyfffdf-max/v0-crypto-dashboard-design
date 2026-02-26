@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════════════════════════════
  * 💱 PROFIT CASA DE CAMBIO — CONFIGURACIÓN DE COMISIONES Y RENTABILIDAD

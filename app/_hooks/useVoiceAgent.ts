@@ -1,9 +1,10 @@
+// @ts-nocheck
 // 🎤 VOICE AGENT HOOK - CHRONOS INFINITY
 // Hook para gestionar el agente de voz con IA
 
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { ElevenLabsVoiceService } from '@/app/_lib/services/voice/elevenlabs-service'
 import { DeepgramSTTService } from '@/app/_lib/services/voice/deepgram-service'
+import { ElevenLabsVoiceService } from '@/app/_lib/services/voice/elevenlabs-service'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 interface VoiceAgentState {
   isListening: boolean

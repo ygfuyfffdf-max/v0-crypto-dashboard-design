@@ -3,7 +3,7 @@
 import { PanelErrorBoundary } from "@/app/_components/chronos-2026/panels/PanelErrorBoundary"
 import { SupremeVentasBackground } from "@/app/_components/chronos-2026/panels/SupremePanelBackgrounds"
 import dynamic from "next/dynamic"
-import { useRouter } from "next/navigation"
+
 
 const AuroraVentasPanelUnified = dynamic(
   () => import("@/app/_components/chronos-2026/panels/ventas"),
@@ -18,11 +18,10 @@ const AuroraVentasPanelUnified = dynamic(
 )
 
 export default function VentasPage() {
-  const router = useRouter()
   return (
     <PanelErrorBoundary panelName="Ventas">
       <SupremeVentasBackground showParticles={false} showGradient showVignette showGrid>
-        <AuroraVentasPanelUnified onNavigate={(path) => router.push(path)} />
+        <AuroraVentasPanelUnified />
       </SupremeVentasBackground>
     </PanelErrorBoundary>
   )

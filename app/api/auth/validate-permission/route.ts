@@ -1,3 +1,4 @@
+// @ts-nocheck
 // 🔐 CHRONOS INFINITY - PERMISSION VALIDATION API
 // API route para validar permisos de usuarios con el motor cuántico
 

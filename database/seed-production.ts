@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ═══════════════════════════════════════════════════════════════
 // CHRONOS INFINITY 2026 — SEED PRODUCCIÓN
 // Inicializa los 7 bancos CON CAPITAL EN CERO para uso real

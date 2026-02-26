@@ -2558,6 +2558,62 @@ body::before {
     opacity: 0.6;
   }
 
+  /* ═══════════════════ LIQUID GLASS + NEO-TACTILE (Hero Board, UX Design Course) ═══════════════ */
+
+  /* Hover elevation — element lifts with shadow (Neo-Tactile) */
+  .neo-tactile-hover-elevate {
+    transition:
+      transform 0.25s var(--ease-out),
+      box-shadow 0.25s var(--ease-out),
+      border-color 0.25s ease;
+  }
+
+  .neo-tactile-hover-elevate:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 40px -12px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Loading glow — cyan-blue spinner (Neo-Tactile loading state) */
+  .neo-tactile-loading-glow {
+    animation: neo-tactile-loading 1.2s ease-in-out infinite;
+  }
+
+  @keyframes neo-tactile-loading {
+    0%,
+    100% {
+      box-shadow: 0 0 12px -2px rgba(6, 182, 212, 0.4);
+      opacity: 0.8;
+    }
+    50% {
+      box-shadow: 0 0 24px -4px rgba(6, 182, 212, 0.6);
+      opacity: 1;
+    }
+  }
+
+  /* Liquid glass base — frosted blur + iridescent edge */
+  .liquid-glass-base {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow:
+      0 4px 24px -8px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  /* Destructive action — unmistakable danger (Make destructive actions unmistakable) */
+  .destructive-action {
+    border: 2px solid rgba(239, 68, 68, 0.5);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5), 0 4px 14px -2px rgba(239, 68, 68, 0.4);
+  }
+
+  .destructive-action:hover {
+    border-color: rgba(248, 113, 113, 0.6);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5), 0 6px 20px -2px rgba(239, 68, 68, 0.5);
+  }
+
   /* Spotlight effect container */
   .spotlight-container {
     position: relative;
@@ -3511,4 +3567,526 @@ a,
     --mesh-hue-2: 200deg;
     --mesh-hue-3: 320deg;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   🎨 CHRONOS INFINITY 2026 — 12 PREMIUM DESIGN IMPROVEMENTS
+   Score target: 87.5/100 → 94/100
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   #1 — NOISE GRAIN OVERLAY (Apple Vision Pro style)
+   Add .glass-grain to any glass container for subtle film-grain texture
+   ───────────────────────────────────────────────────────────────────────────── */
+.glass-grain {
+  position: relative;
+}
+
+.glass-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+  z-index: 1;
+}
+
+/* Grain intensity variants */
+.glass-grain-subtle::after {
+  opacity: 0.02;
+}
+
+.glass-grain-medium::after {
+  opacity: 0.05;
+}
+
+.glass-grain-heavy::after {
+  opacity: 0.08;
+}
+
+/* Animated grain — shifts texture position for dynamic feel */
+.glass-grain-animated::after {
+  animation: grain-drift 8s steps(10) infinite;
+}
+
+@keyframes grain-drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-5%, -5%);
+  }
+  20% {
+    transform: translate(-10%, 5%);
+  }
+  30% {
+    transform: translate(5%, -10%);
+  }
+  40% {
+    transform: translate(-5%, 15%);
+  }
+  50% {
+    transform: translate(-10%, 5%);
+  }
+  60% {
+    transform: translate(15%, 0);
+  }
+  70% {
+    transform: translate(0, 10%);
+  }
+  80% {
+    transform: translate(-15%, 0);
+  }
+  90% {
+    transform: translate(10%, 5%);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   #3 — BORDER LIGHT SWEEP 360° (Conic gradient border rotation)
+   Rotating light sweep along card borders — Apple Card style
+   ───────────────────────────────────────────────────────────────────────────── */
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.border-sweep {
+  position: relative;
+  overflow: hidden;
+}
+
+.border-sweep::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 0%,
+    transparent 55%,
+    rgba(168, 85, 247, 0.5) 70%,
+    rgba(6, 182, 212, 0.4) 80%,
+    rgba(236, 72, 153, 0.3) 88%,
+    transparent 95%
+  );
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  animation: border-sweep-rotate 4s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes border-sweep-rotate {
+  to {
+    --border-angle: 360deg;
+  }
+}
+
+/* Speed variants */
+.border-sweep-slow::before {
+  animation-duration: 8s;
+}
+
+.border-sweep-fast::before {
+  animation-duration: 2s;
+}
+
+/* Color variants */
+.border-sweep-cyan::before {
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 0%,
+    transparent 55%,
+    rgba(6, 182, 212, 0.6) 70%,
+    rgba(34, 211, 238, 0.4) 80%,
+    rgba(103, 232, 249, 0.2) 90%,
+    transparent 95%
+  );
+}
+
+.border-sweep-aurora::before {
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 0%,
+    transparent 40%,
+    rgba(6, 182, 212, 0.4) 50%,
+    rgba(168, 85, 247, 0.5) 62%,
+    rgba(236, 72, 153, 0.4) 74%,
+    rgba(250, 204, 21, 0.3) 86%,
+    transparent 95%
+  );
+}
+
+/* Hover-only sweep */
+.border-sweep-hover::before {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.border-sweep-hover:hover::before {
+  opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   #4 — BLUR TRANSITION ON ENTRY (Frosted glass reveal)
+   Elements fade in from a blurred state — cinematic app-load feel
+   ───────────────────────────────────────────────────────────────────────────── */
+.blur-enter {
+  animation: blur-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes blur-in {
+  from {
+    filter: blur(20px);
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    filter: blur(0px);
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Staggered delay variants for cascading reveals */
+.blur-enter-delay-1 {
+  animation-delay: 0.05s;
+}
+.blur-enter-delay-2 {
+  animation-delay: 0.1s;
+}
+.blur-enter-delay-3 {
+  animation-delay: 0.15s;
+}
+.blur-enter-delay-4 {
+  animation-delay: 0.2s;
+}
+.blur-enter-delay-5 {
+  animation-delay: 0.25s;
+}
+.blur-enter-delay-6 {
+  animation-delay: 0.3s;
+}
+.blur-enter-delay-7 {
+  animation-delay: 0.35s;
+}
+.blur-enter-delay-8 {
+  animation-delay: 0.4s;
+}
+
+/* Softer variant — less dramatic */
+.blur-enter-soft {
+  animation: blur-in-soft 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes blur-in-soft {
+  from {
+    filter: blur(8px);
+    opacity: 0;
+  }
+  to {
+    filter: blur(0px);
+    opacity: 1;
+  }
+}
+
+/* Intense variant — maximum drama */
+.blur-enter-intense {
+  animation: blur-in-intense 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes blur-in-intense {
+  from {
+    filter: blur(40px) saturate(0.5);
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  60% {
+    filter: blur(4px) saturate(1.2);
+    opacity: 0.8;
+  }
+  to {
+    filter: blur(0px) saturate(1);
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   #5 — AMBIENT LIGHT SHIFT (Global environment color cycling)
+   Subtle background hue that shifts over time — living, breathing UI
+   ───────────────────────────────────────────────────────────────────────────── */
+@property --ambient-hue {
+  syntax: "<angle>";
+  initial-value: 270deg;
+  inherits: true;
+}
+
+@property --ambient-saturation {
+  syntax: "<percentage>";
+  initial-value: 60%;
+  inherits: true;
+}
+
+@property --ambient-intensity {
+  syntax: "<number>";
+  initial-value: 0.04;
+  inherits: true;
+}
+
+.ambient-light {
+  animation: ambient-shift 30s ease-in-out infinite;
+}
+
+@keyframes ambient-shift {
+  0%,
+  100% {
+    --ambient-hue: 270deg;
+    --ambient-saturation: 60%;
+  }
+  25% {
+    --ambient-hue: 200deg;
+    --ambient-saturation: 55%;
+  }
+  50% {
+    --ambient-hue: 320deg;
+    --ambient-saturation: 65%;
+  }
+  75% {
+    --ambient-hue: 240deg;
+    --ambient-saturation: 50%;
+  }
+}
+
+/* Ambient glow overlay — add to body or main container */
+.ambient-glow::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 100% 80% at 50% 0%,
+    hsla(var(--ambient-hue), var(--ambient-saturation), 50%, var(--ambient-intensity)) 0%,
+    transparent 60%
+  );
+  transition: background 2s ease;
+}
+
+/* Ambient floor glow — bottom of screen */
+.ambient-floor::after {
+  content: "";
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 120% 100% at 50% 100%,
+    hsla(var(--ambient-hue), var(--ambient-saturation), 40%, 0.03) 0%,
+    transparent 70%
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   #6 — MORPHING BORDER-RADIUS (Organic blob shape animation)
+   Cards subtly morph their corners — alive, breathing feeling
+   ───────────────────────────────────────────────────────────────────────────── */
+.morph-radius {
+  animation: morph-border 8s ease-in-out infinite;
+}
+
+@keyframes morph-border {
+  0%,
+  100% {
+    border-radius: 16px 24px 16px 24px;
+  }
+  14% {
+    border-radius: 24px 16px 24px 16px;
+  }
+  28% {
+    border-radius: 20px 28px 12px 28px;
+  }
+  42% {
+    border-radius: 28px 12px 28px 12px;
+  }
+  57% {
+    border-radius: 12px 28px 20px 24px;
+  }
+  71% {
+    border-radius: 24px 20px 24px 16px;
+  }
+  85% {
+    border-radius: 20px 16px 28px 20px;
+  }
+}
+
+/* Subtle variant — smaller morphing range */
+.morph-radius-subtle {
+  animation: morph-border-subtle 12s ease-in-out infinite;
+}
+
+@keyframes morph-border-subtle {
+  0%,
+  100% {
+    border-radius: 16px 18px 16px 18px;
+  }
+  33% {
+    border-radius: 18px 16px 18px 16px;
+  }
+  66% {
+    border-radius: 17px 19px 15px 19px;
+  }
+}
+
+/* Fast variant for small elements */
+.morph-radius-fast {
+  animation: morph-border 4s ease-in-out infinite;
+}
+
+/* Hover-only morphing */
+.morph-radius-hover {
+  transition: border-radius 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.morph-radius-hover:hover {
+  border-radius: 24px 12px 24px 12px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   #11 — PREMIUM SKELETON SHIMMER (Apple-style content loading)
+   Refined skeleton placeholders with premium shimmer gradient
+   ───────────────────────────────────────────────────────────────────────────── */
+.skeleton-premium {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.02) 0%,
+    rgba(255, 255, 255, 0.04) 40%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  border-radius: 8px;
+}
+
+.skeleton-premium::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(168, 85, 247, 0.06) 20%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(6, 182, 212, 0.06) 80%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-premium-shimmer 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes skeleton-premium-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Skeleton size presets */
+.skeleton-text {
+  height: 14px;
+  width: 80%;
+}
+
+.skeleton-text-sm {
+  height: 10px;
+  width: 60%;
+}
+
+.skeleton-text-lg {
+  height: 18px;
+  width: 90%;
+}
+
+.skeleton-heading {
+  height: 24px;
+  width: 50%;
+}
+
+.skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.skeleton-avatar-lg {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+
+.skeleton-card {
+  height: 120px;
+  width: 100%;
+  border-radius: 12px;
+}
+
+.skeleton-chart {
+  height: 200px;
+  width: 100%;
+  border-radius: 12px;
+}
+
+/* Skeleton group spacing */
+.skeleton-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Staggered shimmer for multiple skeleton items */
+.skeleton-group > .skeleton-premium:nth-child(1)::after {
+  animation-delay: 0s;
+}
+.skeleton-group > .skeleton-premium:nth-child(2)::after {
+  animation-delay: 0.1s;
+}
+.skeleton-group > .skeleton-premium:nth-child(3)::after {
+  animation-delay: 0.2s;
+}
+.skeleton-group > .skeleton-premium:nth-child(4)::after {
+  animation-delay: 0.3s;
+}
+.skeleton-group > .skeleton-premium:nth-child(5)::after {
+  animation-delay: 0.4s;
+}
+
+/* Dark glass skeleton variant */
+.skeleton-glass {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.01) 50%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
 }

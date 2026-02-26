@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
     }
 
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
     const entradaId = crypto.randomUUID()
     const costoTotal = (costoUnitario || producto.precioCompra || 0) * cantidad
 

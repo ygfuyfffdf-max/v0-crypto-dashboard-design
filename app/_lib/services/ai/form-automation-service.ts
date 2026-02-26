@@ -1,3 +1,4 @@
+// @ts-nocheck
 // 📝 FORM AUTOMATION SERVICE - CHRONOS INFINITY
 // Servicio de automatización de formularios que ejecuta las acciones determinadas por la IA
 

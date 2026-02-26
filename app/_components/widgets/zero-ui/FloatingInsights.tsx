@@ -1,8 +1,8 @@
 'use client'
 
-import { motion, AnimatePresence } from 'motion/react'
-import { useEffect, useState } from 'react'
 import { AlertCircle, TrendingUp, Zap } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useEffect, useState } from 'react'
 
 interface Insight {
   id: string
@@ -23,13 +23,14 @@ export function FloatingInsights({ mode }: { mode: 'orb' | 'expanded' }) {
   useEffect(() => {
     if (mode === 'orb') {
       const interval = setInterval(() => {
-        const randomInsight = MOCK_INSIGHTS[Math.floor(Math.random() * MOCK_INSIGHTS.length)]
+        const randomInsight = MOCK_INSIGHTS[Math.floor(Math.random() * MOCK_INSIGHTS.length)] ?? null
         setActiveInsight(randomInsight)
         setTimeout(() => setActiveInsight(null), 4000)
       }, 8000)
       return () => clearInterval(interval)
     } else {
       setActiveInsight(null)
+      return undefined
     }
   }, [mode])
 

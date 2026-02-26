@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * 🧪 CHRONOS TESTING STRATEGY - Estrategia Completa de Testing

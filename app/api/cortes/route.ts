@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { logger } from '@/app/lib/utils/logger'
 import { db } from '@/database'
 import { bancos, movimientos, ordenesCompra, ventas } from '@/database/schema'

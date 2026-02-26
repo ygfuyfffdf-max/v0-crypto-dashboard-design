@@ -4,12 +4,11 @@
  * Objetivo: Sub-milisegundo de latencia para todas las operaciones
  */
 
-import { Pool } from 'pg';
-import { MongoClient, Db, Collection } from 'mongodb';
-import { createClient, RedisClientType } from 'redis';
-import neo4j, { Driver, Session, driver, auth } from 'neo4j-driver';
-import { InfluxDB, WriteApi, Point } from '@influxdata/influxdb-client';
+import { MongoClient } from 'mongodb';
+import neo4j, { Driver, Session } from 'neo4j-driver';
 import { performance } from 'perf_hooks';
+import { Pool } from 'pg';
+import { createClient, RedisClientType } from 'redis';
 
 export interface DatabaseConfig {
   postgresql: {
@@ -298,10 +297,10 @@ export class PolyglotPersistenceEngine {
       const latency = performance.now() - startTime;
 
       // Transformar resultados
-      const records = result.records.map((record: { keys: string[]; get: (index: number) => unknown }) => {
+      const records = result.records.map((record) => {
         const obj: Record<string, unknown> = {};
-        record.keys.forEach((key: string, index: number) => {
-          obj[key] = record.get(index);
+        record.keys.forEach((key, index) => {
+          obj[String(key)] = record.get(index as unknown as number);
         });
         return obj;
       });

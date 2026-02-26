@@ -10,9 +10,9 @@
 'use server'
 
 import {
-  procesarDevolucion as procesarDevolucionService,
-  registrarAuditLog,
-  type DevolucionInput,
+    procesarDevolucion as procesarDevolucionService,
+    registrarAuditLog,
+    type DevolucionInput,
 } from '@/app/_lib/services/business-logic-drizzle.service'
 import { logger } from '@/app/lib/utils/logger'
 import { db } from '@/database'
@@ -132,7 +132,7 @@ export async function solicitarDevolucion(
 
     // 4. Calcular montos
     const devolucionId = `dev_${nanoid(12)}`
-    const ahora = new Date()
+    const ahora = Math.floor(Date.now() / 1000)
     const tipo = input.cantidadDevuelta === venta.cantidad ? 'total' : 'parcial'
     const proporcion = input.cantidadDevuelta / venta.cantidad
 
@@ -164,7 +164,7 @@ export async function solicitarDevolucion(
       reversionUtilidades,
       montoReembolso,
       estadoReembolso: montoReembolso > 0 ? 'pendiente' : 'no_aplica',
-      devolverStock: input.devolverStock ?? true,
+      devolverStock: (input.devolverStock ?? true) ? 1 : 0,
       ocDestinoId: venta.ocId,
       observaciones: input.observaciones || null,
       createdAt: ahora,
@@ -217,8 +217,8 @@ export async function aprobarDevolucion(
       .set({
         estado: 'aprobada',
         aprobadoPor: aprobadoPor || null,
-        fechaAprobacion: new Date(),
-        updatedAt: new Date(),
+        fechaAprobacion: Math.floor(Date.now() / 1000),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(eq(devoluciones.id, devolucionId))
 
@@ -280,7 +280,7 @@ export async function procesarDevolucionCompleta(
         ventaId: devolucion.ventaId,
         cantidadDevuelta: devolucion.cantidadDevuelta,
         motivo: devolucion.motivo as DevolucionInput['motivo'],
-        devolverStock: devolucion.devolverStock ?? true,
+        devolverStock: Boolean(devolucion.devolverStock ?? 1),
         ocDestinoId: devolucion.ocDestinoId || undefined,
         observaciones: devolucion.observaciones || undefined,
         userId: procesadoPor,
@@ -298,9 +298,9 @@ export async function procesarDevolucionCompleta(
       .set({
         estado: 'procesada',
         procesadoPor: procesadoPor || null,
-        fechaProcesamiento: new Date(),
-        stockDevuelto: devolucion.devolverStock ?? true,
-        updatedAt: new Date(),
+        fechaProcesamiento: Math.floor(Date.now() / 1000),
+        stockDevuelto: devolucion.devolverStock ?? 1,
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(eq(devoluciones.id, devolucionId))
 
@@ -350,7 +350,7 @@ export async function rechazarDevolucion(
       .set({
         estado: 'rechazada',
         motivoRechazo,
-        updatedAt: new Date(),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(eq(devoluciones.id, devolucionId))
 

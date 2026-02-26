@@ -340,7 +340,7 @@ export function useAccessibleVariants<T extends Variants>(
             ...variant,
             transition: { duration: 0.01 },
           }
-        } else {
+        } else if (variant !== undefined) {
           simplified[key] = variant
         }
       }

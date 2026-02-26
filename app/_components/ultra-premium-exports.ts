@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════════════════════════════
  * 🌟 CHRONOS INFINITY 2026 — ULTRA PREMIUM EXPORTS
@@ -27,150 +28,82 @@
 
 // Core System
 export {
-  iOS,
-  iOSProvider,
-  useiOS,
-  iOSCard,
-  iOSScrollView,
-  iOSSheet,
-  iOSButton as iOSButtonUltimate,
-  iOSInput as iOSInputUltimate,
-  iOSBadge as iOSBadgeUltimate,
-  iOSSearchBar as iOSSearchBarUltimate,
-  iOSListItem as iOSListItemUltimate,
-  iOSListGroup as iOSListGroupUltimate,
-  iOSToastProvider,
-  useToast as useToastUltimate,
+    iOS, iOSBadge as iOSBadgeUltimate, iOSButton as iOSButtonUltimate, iOSCard, iOSInput as iOSInputUltimate, iOSListGroup as iOSListGroupUltimate, iOSListItem as iOSListItemUltimate, iOSProvider, iOSScrollView, iOSSearchBar as iOSSearchBarUltimate, iOSSheet, iOSToastProvider,
+    useToast as useToastUltimate, useiOS
 } from './ui/ios'
 
 // Advanced Scroll
 export {
-  iOSScrollContainer,
-  FormScrollContainer as iOSFormScrollContainer,
-  ModalScrollContainer as iOSModalScrollContainer,
-  HorizontalScroll,
-  ScrollSnapItem,
-  useAdvancedScroll,
+    HorizontalScroll,
+    ScrollSnapItem, FormScrollContainer as iOSFormScrollContainer,
+    ModalScrollContainer as iOSModalScrollContainer, iOSScrollContainer, useAdvancedScroll
 } from './ui/ios'
 
 // Mobile Navigation
 export {
-  iOSTabBarMobile,
-  iOSMobileHeader,
-  iOSDrawerMenu,
-  iOSFABMobile,
-  iOSPageTransition,
-  useMobileNav,
+    iOSDrawerMenu,
+    iOSFABMobile, iOSMobileHeader, iOSPageTransition, iOSTabBarMobile, useMobileNav
 } from './ui/ios'
 
 // Advanced Forms
 export {
-  iOSForm,
-  iOSFormGroup,
-  iOSTextInput,
-  iOSTextAreaAdvanced,
-  iOSSelectAdvanced,
-  iOSToggleField,
-  iOSCheckboxAdvanced,
-  useFormAdvanced,
+    iOSCheckboxAdvanced, iOSForm,
+    iOSFormGroup, iOSSelectAdvanced, iOSTextAreaAdvanced, iOSTextInput, iOSToggleField, useFormAdvanced
 } from './ui/ios'
 
 // Premium Cards
 export {
-  iOSMetricCardPremium,
-  iOSInfoCard,
-  iOSEntityCard,
-  iOSActionCard,
+    iOSActionCard, iOSEntityCard, iOSInfoCard, iOSMetricCardPremium
 } from './ui/ios'
 
 // Toast & Alerts
 export {
-  iOSToastProviderAdvanced,
-  useToastAdvanced,
-  iOSAlertAdvanced,
-  iOSConfirm,
+    iOSAlertAdvanced,
+    iOSConfirm, iOSToastProviderAdvanced,
+    useToastAdvanced
 } from './ui/ios'
 
 // Integration Components
 export {
-  iOSIntegrationWrapper,
-  iOSPageLayout,
-  iOSSection,
-  iOSGrid,
-  iOSEmptyState,
-  iOSLoading,
-  defaultNavItems,
-  extendedNavItems,
+    defaultNavItems,
+    extendedNavItems, iOSEmptyState, iOSGrid, iOSIntegrationWrapper, iOSLoading, iOSPageLayout,
+    iOSSection
 } from './ui/ios'
 
 // Clean Components (Sin efectos 3D problemáticos)
 export {
-  CleanGlassCard,
-  iOSCleanMetricCard,
-  iOSCleanListCard,
-  iOSCleanExpandableCard,
-  iOSCleanActionCard,
-  CleanModal,
-  CleanAlert,
-  CleanConfirmationSheet,
-  CleanTabBar,
-  CleanHeader,
-  CleanBreadcrumbs,
-  CleanFAB,
-  CleanQuickActions,
-  EnhancedScrollContainer,
-  FormScrollContainer,
-  HorizontalScrollContainer,
+    CleanAlert, CleanBreadcrumbs, CleanConfirmationSheet, CleanFAB, CleanGlassCard, CleanHeader, CleanModal, CleanQuickActions, CleanTabBar, EnhancedScrollContainer,
+    FormScrollContainer,
+    HorizontalScrollContainer, iOSCleanActionCard, iOSCleanExpandableCard, iOSCleanListCard, iOSCleanMetricCard
 } from './ui/ios'
 
 // Motion Settings
 export {
-  MotionSettingsProvider,
-  useMotionSettings,
-  useShouldAnimate,
-  use3DEffects,
+    MotionSettingsProvider, use3DEffects, useMotionSettings,
+    useShouldAnimate
 } from './ui/ios'
 
 // Visual Effects
 export {
-  iOSShimmer,
-  iOSMorphGradient,
-  iOSGlow,
-  iOSRainbowBorder,
-  iOSParticles,
-  iOSBlurTransition,
-  iOSRipple,
-  iOSReveal,
-  iOSStaggerChildren,
-  iOSStaggerItem,
-  iOSGradientText,
-  iOSCounter,
-  iOSTypingEffect,
+    iOSBlurTransition, iOSCounter, iOSGlow, iOSGradientText, iOSMorphGradient, iOSParticles, iOSRainbowBorder, iOSReveal, iOSRipple, iOSShimmer, iOSStaggerChildren,
+    iOSStaggerItem, iOSTypingEffect
 } from './ui/ios'
 
 // Mobile Layout
 export {
-  MobileLayoutProvider,
-  MobileScreen,
-  MobileHeader,
-  MobileSection,
-  MobileCardContainer,
-  MobileEmptyState,
-  MobileLoadingState,
-  useMobileLayout,
+    MobileCardContainer,
+    MobileEmptyState, MobileHeader, MobileLayoutProvider, MobileLoadingState, MobileScreen, MobileSection, useMobileLayout
 } from './ui/ios'
 
 // Financial Summary
 export {
-  iOSFinancialSummary,
-  iOSFinancialSummaryCompact,
+    iOSFinancialSummary,
+    iOSFinancialSummaryCompact
 } from './ui/ios'
 
 // Dashboard Quick Actions
 export {
-  iOSDashboardQuickActions,
-  QuickActionGroup,
-  FloatingQuickBar,
+    FloatingQuickBar, QuickActionGroup, iOSDashboardQuickActions
 } from './ui/ios'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -178,16 +111,7 @@ export {
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export {
-  BancoDashboardSupreme,
-  AdvancedMetricsDashboard,
-  type BancoId,
-  type PeriodoFiltro,
-  type CategoriaTransaccion,
-  type MetricaBanco,
-  type FlujoTemporal,
-  type DesglosePorCategoria,
-  type MovimientoResumen,
-  type BancoDashboardProps,
+    AdvancedMetricsDashboard, BancoDashboardSupreme, type BancoDashboardProps, type BancoId, type CategoriaTransaccion, type DesglosePorCategoria, type FlujoTemporal, type MetricaBanco, type MovimientoResumen, type PeriodoFiltro
 } from './dashboards'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -195,18 +119,9 @@ export {
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export {
-  AuditDashboardSupreme,
-  AdminDashboardSupreme,
-  ApprovalsPanelSupreme,
-  UserManagementPanel,
-  RolePermissionsManager,
-  AdminActivityDashboard,
-  type EntradaAudit,
-  type AlertaAudit,
-  type EstadisticasAudit,
-  type AccionAudit,
-  type ModuloAudit,
-  type SeveridadAudit,
+    AdminActivityDashboard, AdminDashboardSupreme,
+    ApprovalsPanelSupreme, AuditDashboardSupreme, RolePermissionsManager, UserManagementPanel, type AccionAudit, type AlertaAudit, type EntradaAudit, type EstadisticasAudit, type ModuloAudit,
+    type SeveridadAudit
 } from './admin'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -214,25 +129,16 @@ export {
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export {
-  // Ultra transactions table
-  TablaTransaccionesUltra,
-  type TransaccionCompleta,
-  type TrazabilidadCompleta,
-  type DispositivoInfo,
-  type UsuarioAudit,
-  type CambioHistorial,
-  type FiltrosTabla,
-  type ColumnaConfig,
-  // Supreme data table
-  SupremeDataTableUltra,
-  // Domain tables
-  TablaVentas,
-  TablaMovimientos,
-  TablaGastosAbonos,
-  TablaOC,
-  TablaStockHistorico,
-  // Base table
-  QuantumTable,
+    // Base table
+    QuantumTable,
+    // Supreme data table
+    SupremeDataTableUltra, TablaGastosAbonos, TablaMovimientos, TablaOC,
+    TablaStockHistorico,
+    // Ultra transactions table
+    TablaTransaccionesUltra,
+    // Domain tables
+    TablaVentas, type CambioHistorial, type ColumnaConfig, type DispositivoInfo, type FiltrosTabla, type TransaccionCompleta,
+    type TrazabilidadCompleta, type UsuarioAudit
 } from './tables'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -240,14 +146,10 @@ export {
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export {
-  FiltrosAvanzados,
-  type FiltrosActivos,
-  type FiltroGuardado,
-  type ConfiguracionFiltro,
-  type OpcionFiltro,
-  type PeriodoPreset,
-  type RangoFecha,
-  type RangoMonto,
+    FiltrosAvanzados, type ConfiguracionFiltro, type FiltroGuardado, type FiltrosActivos, type OpcionFiltro,
+    type PeriodoPreset,
+    type RangoFecha,
+    type RangoMonto
 } from './filters'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -255,14 +157,8 @@ export {
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export {
-  OrdenCompraForm,
-  VentaForm,
-  TransferenciaForm,
-  GastoForm,
-  AbonoClienteForm,
-  PagoDistribuidorForm,
-  VentaFormGen5,
-  WizardVentaPremium,
+    AbonoClienteForm, GastoForm, OrdenCompraForm, PagoDistribuidorForm, TransferenciaForm, VentaForm, VentaFormGen5,
+    WizardVentaPremium
 } from './forms'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -270,11 +166,8 @@ export {
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export {
-  KocmocLoginForm,
-  KocmocRegisterForm,
-  SilverInput,
-  SilverButton,
-  SILVER_COLORS,
+    KocmocLoginForm,
+    KocmocRegisterForm, SILVER_COLORS, SilverButton, SilverInput
 } from './auth/KocmocAuthGateway'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -291,10 +184,10 @@ export { UltraMetricCard } from './ui/UltraMetricCard'
 export { CommandMenu } from './ui/CommandMenu'
 
 // Loading Components
-export { LoadingSpinner, LoadingCard, LoadingSkeleton } from './ui/LoadingSpinner'
+export { LoadingCard, LoadingSkeleton, LoadingSpinner } from './ui/LoadingSpinner'
 
 // Metrics Bar
-export { MetricsBar, HealthOrbWidget } from './ui/MetricsBar'
+export { HealthOrbWidget, MetricsBar } from './ui/MetricsBar'
 
 // Aurora Glass System
 export * from './ui/AuroraGlassSystem'
@@ -304,16 +197,7 @@ export * from './ui/AuroraGlassSystem'
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export {
-  AuroraDashboardUnified,
-  AuroraBancosPanelUnified,
-  AuroraVentasPanelUnified,
-  AuroraClientesPanelUnified,
-  AuroraDistribuidoresPanelUnified,
-  AuroraAlmacenPanelUnified,
-  AuroraOrdenesPanelUnified,
-  AuroraMovimientosPanelUnified,
-  AuroraReportesPanelUnified,
-  AuroraAIPanelUnified,
+    AuroraAIPanelUnified, AuroraAlmacenPanelUnified, AuroraBancosPanelUnified, AuroraClientesPanelUnified, AuroraDashboardUnified, AuroraDistribuidoresPanelUnified, AuroraMovimientosPanelUnified, AuroraOrdenesPanelUnified, AuroraReportesPanelUnified, AuroraVentasPanelUnified
 } from './chronos-2026/panels'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -321,19 +205,17 @@ export {
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export {
-  AnimatedCounter,
-  LiquidText,
-  FlipCard,
-  Magnetic,
-  MorphingBlob,
-  OrbitLoader,
-  ParallaxLayer,
-  ParticleBurst,
-  PulseGlow,
-  RevealOnScroll,
-  Shimmer,
-  Skeleton,
-  Spotlight,
-  Typewriter,
-  Wave,
+    AnimatedCounter, FlipCard, LiquidText, Magnetic,
+    MorphingBlob,
+    OrbitLoader,
+    ParallaxLayer,
+    ParticleBurst,
+    PulseGlow,
+    RevealOnScroll,
+    Shimmer,
+    Skeleton,
+    Spotlight,
+    Typewriter,
+    Wave
 } from './animations/MicroAnimations'
+

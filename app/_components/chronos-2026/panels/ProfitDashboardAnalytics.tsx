@@ -17,27 +17,25 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
-import { AnimatePresence, motion } from 'motion/react'
-import { memo, useCallback, useEffect, useState } from 'react'
 import {
-  Activity,
-  AlertTriangle,
-  ArrowDown,
-  ArrowUp,
-  BarChart3,
-  CircleDollarSign,
-  Clock,
-  DollarSign,
-  Layers,
-  LineChart,
-  PieChart,
-  RefreshCw,
-  TrendingDown,
-  TrendingUp,
-  Users,
-  Wallet,
-  Zap,
+    Activity,
+    AlertTriangle,
+    ArrowDown,
+    ArrowUp,
+    BarChart3,
+    CircleDollarSign,
+    DollarSign,
+    Layers,
+    LineChart,
+    PieChart,
+    RefreshCw,
+    TrendingDown,
+    TrendingUp,
+    Users,
+    Zap
 } from 'lucide-react'
+import { motion } from 'motion/react'
+import { memo, useCallback, useEffect, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -121,7 +119,7 @@ const KPICard = memo(function KPICard({
   titulo: string
   valor: number
   subtitulo?: string
-  icono: React.ElementType
+  icono: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
   colorIcono: string
   variacion?: number
   formato?: 'numero' | 'moneda' | 'porcentaje'

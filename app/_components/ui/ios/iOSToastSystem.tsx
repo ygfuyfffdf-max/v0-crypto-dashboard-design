@@ -18,29 +18,27 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
+import {
+    AlertTriangle,
+    Bell,
+    CheckCircle2,
+    Info,
+    LucideIcon,
+    Sparkles,
+    X,
+    XCircle
+} from 'lucide-react'
 import { AnimatePresence, motion, PanInfo } from 'motion/react'
 import {
-  memo,
-  ReactNode,
-  useCallback,
-  useState,
-  createContext,
-  useContext,
-  useEffect,
+    createContext,
+    memo,
+    ReactNode,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
 } from 'react'
 import { createPortal } from 'react-dom'
-import {
-  LucideIcon,
-  Check,
-  X,
-  AlertTriangle,
-  Info,
-  AlertCircle,
-  Bell,
-  Sparkles,
-  CheckCircle2,
-  XCircle,
-} from 'lucide-react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TIPOS
@@ -600,6 +598,8 @@ interface iOSConfirmProps {
   variant?: 'default' | 'destructive'
 }
 
+const IOSAlert = iOSAlert
+
 export const iOSConfirm = memo(function iOSConfirm({
   isOpen,
   onClose,
@@ -623,7 +623,7 @@ export const iOSConfirm = memo(function iOSConfirm({
   }, [onConfirm, onClose])
 
   return (
-    <iOSAlert
+    <IOSAlert
       isOpen={isOpen}
       onClose={onClose}
       title={title}
@@ -648,10 +648,8 @@ export const iOSConfirm = memo(function iOSConfirm({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export type {
-  Toast,
-  ToastVariant,
-  ToastContextType,
-  iOSAlertProps,
-  iOSConfirmProps,
-  iOSToastProviderProps,
+    iOSAlertProps,
+    iOSConfirmProps,
+    iOSToastProviderProps, Toast, ToastContextType, ToastVariant
 }
+

@@ -12,10 +12,10 @@
  */
 
 // Advanced metrics dashboard
-export { default as AdvancedMetricsDashboard } from './AdvancedMetricsDashboard'
+export { AdvancedMetricsDashboard } from './AdvancedMetricsDashboard'
 
 // Individual bank dashboard with primordial variables
 export {
-  BancoDashboardSupreme,
-  default as BancoDashboardSupremeDefault
+    BancoDashboardSupreme,
+    default as BancoDashboardSupremeDefault
 } from './BancoDashboardSupreme'

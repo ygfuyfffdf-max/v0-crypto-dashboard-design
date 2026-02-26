@@ -1,8 +1,8 @@
 "use client"
 
-import { useVentas } from "../VentasContext"
 import { AuroraBadge, AuroraButton } from "@/app/_components/ui/AuroraGlassSystem"
-import { Edit3, Trash2, Eye } from "lucide-react"
+import { Edit3, Eye, Trash2 } from "lucide-react"
+import { useVentas } from "../VentasContext"
 
 export function VentasTable() {
   const { filteredVentas, handleDeleteVenta } = useVentas()
@@ -36,14 +36,15 @@ export function VentasTable() {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-center">
                 <AuroraBadge
-                  variant={
+                  variant="solid"
+                  color={
                     venta.estado === "pagada"
-                      ? "success"
+                      ? "emerald"
                       : venta.estado === "pendiente"
-                      ? "warning"
+                      ? "gold"
                       : venta.estado === "cancelada"
-                      ? "destructive"
-                      : "default"
+                      ? "magenta"
+                      : "violet"
                   }
                 >
                   {venta.estado}

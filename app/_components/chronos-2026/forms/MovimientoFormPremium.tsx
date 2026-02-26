@@ -230,7 +230,7 @@ export function MovimientoFormPremium({
     setValue,
     formState: { errors, isValid },
   } = useForm<MovimientoFormData>({
-    resolver: zodResolver(MovimientoFormSchema),
+    resolver: zodResolver(MovimientoFormSchema) as any,
     defaultValues: {
       bancoId: initialData?.bancoId || (defaultBancoId as (typeof BANCO_IDS)[number]),
       tipo: initialData?.tipo || defaultTipo,

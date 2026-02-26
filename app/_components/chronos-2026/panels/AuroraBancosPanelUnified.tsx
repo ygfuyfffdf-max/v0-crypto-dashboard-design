@@ -1,35 +1,38 @@
 "use client"
 
+import {
+    LiquidGlassButton,
+} from "@/app/_components/chronos-2026/primitives/LiquidGlassSystem"
 import { ModalShell } from "@/app/_components/modals/ModalShell"
 import { GlassCurrencyInput, GlassInput, GlassSelect } from "@/app/_components/ui/GlassFormSystem"
 import { cn } from "@/app/_lib/utils"
 import {
-  useBancosData as useBancos,
-  useClientesData,
-  useDistribuidoresData,
-  useRegistrarGasto,
-  useTransferencia,
+    useBancosData as useBancos,
+    useClientesData,
+    useDistribuidoresData,
+    useRegistrarGasto,
+    useTransferencia,
 } from "@/app/hooks/useDataHooks"
 import {
-  Activity,
-  ArrowDownRight,
-  ArrowLeftRight,
-  ArrowUpRight,
-  BarChart3,
-  ChevronRight,
-  CreditCard,
-  DollarSign,
-  Eye,
-  Landmark,
-  PiggyBank,
-  Plus,
-  Receipt,
-  RefreshCw,
-  ShoppingCart,
-  TrendingUp,
-  Truck,
-  Users,
-  Wallet,
+    Activity,
+    ArrowDownRight,
+    ArrowLeftRight,
+    ArrowUpRight,
+    BarChart3,
+    ChevronRight,
+    CreditCard,
+    DollarSign,
+    Eye,
+    Landmark,
+    PiggyBank,
+    Plus,
+    Receipt,
+    RefreshCw,
+    ShoppingCart,
+    TrendingUp,
+    Truck,
+    Users,
+    Wallet,
 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
@@ -186,7 +189,7 @@ function BankCard({
       whileTap={{ scale: 0.98 }}
       className={cn(
         "w-44 shrink-0 snap-start rounded-xl p-4 text-left transition-all duration-300",
-        "border bg-white/3 backdrop-blur-sm",
+        "border bg-white/3 backdrop-blur-sm neo-tactile-hover-elevate",
         selected ? "border-2 shadow-lg" : "border-white/6 hover:border-white/12"
       )}
       style={
@@ -234,7 +237,7 @@ function KpiCardPremium({
   color,
   trend,
 }: {
-  icon: React.ElementType
+  icon: React.ComponentType<{ className?: string }>
   label: string
   value: number
   color: "violet" | "gold" | "plasma" | "emerald"
@@ -357,7 +360,7 @@ function CashFlowChart() {
   }))
 
   const line = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x},${p.y}`).join(" ")
-  const area = `${line} L${pts[pts.length - 1].x},${H - P} L${pts[0].x},${H - P} Z`
+  const area = `${line} L${pts[pts.length - 1]!.x},${H - P} L${pts[0]!.x},${H - P} Z`
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -680,25 +683,20 @@ function BancosModals({
             placeholder="Ej: Venta, Abono, Depósito..."
           />
           <div className="flex gap-2 pt-2">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <LiquidGlassButton
+              variant="accent"
+              size="md"
+              className="flex-1 bg-emerald-500/30 hover:bg-emerald-500/40 text-emerald-300"
               onClick={() => {
                 if (monto > 0) onSubmitIngreso(monto, concepto || "Ingreso manual")
                 handleClose()
               }}
-              className="flex-1 rounded-xl border border-emerald-500/30 bg-emerald-500/20 py-2.5 font-medium text-emerald-400"
             >
               Confirmar
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleClose}
-              className="flex-1 rounded-xl bg-white/5 py-2.5 font-medium text-white/70"
-            >
+            </LiquidGlassButton>
+            <LiquidGlassButton variant="glass" size="md" className="flex-1" onClick={handleClose}>
               Cancelar
-            </motion.button>
+            </LiquidGlassButton>
           </div>
         </div>
       </ModalShell>
@@ -719,25 +717,20 @@ function BancosModals({
             placeholder="Ej: Pago proveedor, Comisión..."
           />
           <div className="flex gap-2 pt-2">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <LiquidGlassButton
+              variant="destructive"
+              size="md"
+              className="flex-1"
               onClick={() => {
                 if (monto > 0) onSubmitGasto(monto, concepto || "Gasto manual")
                 handleClose()
               }}
-              className="flex-1 rounded-xl border border-red-500/30 bg-red-500/20 py-2.5 font-medium text-red-400"
             >
               Confirmar
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleClose}
-              className="flex-1 rounded-xl bg-white/5 py-2.5 font-medium text-white/70"
-            >
+            </LiquidGlassButton>
+            <LiquidGlassButton variant="glass" size="md" className="flex-1" onClick={handleClose}>
               Cancelar
-            </motion.button>
+            </LiquidGlassButton>
           </div>
         </div>
       </ModalShell>
@@ -765,26 +758,21 @@ function BancosModals({
             placeholder="Ej: Transferencia interna"
           />
           <div className="flex gap-2 pt-2">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <LiquidGlassButton
+              variant="secondary"
+              size="md"
+              className="flex-1"
               onClick={() => {
                 if (monto > 0 && bancoDestinoId)
                   onSubmitTransferencia(bancoDestinoId, monto, concepto || "Transferencia")
                 handleClose()
               }}
-              className="flex-1 rounded-xl border border-blue-500/30 bg-blue-500/20 py-2.5 font-medium text-blue-400"
             >
               Transferir
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleClose}
-              className="flex-1 rounded-xl bg-white/5 py-2.5 font-medium text-white/70"
-            >
+            </LiquidGlassButton>
+            <LiquidGlassButton variant="glass" size="md" className="flex-1" onClick={handleClose}>
               Cancelar
-            </motion.button>
+            </LiquidGlassButton>
           </div>
         </div>
       </ModalShell>

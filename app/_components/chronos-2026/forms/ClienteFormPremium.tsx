@@ -73,7 +73,7 @@ export function ClienteFormPremium({
     reset,
     formState: { errors, isValid, isDirty },
   } = useForm<ClienteFormData>({
-    resolver: zodResolver(ClienteFormSchema),
+    resolver: zodResolver(ClienteFormSchema) as any,
     defaultValues: {
       nombre: initialData?.nombre || '',
       telefono: initialData?.telefono || '',

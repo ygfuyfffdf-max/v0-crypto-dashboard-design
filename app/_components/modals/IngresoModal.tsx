@@ -19,7 +19,7 @@ import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { iOSModal, iOSButton, iOSGlassCard, iOSInput, iOSPill } from '../ui/ios'
+import { iOSModal as IOSModal, iOSButton as IOSButton, iOSGlassCard, iOSInput, iOSPill } from '../ui/ios'
 // ═══════════════════════════════════════════════════════════════════════════
 // SCHEMA
 // ═══════════════════════════════════════════════════════════════════════════
@@ -164,7 +164,7 @@ export function IngresoModal({ isOpen, onClose, bancoPreseleccionado }: IngresoM
   })
 
   return (
-    <iOSModal
+    <IOSModal
       isOpen={isOpen}
       onClose={onClose}
       title="Registrar Ingreso"
@@ -307,20 +307,20 @@ export function IngresoModal({ isOpen, onClose, bancoPreseleccionado }: IngresoM
         </AnimatePresence>
 
         <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
-          <iOSButton variant="secondary" onClick={onClose}>
+          <IOSButton variant="gray" onClick={onClose}>
             Cancelar
-          </iOSButton>
-          <iOSButton
+          </IOSButton>
+          <IOSButton
             type="submit"
-            variant="primary"
+            variant="filled"
             loading={isPending}
             disabled={!watchedValues.bancoId || (watchedValues.monto || 0) <= 0}
-            icon={<Plus className="h-4 w-4" />}
+            icon={Plus}
           >
             Registrar Ingreso
-          </iOSButton>
+          </IOSButton>
         </div>
       </form>
-    </iOSModal>
+    </IOSModal>
   )
 }

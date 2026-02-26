@@ -17,7 +17,7 @@ export { EnhancedAuroraButton, EnhancedAuroraCard } from './EnhancedAuroraSystem
 export * from './premium'
 
 // 🛒 COMPLETE FORMS (NEW - Ready-to-use Forms)
-export { VentaFormGen5 } from '../forms/VentaFormGen5'
+// export { VentaFormGen5 } from '../forms/VentaFormGen5' // file not found
 
 // 🌌 QUANTUM ELEVATED UI (Gen 4 - Legacy)
 export {
@@ -31,7 +31,7 @@ export {
     QuantumSelect,
     type ButtonSize,
     type ButtonVariant,
-    type GlassVariant,
+    type GlassVariant
 } from './QuantumElevatedUI'
 
 // Ultra Premium Components
@@ -47,11 +47,7 @@ export { Button, Modal, ModalFooter } from './Modal'
 
 // 🎬 MICRO ANIMATIONS SYSTEM
 export {
-    AnimatedCounter, fadeInDown,
-    fadeInLeft,
-    fadeInRight,
-    // Animation Variants
-    fadeInUp, FlipCard,
+    AnimatedCounter, FlipCard,
     // Animation Components
     LiquidText,
     Magnetic,
@@ -60,11 +56,15 @@ export {
     ParallaxLayer,
     ParticleBurst,
     PulseGlow,
-    RevealOnScroll, scaleIn, Shimmer,
+    RevealOnScroll, Shimmer,
     Skeleton,
-    Spotlight, staggerContainer,
-    staggerItem, Typewriter,
-    Wave,
+    Spotlight, Typewriter,
+    Wave, fadeInDown,
+    fadeInLeft,
+    fadeInRight,
+    // Animation Variants
+    fadeInUp, scaleIn, staggerContainer,
+    staggerItem
 } from '../animations/MicroAnimations'
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -75,115 +75,53 @@ export * from './ios'
 
 // 🆕 CLEAN SYSTEM DIRECT EXPORTS (Sin 3D problemático)
 export {
-  // Clean Cards
-  CleanGlassCard,
-  iOSCleanMetricCard,
-  iOSCleanListCard,
-  iOSCleanExpandableCard,
-  iOSCleanActionCard,
-  // Clean Modals
-  CleanModal,
-  CleanAlert,
-  CleanConfirmationSheet,
-  // Clean Navigation
-  CleanTabBar,
-  CleanHeader,
-  CleanBreadcrumbs,
-  CleanFAB,
-  CleanQuickActions,
-  defaultTabItems,
-  // Enhanced Scroll
-  EnhancedScrollContainer,
-  FormScrollContainer,
-  HorizontalScrollContainer,
-  // Motion Settings
-  MotionSettingsProvider,
-  useMotionSettings,
-  useShouldAnimate,
-  use3DEffects,
+    CleanAlert, CleanBreadcrumbs, CleanConfirmationSheet, CleanFAB,
+    // Clean Cards
+    CleanGlassCard, CleanHeader,
+    // Clean Modals
+    CleanModal, CleanQuickActions,
+    // Clean Navigation
+    CleanTabBar,
+    // Enhanced Scroll
+    EnhancedScrollContainer,
+    FormScrollContainer,
+    HorizontalScrollContainer,
+    // Motion Settings
+    MotionSettingsProvider, defaultTabItems, iOSCleanActionCard, iOSCleanExpandableCard, iOSCleanListCard, iOSCleanMetricCard, use3DEffects, useMotionSettings,
+    useShouldAnimate
 } from './ios'
 
 // Individual iOS exports for convenience
 export {
-  // Core
-  iOSGlassCard,
-  iOSNavBar,
-  iOSSearchBar,
-  iOSButton,
-  iOSToggle,
-  iOSPill,
-  iOSProgress,
-  iOSSkeleton,
-  iOSListItem,
-  iOSListGroup,
-  iOSSegmentedControl,
-  iOSActionSheet,
-  // Modals
-  iOSModal,
-  iOSAlert,
-  iOSConfirmationSheet,
-  // Forms
-  iOSInput,
-  iOSTextArea,
-  iOSSelect,
-  iOSCheckbox,
-  iOSRadioGroup,
-  iOSNumberInput,
-  iOSFormContainer,
-  iOSFormSection,
-  // Navigation
-  iOSTabBar,
-  iOSFAB,
-  iOSBreadcrumbs,
-  iOSPageIndicator,
-  iOSNavigationStack,
-  iOSNavigationPage,
-  iOSQuickActions,
-  iOSSwipeBack,
-  // Scroll
-  iOSScrollView,
-  iOSPullToRefresh,
-  iOSHorizontalScroll,
-  iOSCarouselItem,
-  iOSCollapsibleHeader,
-  iOSInfiniteScroll,
-  iOSSectionList,
-  // Cards
-  iOSMetricCard,
-  iOSListCard,
-  iOSExpandableCard,
-  iOSFeatureCard,
-  iOSTransactionCard,
-  iOSStatsCard,
-  // Config & Hooks
-  iOSSystemConfig,
-  useiOSTheme,
-  useNavigationStack,
-  useFormContext,
-  createSpringConfig,
-  createGlassClasses,
-  isMobileDevice,
-  prefersReducedMotion,
-  // Mobile Layout
-  MobileLayoutProvider,
-  MobileScreen,
-  MobileHeader,
-  MobileSection,
-  MobileCardContainer,
-  MobileEmptyState,
-  MobileLoadingState,
-  useMobileLayout,
-  // Motion Settings
-  MotionSettingsModal,
-  MotionSettingsCompact,
-  // Toast System
-  ToastProvider,
-  useToast,
-  // Dashboard Quick Actions
-  iOSDashboardQuickActions,
-  QuickActionGroup,
-  FloatingQuickBar,
-  // Financial Summary
-  iOSFinancialSummary,
-  iOSFinancialSummaryCompact,
+    FloatingQuickBar, MobileCardContainer,
+    MobileEmptyState, MobileHeader,
+    // Mobile Layout
+    MobileLayoutProvider, MobileLoadingState, MobileScreen, MobileSection, MotionSettingsCompact,
+    // Motion Settings
+    MotionSettingsModal, QuickActionGroup,
+    // Toast System
+    ToastProvider, createGlassClasses, createSpringConfig, iOSActionSheet, iOSAlert, iOSBreadcrumbs, iOSButton, iOSCarouselItem, iOSCheckbox, iOSCollapsibleHeader, iOSConfirmationSheet,
+    // Dashboard Quick Actions
+    iOSDashboardQuickActions, iOSExpandableCard, iOSFAB, iOSFeatureCard,
+    // Financial Summary
+    iOSFinancialSummary,
+    iOSFinancialSummaryCompact, iOSFormContainer,
+    iOSFormSection,
+    // Core
+    iOSGlassCard, iOSHorizontalScroll, iOSInfiniteScroll,
+    // Forms
+    iOSInput, iOSListCard, iOSListGroup, iOSListItem,
+    // Cards
+    iOSMetricCard,
+    // Modals
+    iOSModal, iOSNavBar, iOSNavigationPage, iOSNavigationStack, iOSNumberInput, iOSPageIndicator, iOSPill,
+    iOSProgress, iOSPullToRefresh, iOSQuickActions, iOSRadioGroup,
+    // Scroll
+    iOSScrollView, iOSSearchBar, iOSSectionList, iOSSegmentedControl, iOSSelect, iOSSkeleton, iOSStatsCard, iOSSwipeBack,
+    // Config & Hooks
+    iOSSystemConfig,
+    // Navigation
+    iOSTabBar, iOSTextArea, iOSToggle, iOSTransactionCard, isMobileDevice,
+    prefersReducedMotion, useFormContext, useMobileLayout, useNavigationStack, useToast, useiOSTheme
 } from './ios'
+

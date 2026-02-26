@@ -21,26 +21,19 @@
 'use client'
 
 import { cn } from '@/app/lib/utils'
-import { AnimatePresence, motion } from 'motion/react'
 import {
-  Filter,
-  Save,
-  Star,
-  Trash2,
-  Share2,
-  Download,
-  Upload,
-  Plus,
-  X,
-  Check,
-  Search,
-  Calendar,
-  User,
-  Hash,
-  Type,
-  ChevronDown,
+    Check,
+    Filter,
+    Plus,
+    Save,
+    Search,
+    Share2,
+    Star,
+    Trash2,
+    X
 } from 'lucide-react'
-import React, { useState, useMemo, useCallback } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useMemo, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
 // TIPOS
@@ -695,7 +688,7 @@ function FilterItem({ filter, onApply, onToggleFavorite, onDelete, onShare }: Fi
         <div className="mb-1 flex items-center gap-2">
           <h4 className="text-sm font-semibold text-white">{filter.name}</h4>
           {filter.isShared && (
-            <Share2 className="h-3 w-3 text-blue-400" title="Compartido" />
+            <Share2 className="h-3 w-3 text-blue-400" aria-label="Compartido" />
           )}
           {filter.isDefault && (
             <div className="rounded-full bg-purple-500/20 px-2 py-0.5 text-[10px] font-medium text-purple-400">

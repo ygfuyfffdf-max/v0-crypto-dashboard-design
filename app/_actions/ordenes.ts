@@ -94,7 +94,7 @@ export async function createOrden(input: {
     await db.insert(ordenesCompra).values({
       id,
       distribuidorId: input.distribuidorId,
-      fecha: new Date(),
+      fecha: Math.floor(Date.now() / 1000),
       cantidad: input.cantidad,
       precioUnitario: input.precioUnitario,
       subtotal,
@@ -144,7 +144,7 @@ export async function pagarOrden(input: {
         montoPagado: nuevoMontoPagado,
         montoRestante: Math.max(0, nuevoSaldo),
         estado: nuevoEstado,
-        fechaUltimoPago: new Date(),
+        fechaUltimoPago: Math.floor(Date.now() / 1000),
         numeroPagos: (orden.numeroPagos ?? 0) + 1,
         porcentajePagado: (nuevoMontoPagado / (orden.total ?? 1)) * 100,
         updatedAt: sql`(unixepoch())`,
@@ -158,7 +158,7 @@ export async function pagarOrden(input: {
       tipo: 'gasto',
       monto: input.monto,
       concepto: `Pago orden ${orden.numeroOrden || orden.id}`,
-      fecha: new Date(),
+      fecha: Math.floor(Date.now() / 1000),
       referencia: input.referencia,
     })
 

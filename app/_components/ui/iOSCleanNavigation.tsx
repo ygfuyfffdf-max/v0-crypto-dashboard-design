@@ -18,27 +18,20 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
-import { AnimatePresence, motion, useMotionValue, useTransform } from 'motion/react'
 import {
-  ArrowLeft,
-  Home,
-  LayoutDashboard,
-  Wallet,
-  Users,
-  Package,
-  ShoppingCart,
-  BarChart3,
-  Settings,
-  Plus,
-  LucideIcon,
-  ChevronRight,
-  MoreHorizontal,
-  Search,
-  Bell,
-  Menu,
+    ArrowLeft,
+    ChevronRight,
+    Home,
+    LucideIcon,
+    MoreHorizontal,
+    Plus,
+    ShoppingCart,
+    Users,
+    Wallet
 } from 'lucide-react'
-import { memo, ReactNode, useCallback, useState, useEffect } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 import { usePathname, useRouter } from 'next/navigation'
+import { memo, ReactNode, useCallback, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TAB BAR - Navegación inferior iOS-style
@@ -283,7 +276,7 @@ export const CleanBreadcrumbs = memo(function CleanBreadcrumbs({
   // If too many items, collapse middle ones
   const visibleItems = items.length > maxVisible
     ? [
-        items[0],
+        items[0]!,
         { label: '...', href: undefined },
         ...items.slice(-maxVisible + 1),
       ]
@@ -585,13 +578,7 @@ export const defaultTabItems: TabItem[] = [
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export type {
-  TabItem,
-  CleanTabBarProps,
-  CleanHeaderProps,
-  BreadcrumbItem,
-  CleanBreadcrumbsProps,
-  FABAction,
-  CleanFABProps,
-  QuickAction,
-  CleanQuickActionsProps,
+    BreadcrumbItem,
+    CleanBreadcrumbsProps, CleanFABProps, CleanHeaderProps, CleanQuickActionsProps, CleanTabBarProps, FABAction, QuickAction, TabItem
 }
+

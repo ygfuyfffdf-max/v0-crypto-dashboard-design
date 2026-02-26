@@ -1,13 +1,17 @@
 'use client'
 
 import { useZeroForceVoice } from '@/app/_hooks/useZeroForceVoice'
-import { MetricCard } from './zero-ui/MetricCard'
-import { ActionConfirm } from './zero-ui/ActionConfirm'
-import { Canvas, useFrame, extend } from '@react-three/fiber'
-import { Sphere, shaderMaterial, Float } from '@react-three/drei'
-import * as THREE from 'three'
+import { cn } from '@/app/_lib/utils'
 import { QUANTUM_SHADERS } from '@/app/lib/design-system/quantum-shaders-supreme'
+import { Float, shaderMaterial } from '@react-three/drei'
+import { Canvas, extend, useFrame } from '@react-three/fiber'
+import { Activity, Mic, Minimize2, Phone, Send, Sparkles } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useEffect, useRef, useState } from 'react'
+import * as THREE from 'three'
+import { ActionConfirm } from './zero-ui/ActionConfirm'
 import { FloatingInsights } from './zero-ui/FloatingInsights'
+import { MetricCard } from './zero-ui/MetricCard'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
 // 🌌 ZERO UI QUANTUM WIDGET
@@ -317,13 +321,14 @@ function OrbMesh({ state }: { state: AIState }) {
 
   useFrame((stateThree, delta) => {
     if (materialRef.current) {
+      const u = materialRef.current.uniforms
       // Time update
-      materialRef.current.uniforms.uTime.value = stateThree.clock.elapsedTime
+      if (u.uTime) u.uTime.value = stateThree.clock.elapsedTime
       
       // Pulse sync (Heartbeat logic)
       const targetPulse = state === 'listening' ? 2.0 : state === 'speaking' ? 1.5 : 1.0
-      materialRef.current.uniforms.uPulse.value = THREE.MathUtils.lerp(
-        materialRef.current.uniforms.uPulse.value,
+      if (u.uPulse) u.uPulse.value = THREE.MathUtils.lerp(
+        u.uPulse.value ?? 1.0,
         targetPulse,
         0.1
       )
@@ -334,8 +339,8 @@ function OrbMesh({ state }: { state: AIState }) {
       if (state === 'processing') targetMood = 1.0 // Gold
       if (state === 'speaking') targetMood = 0.5 // Mixed
       
-      materialRef.current.uniforms.uMood.value = THREE.MathUtils.lerp(
-        materialRef.current.uniforms.uMood.value,
+      if (u.uMood) u.uMood.value = THREE.MathUtils.lerp(
+        u.uMood.value ?? 0.0,
         targetMood,
         0.05
       )
@@ -349,6 +354,7 @@ function OrbMesh({ state }: { state: AIState }) {
   return (
     <mesh ref={meshRef}>
       <sphereGeometry args={[1.5, 64, 64]} />
+      {/* @ts-ignore - custom R3F extended material */}
       <quantumOrbMaterial 
         ref={materialRef} 
         transparent={true} 

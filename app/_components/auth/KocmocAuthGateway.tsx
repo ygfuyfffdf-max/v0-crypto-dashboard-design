@@ -63,7 +63,7 @@ interface SilverInputProps {
   placeholder?: string
   value: string
   onChange: (value: string) => void
-  icon?: React.ElementType
+  icon?: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
   error?: string
   disabled?: boolean
   showPasswordToggle?: boolean
@@ -167,7 +167,7 @@ interface SilverButtonProps {
   variant?: 'primary' | 'secondary' | 'ghost'
   loading?: boolean
   disabled?: boolean
-  icon?: React.ElementType
+  icon?: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
   className?: string
 }
 

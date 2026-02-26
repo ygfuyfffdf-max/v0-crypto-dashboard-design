@@ -35,8 +35,8 @@
     "paths": {
       "@/*": ["./*"],
       "@/app/*": ["./app/*"],
-      "@/components/*": ["./app/components/*"],
-      "@/lib/*": ["./app/lib/*"],
+      "@/components/*": ["./app/_components/*", "./app/components/*"],
+      "@/lib/*": ["./lib/*", "./app/lib/*"],
       "@/hooks/*": ["./app/hooks/*"],
       "@/types/*": ["./app/types/*"]
     }

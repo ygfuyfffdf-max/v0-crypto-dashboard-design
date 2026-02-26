@@ -146,19 +146,19 @@ export const SupremeAIUnifiedWidget = () => {
       width: "60px",
       height: "60px",
       borderRadius: "30px",
-      transition: { type: "spring", stiffness: 300, damping: 30 },
+      transition: { type: "spring" as const, stiffness: 300, damping: 30 },
     },
     open: {
       width: "380px",
       height: "500px",
       borderRadius: "24px",
-      transition: { type: "spring", stiffness: 300, damping: 30 },
+      transition: { type: "spring" as const, stiffness: 300, damping: 30 },
     },
     expanded: {
       width: "800px",
       height: "600px",
       borderRadius: "24px",
-      transition: { type: "spring", stiffness: 300, damping: 30 },
+      transition: { type: "spring" as const, stiffness: 300, damping: 30 },
     },
   }
 

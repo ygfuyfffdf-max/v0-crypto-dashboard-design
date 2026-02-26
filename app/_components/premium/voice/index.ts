@@ -1,5 +1,6 @@
 // Premium Voice Components - Zero Force Integration
-export { default as ZeroForceVoiceWidget } from './ZeroForceVoiceWidget'
+import ZeroForceVoiceWidget from './ZeroForceVoiceWidget'
+export { ZeroForceVoiceWidget }
 export type { ZeroForceVoiceWidgetProps } from './ZeroForceVoiceWidget'
 
 // Voice Services

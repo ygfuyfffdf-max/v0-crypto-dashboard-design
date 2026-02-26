@@ -1,13 +1,15 @@
 'use client'
 
-import { useRef, useMemo, memo } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { Points, PointMaterial, Cloud, Float, Stars, Sparkles } from '@react-three/drei'
-import { Bloom, Vignette, Noise } from '@react-three/postprocessing'
-import * as THREE from 'three'
 import { WebGLErrorBoundary } from '@/app/_components/chronos-2026/3d/WebGLErrorBoundary'
 import { SafeEffectComposer } from '@/app/_components/chronos-2026/3d/effects/SafeEffectComposer'
+import { Cloud, Float, PointMaterial, Points, Sparkles } from '@react-three/drei'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { Bloom, Noise, Vignette } from '@react-three/postprocessing'
+import { memo, useMemo, useRef } from 'react'
+import * as THREE from 'three'
 import { SILVER_SPACE_COLORS } from './KocmocPremiumSystem'
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const AnyCloud = Cloud as any
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // 🌌 SILVER SPACE 3D SCENE
@@ -59,7 +61,7 @@ function FloatingNebula() {
   return (
     <group>
       <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
-        <Cloud
+        <AnyCloud
           opacity={0.15}
           speed={0.2} // Rotation speed
           width={20} // Width of the full cloud
@@ -71,7 +73,7 @@ function FloatingNebula() {
         />
       </Float>
       <Float speed={1.2} rotationIntensity={0.3} floatIntensity={0.4}>
-        <Cloud
+        <AnyCloud
           opacity={0.1}
           speed={0.15}
           width={15}

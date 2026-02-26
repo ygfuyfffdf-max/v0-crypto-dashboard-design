@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ═══════════════════════════════════════════════════════════════════════════════════════════════════
  * 🔄 CHRONOS INFINITY 2026 — SISTEMA DE WORKFLOWS Y APROBACIONES MULTI-NIVEL

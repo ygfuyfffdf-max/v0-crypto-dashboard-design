@@ -17,7 +17,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import {
   Download,
   FileText,
@@ -110,7 +110,7 @@ const formatosDisponibles: {
   id: FormatoExport
   nombre: string
   descripcion: string
-  icono: React.ElementType
+  icono: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
   extension: string
 }[] = [
   {
@@ -797,7 +797,7 @@ export default function ExportModalAdvanced({
               variant="outline"
               onClick={() => {
                 if (pasoIndex > 0) {
-                  setPaso(pasos[pasoIndex - 1])
+                  setPaso(pasos[pasoIndex - 1]!)
                 } else {
                   onOpenChange(false)
                 }
@@ -810,7 +810,7 @@ export default function ExportModalAdvanced({
             <Button
               onClick={() => {
                 if (pasoIndex < pasos.length - 1) {
-                  setPaso(pasos[pasoIndex + 1])
+                  setPaso(pasos[pasoIndex + 1]!)
                 } else {
                   handleExportar()
                 }

@@ -22,73 +22,67 @@
 
 import { cn } from '@/app/_lib/utils'
 import { formatCurrency } from '@/app/_lib/utils/formatters'
-import { AnimatePresence, motion } from 'motion/react'
-import { memo, useCallback, useMemo, useState } from 'react'
 import {
-  Activity,
-  AlertCircle,
-  ArrowDownLeft,
-  ArrowDownRight,
-  ArrowRight,
-  ArrowUpLeft,
-  ArrowUpRight,
-  Banknote,
-  BarChart3,
-  Calendar,
-  CalendarDays,
-  CalendarRange,
-  CheckCircle2,
-  ChevronDown,
-  ChevronRight,
-  CircleDollarSign,
-  Clock,
-  CreditCard,
-  DollarSign,
-  Download,
-  Edit,
-  ExternalLink,
-  Eye,
-  FileBarChart,
-  Filter,
-  History,
-  Info,
-  Landmark,
-  Layers,
-  LineChart,
-  Loader2,
-  MoreHorizontal,
-  PieChart,
-  Plus,
-  Receipt,
-  RefreshCw,
-  Scissors,
-  Send,
-  Settings,
-  Sparkles,
-  Tag,
-  Target,
-  TrendingDown,
-  TrendingUp,
-  Truck,
-  Wallet,
-  X,
-  Zap,
+    Activity,
+    ArrowDownLeft,
+    ArrowDownRight,
+    ArrowUpLeft,
+    ArrowUpRight,
+    BarChart3,
+    Calendar,
+    CalendarDays,
+    CalendarRange,
+    CheckCircle2,
+    ChevronRight,
+    Clock,
+    CreditCard,
+    DollarSign,
+    Download,
+    Edit,
+    Filter,
+    Landmark,
+    LineChart,
+    MoreHorizontal,
+    PieChart,
+    Plus,
+    Receipt,
+    RefreshCw,
+    Scissors,
+    Send,
+    Settings,
+    Sparkles,
+    TrendingDown,
+    TrendingUp,
+    Truck,
+    Wallet,
+    X
 } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import dynamic from 'next/dynamic'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 
 // Lazy load charts
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ResponsiveContainer = dynamic(
-  () => import('recharts').then((mod) => mod.ResponsiveContainer),
+  () => import('recharts').then((mod) => mod.ResponsiveContainer as any),
   { ssr: false }
-)
-const AreaChart = dynamic(() => import('recharts').then((mod) => mod.AreaChart), { ssr: false })
-const Area = dynamic(() => import('recharts').then((mod) => mod.Area), { ssr: false })
-const BarChart = dynamic(() => import('recharts').then((mod) => mod.BarChart), { ssr: false })
-const Bar = dynamic(() => import('recharts').then((mod) => mod.Bar), { ssr: false })
-const XAxis = dynamic(() => import('recharts').then((mod) => mod.XAxis), { ssr: false })
-const YAxis = dynamic(() => import('recharts').then((mod) => mod.YAxis), { ssr: false })
-const CartesianGrid = dynamic(() => import('recharts').then((mod) => mod.CartesianGrid), { ssr: false })
-const Tooltip = dynamic(() => import('recharts').then((mod) => mod.Tooltip), { ssr: false })
+) as React.ComponentType<any>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const AreaChart = dynamic(() => import('recharts').then((mod) => mod.AreaChart as any), { ssr: false }) as React.ComponentType<any>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Area = dynamic(() => import('recharts').then((mod) => mod.Area as any), { ssr: false }) as React.ComponentType<any>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const BarChart = dynamic(() => import('recharts').then((mod) => mod.BarChart as any), { ssr: false }) as React.ComponentType<any>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Bar = dynamic(() => import('recharts').then((mod) => mod.Bar as any), { ssr: false }) as React.ComponentType<any>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const XAxis = dynamic(() => import('recharts').then((mod) => mod.XAxis as any), { ssr: false }) as React.ComponentType<any>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const YAxis = dynamic(() => import('recharts').then((mod) => mod.YAxis as any), { ssr: false }) as React.ComponentType<any>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CartesianGrid = dynamic(() => import('recharts').then((mod) => mod.CartesianGrid as any), { ssr: false }) as React.ComponentType<any>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Tooltip = dynamic(() => import('recharts').then((mod) => mod.Tooltip as any), { ssr: false }) as React.ComponentType<any>
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -518,7 +512,7 @@ const FlowChart = memo(function FlowChart({ data }: FlowChartProps) {
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
           <XAxis dataKey="fecha" stroke="rgba(255,255,255,0.3)" fontSize={12} />
-          <YAxis stroke="rgba(255,255,255,0.3)" fontSize={12} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+          <YAxis stroke="rgba(255,255,255,0.3)" fontSize={12} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}k`} />
           <Tooltip
             contentStyle={{
               backgroundColor: 'rgba(0,0,0,0.9)',

@@ -18,13 +18,13 @@
 import { cn } from '@/app/_lib/utils'
 import { motion } from 'motion/react'
 import {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
+    memo,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+    type ReactNode,
 } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -99,7 +99,7 @@ function VirtualizedListInner<T>(
     for (let i = start; i <= end; i++) {
       virtual.push({
         index: i,
-        item: items[i],
+        item: items[i]!,
         style: {
           position: 'absolute',
           top: i * itemWithGap,
@@ -286,7 +286,7 @@ function VirtualizedGridInner<T>(
 
         virtual.push({
           index,
-          item: items[index],
+          item: items[index]!,
           style: {
             position: 'absolute',
             top: row * rowHeight,

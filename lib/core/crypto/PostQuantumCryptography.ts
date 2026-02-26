@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { PostQuantumKeyPair, QuantumSignature, HybridKeyPair, CryptoConfig } from './types';
 
 export class PostQuantumCryptography {

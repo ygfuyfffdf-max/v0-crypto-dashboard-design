@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, MotionProps } from 'framer-motion';
 import { Loader2 } from 'lucide-react';

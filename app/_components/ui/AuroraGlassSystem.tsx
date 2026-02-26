@@ -668,9 +668,10 @@ function generateSparklineAreaPath(data: number[]): string {
 export interface AuroraButtonProps {
   children: ReactNode
   onClick?: () => void
-  variant?: "primary" | "secondary" | "ghost" | "glow"
+  type?: "button" | "submit" | "reset"
+  variant?: "primary" | "secondary" | "ghost" | "glow" | "glass"
   color?: "violet" | "cyan" | "magenta" | "emerald" | "gold"
-  size?: "sm" | "md" | "lg"
+  size?: "sm" | "md" | "lg" | "icon"
   icon?: ReactNode
   iconPosition?: "left" | "right"
   disabled?: boolean
@@ -681,6 +682,7 @@ export interface AuroraButtonProps {
 export function AuroraButton({
   children,
   onClick,
+  type = "button",
   variant = "primary",
   color = "violet",
   size = "md",
@@ -690,6 +692,9 @@ export function AuroraButton({
   loading = false,
   className,
 }: AuroraButtonProps) {
+  // Normalize aliases
+  const normalizedVariant = variant === "glass" ? "ghost" : variant
+  const normalizedSize = size === "icon" ? "sm" : size
   const colorConfig = AURORA_COLORS[color]
   const [ripples, setRipples] = useState<{ x: number; y: number; id: number }[]>([])
 
@@ -727,18 +732,19 @@ export function AuroraButton({
   return (
     <motion.button
       onClick={handleClick}
+      type={type}
       disabled={disabled || loading}
       className={cn(
         "transition-spring relative overflow-hidden rounded-xl font-medium hover:scale-105",
         "flex items-center justify-center gap-2",
-        sizeStyles[size],
-        variantStyles[variant],
+        sizeStyles[normalizedSize],
+        variantStyles[normalizedVariant],
         disabled && "cursor-not-allowed opacity-50",
         className
       )}
       style={{
-        borderColor: variant === "glow" ? colorConfig.primary : undefined,
-        boxShadow: variant === "glow" ? `0 0 20px ${colorConfig.glow}` : undefined,
+        borderColor: normalizedVariant === "glow" ? colorConfig.primary : undefined,
+        boxShadow: normalizedVariant === "glow" ? `0 0 20px ${colorConfig.glow}` : undefined,
       }}
       whileHover={{
         scale: disabled ? 1 : 1.03,
@@ -748,7 +754,7 @@ export function AuroraButton({
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
       {/* Rotating border glow for glow variant */}
-      {variant === "glow" && (
+      {normalizedVariant === "glow" && (
         <motion.div
           className="pointer-events-none absolute -inset-[2px] rounded-xl opacity-70"
           style={{
@@ -761,7 +767,7 @@ export function AuroraButton({
       )}
 
       {/* Inner background for glow variant */}
-      {variant === "glow" && <div className="absolute inset-[2px] rounded-[10px] bg-black/80" />}
+      {normalizedVariant === "glow" && <div className="absolute inset-[2px] rounded-[10px] bg-black/80" />}
 
       {/* Ripple effects */}
       {ripples.map((ripple) => (

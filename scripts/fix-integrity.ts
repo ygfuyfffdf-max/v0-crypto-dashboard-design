@@ -136,7 +136,7 @@ async function fixGYADistribution(): Promise<number> {
         gananciaPorUnidad,
         margenSobreCosto: costoTotal > 0 ? (gananciaTotal / costoTotal) * 100 : 0,
         porcentajePagado: proporcion * 100,
-        updatedAt: new Date(),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(eq(ventas.id, venta.id))
 
@@ -193,13 +193,13 @@ async function generateHistoricalMovements(): Promise<number> {
         bancoId: banco.id,
         tipo: "ingreso",
         monto: diferenciaIngresos,
-        fecha: new Date(),
+        fecha: Math.floor(Date.now() / 1000),
         concepto: "Ajuste histórico de ingresos - Migración",
         referencia: `AJUSTE-${Date.now()}`,
         categoria: "Ajustes",
         observaciones:
           "Movimiento generado automáticamente para sincronizar histórico con movimientos",
-        createdAt: new Date(),
+        createdAt: Math.floor(Date.now() / 1000),
       })
 
       log(
@@ -216,13 +216,13 @@ async function generateHistoricalMovements(): Promise<number> {
         bancoId: banco.id,
         tipo: "gasto",
         monto: diferenciaEgresos,
-        fecha: new Date(),
+        fecha: Math.floor(Date.now() / 1000),
         concepto: "Ajuste histórico de gastos - Migración",
         referencia: `AJUSTE-${Date.now()}`,
         categoria: "Ajustes",
         observaciones:
           "Movimiento generado automáticamente para sincronizar histórico con movimientos",
-        createdAt: new Date(),
+        createdAt: Math.floor(Date.now() / 1000),
       })
 
       log("cyan", `   📤 ${banco.nombre}: Gasto de ajuste $${diferenciaEgresos.toLocaleString()}`)
@@ -284,7 +284,7 @@ async function syncAbonosWithVentas(): Promise<number> {
         ventaId: venta.id,
         clienteId: venta.clienteId,
         monto: diferencia,
-        fecha: new Date(),
+        fecha: Math.floor(Date.now() / 1000),
         proporcion,
         montoBovedaMonte,
         montoFletes,
@@ -293,7 +293,7 @@ async function syncAbonosWithVentas(): Promise<number> {
         montoRestantePostAbono: venta.montoRestante || 0,
         estadoPagoResultante: venta.estadoPago || "pendiente",
         concepto: "Abono de sincronización - Migración",
-        createdAt: new Date(),
+        createdAt: Math.floor(Date.now() / 1000),
       })
 
       // Actualizar contador de abonos en la venta
@@ -301,9 +301,9 @@ async function syncAbonosWithVentas(): Promise<number> {
         .update(ventas)
         .set({
           numeroAbonos: (abonoInfo?.count || 0) + 1,
-          fechaPrimerAbono: venta.fechaPrimerAbono || new Date(),
-          fechaUltimoAbono: new Date(),
-          updatedAt: new Date(),
+          fechaPrimerAbono: venta.fechaPrimerAbono || Math.floor(Date.now() / 1000),
+          fechaUltimoAbono: Math.floor(Date.now() / 1000),
+          updatedAt: Math.floor(Date.now() / 1000),
         })
         .where(eq(ventas.id, venta.id))
 
@@ -343,7 +343,7 @@ async function recalculateBankCapital(): Promise<number> {
         .update(bancos)
         .set({
           capitalActual: capitalCalculado,
-          updatedAt: new Date(),
+          updatedAt: Math.floor(Date.now() / 1000),
         })
         .where(eq(bancos.id, banco.id))
 
@@ -374,7 +374,7 @@ async function main() {
   log("cyan", "║       CHRONOS - CORRECCIÓN DE INTEGRIDAD DE DATOS             ║")
   log("cyan", "╚════════════════════════════════════════════════════════════════╝")
   console.log("")
-  log("blue", `📅 Fecha: ${new Date().toLocaleString("es-MX")}`)
+  log("blue", `📅 Fecha: ${Math.floor(Date.now() / 1000).toLocaleString("es-MX")}`)
   console.log("")
 
   try {

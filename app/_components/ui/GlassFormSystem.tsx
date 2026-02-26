@@ -591,7 +591,7 @@ export function GlassAutocomplete({
         case "Enter":
           e.preventDefault()
           if (highlightIndex >= 0 && highlightIndex < filtered.length) {
-            selectOption(filtered[highlightIndex])
+            selectOption(filtered[highlightIndex]!)
           } else if (highlightIndex === filtered.length && onCreateNew && search) {
             onCreateNew(search)
             setSearch("")

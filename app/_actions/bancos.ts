@@ -5,7 +5,7 @@ import { db } from '@/database'
 import { bancos, movimientos } from '@/database/schema'
 import { desc, eq, sql } from 'drizzle-orm'
 import { nanoid } from 'nanoid'
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { revalidatePath, unstable_cache } from 'next/cache'
 import { z } from 'zod'
 import { type ActionResult, ActionHelpers } from './types'
 
@@ -52,7 +52,7 @@ type BancoConMovimientos = BancoData & {
 const getBancosCached = unstable_cache(
   async () => {
     return await db.query.bancos.findMany({
-      where: eq(bancos.activo, true),
+      where: eq(bancos.activo, 1),
       orderBy: (bancos, { asc }) => [asc(bancos.orden)],
     })
   },
@@ -169,7 +169,7 @@ export async function transferirEntreBancos(input: TransferenciaBancosInput) {
   }
 
   const { data } = parsed
-  const now = new Date()
+  const now = Math.floor(Date.now() / 1000)
 
   if (data.bancoOrigenId === data.bancoDestinoId) {
     return { error: 'Los bancos de origen y destino deben ser diferentes' }
@@ -273,7 +273,7 @@ export async function registrarGasto(formData: FormData) {
   }
 
   const { data } = parsed
-  const now = new Date()
+  const now = Math.floor(Date.now() / 1000)
 
   try {
     // Verificar fondos
@@ -335,7 +335,7 @@ export async function getCapitalTotal() {
         gastosHistoricos: sql<number>`sum(${bancos.historicoGastos})`,
       })
       .from(bancos)
-      .where(eq(bancos.activo, true))
+      .where(eq(bancos.activo, 1))
 
     const result = resultQuery[0]
     return {
@@ -429,7 +429,7 @@ export async function registrarIngreso(formData: FormData) {
   }
 
   const { data } = parsed
-  const now = new Date()
+  const now = Math.floor(Date.now() / 1000)
 
   try {
     await db.transaction(async (tx) => {
@@ -484,7 +484,7 @@ export async function realizarCorte(input: CorteInput) {
   }
 
   const { data } = parsed
-  const now = new Date()
+  const now = Math.floor(Date.now() / 1000)
 
   try {
     // Obtener capital actual del banco
@@ -567,14 +567,16 @@ export async function getResumenCorteBanco(input: {
     }
 
     // Rango de fechas (por defecto hoy)
-    const desde =
-      fechaDesde ??
-      (() => {
-        const d = new Date()
-        d.setHours(0, 0, 0, 0)
-        return d
-      })()
-    const hasta = fechaHasta ?? new Date()
+    const desde = fechaDesde
+      ? Math.floor(fechaDesde.getTime() / 1000)
+      : (() => {
+          const d = new Date()
+          d.setHours(0, 0, 0, 0)
+          return Math.floor(d.getTime() / 1000)
+        })()
+    const hasta = fechaHasta
+      ? Math.floor(fechaHasta.getTime() / 1000)
+      : Math.floor(Date.now() / 1000)
 
     const movimientosRango = await db.query.movimientos.findMany({
       where: (m, { and, gte, lte }) =>
@@ -668,7 +670,7 @@ export async function deleteMovimiento(id: string) {
       return { error: 'Movimiento no encontrado' }
     }
 
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     await db.transaction(async (tx) => {
       // Revertir impacto en banco

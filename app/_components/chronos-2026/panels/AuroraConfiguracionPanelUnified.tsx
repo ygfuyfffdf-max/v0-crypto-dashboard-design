@@ -90,7 +90,7 @@ function SectionCard({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay, ease: [0.4, 0, 0.2, 1] }}
-      className="rounded-2xl border border-white/6 bg-white/3 p-5 backdrop-blur-md"
+      className="rounded-2xl border border-white/6 bg-white/3 p-5 backdrop-blur-md neo-tactile-hover-elevate"
     >
       <div className="mb-5 flex items-center gap-3">
         <div className="rounded-xl bg-white/6 p-2">{icon}</div>

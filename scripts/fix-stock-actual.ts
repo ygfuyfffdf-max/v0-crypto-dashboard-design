@@ -17,7 +17,7 @@ async function fixStockActual() {
       .update(ordenesCompra)
       .set({
         stockActual: sql`cantidad`,
-        updatedAt: new Date(),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(sql`stock_actual = 0 OR stock_actual IS NULL`)
 

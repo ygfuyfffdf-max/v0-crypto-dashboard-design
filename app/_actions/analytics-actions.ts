@@ -52,7 +52,7 @@ export interface DashboardCliente {
   scoreTotal: number
   deudaActual: number
   totalCompras: number
-  ultimaCompra: Date | null
+  ultimaCompra: number | null
 }
 
 export interface DashboardDistribuidor {
@@ -102,14 +102,14 @@ export async function getDashboardKPIs(): Promise<ActionResult<DashboardKPIs>> {
     const capitalTotal = bancosData.reduce((sum, b) => sum + (b.capitalActual || 0), 0)
 
     const mesActual = new Date()
-    const inicioMes = new Date(mesActual.getFullYear(), mesActual.getMonth(), 1)
+    const inicioMesTs = Math.floor(new Date(mesActual.getFullYear(), mesActual.getMonth(), 1).getTime() / 1000)
 
     const ventasMes = ventasData
-      .filter((v) => v.fecha && new Date(v.fecha) >= inicioMes)
+      .filter((v) => v.fecha && v.fecha >= inicioMesTs)
       .reduce((sum, v) => sum + (v.precioTotalVenta || 0), 0)
 
     const gananciaMes = ventasData
-      .filter((v) => v.fecha && new Date(v.fecha) >= inicioMes)
+      .filter((v) => v.fecha && v.fecha >= inicioMesTs)
       .reduce((sum, v) => sum + (v.gananciaTotal || 0), 0)
 
     const deudaClientes = clientesData.reduce((sum, c) => sum + (c.saldoPendiente || 0), 0)
@@ -267,11 +267,11 @@ export async function getDashboardClientes(): Promise<ActionResult<DashboardClie
 
         const ultimaCompra =
           ventasCliente.length > 0
-            ? new Date(Math.max(...ventasCliente.map((v) => v.fecha?.getTime() || 0)))
+            ? Math.max(...ventasCliente.map((v) => (v.fecha ?? 0) * 1000))
             : null
 
         const diasSinComprar = ultimaCompra
-          ? Math.floor((Date.now() - ultimaCompra.getTime()) / (1000 * 60 * 60 * 24))
+          ? Math.floor((Date.now() - ultimaCompra) / (1000 * 60 * 60 * 24))
           : 999
 
         const porcentajePagoPuntual =

@@ -20,16 +20,16 @@
 
 import { cn } from '@/app/_lib/utils'
 import {
-  ArrowDown,
-  ArrowUp,
-  ArrowUpDown,
-  Check,
-  ChevronRight,
-  Filter,
-  Loader2,
-  MoreHorizontal,
-  Search,
-  X,
+    ArrowDown,
+    ArrowUp,
+    ArrowUpDown,
+    Check,
+    ChevronRight,
+    Filter,
+    Loader2,
+    MoreHorizontal,
+    Search,
+    X,
 } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -580,8 +580,4 @@ export function PremiumTable<T extends Record<string, unknown>>({
   )
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-// 📤 EXPORTS
-// ═══════════════════════════════════════════════════════════════════════════════════════════════════
-
-export type { TableColumn, TableProps }
+// TableColumn and TableProps are already exported above via export interface declarations

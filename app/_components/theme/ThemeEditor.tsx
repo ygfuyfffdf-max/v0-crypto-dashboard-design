@@ -579,7 +579,7 @@ export function ThemeEditor() {
 
         <div className="flex gap-2">
           <button
-            onClick={() => setCurrentTheme(PRESET_THEMES[0])}
+            onClick={() => setCurrentTheme(PRESET_THEMES[0] ?? {})}
             className="flex items-center gap-2 rounded-lg bg-white/5 px-4 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-white/10"
           >
             <RefreshCw className="h-4 w-4" />

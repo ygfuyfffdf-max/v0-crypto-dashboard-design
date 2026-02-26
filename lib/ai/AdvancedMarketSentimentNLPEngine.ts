@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { MultiModelAIOrchestration } from './MultiModelAIOrchestration';
 import { QuantumPredictionEngine } from './QuantumPredictionEngine';
 

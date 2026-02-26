@@ -1,9 +1,9 @@
-import { NextResponse, type NextRequest } from 'next/server'
+import { AjusteInventarioSchema } from '@/app/lib/schemas/almacen.schema'
+import { logger } from '@/app/lib/utils/logger'
 import { db } from '@/database'
 import { almacen } from '@/database/schema'
 import { eq } from 'drizzle-orm'
-import { logger } from '@/app/lib/utils/logger'
-import { AjusteInventarioSchema } from '@/app/lib/schemas/almacen.schema'
+import { NextResponse, type NextRequest } from 'next/server'
 
 // ═══════════════════════════════════════════════════════════════════════════
 // POST - Ajustar stock de producto en almacén (ajuste manual de inventario)
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     const stockAnterior = producto.cantidad || 0
     const diferencia = nuevoStock - stockAnterior
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     // Actualizar stock del producto
     await db

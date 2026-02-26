@@ -18,8 +18,8 @@
 'use client'
 
 import { cn } from '@/app/lib/utils'
-import { motion, useReducedMotion, useSpring, useTransform } from 'motion/react'
-import React, { useEffect, useMemo, useRef, useState, ReactNode } from 'react'
+import { motion, useReducedMotion, useSpring } from 'motion/react'
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
 // ANIMATED NUMBER — Número con animación de conteo
@@ -313,7 +313,7 @@ export const Sparkline: React.FC<SparklineProps> = ({
       .map((point, i) => `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
       .join(' ')
 
-    const areaPathD = `${pathD} L ${points[points.length - 1].x} ${height - padding} L ${points[0].x} ${height - padding} Z`
+    const areaPathD = `${pathD} L ${points.at(-1)?.x ?? 0} ${height - padding} L ${points[0]?.x ?? 0} ${height - padding} Z`
 
     return {
       path: pathD,
@@ -686,12 +686,6 @@ export const TrendIndicator: React.FC<TrendIndicatorProps> = ({
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
 export type {
-  AnimatedNumberProps,
-  KPICardProps,
-  SparklineProps,
-  ProgressBarProps,
-  CircularProgressProps,
-  StatComparisonProps,
-  MiniBarChartProps,
-  TrendIndicatorProps,
+    AnimatedNumberProps, CircularProgressProps, KPICardProps, MiniBarChartProps, ProgressBarProps, SparklineProps, StatComparisonProps, TrendIndicatorProps
 }
+

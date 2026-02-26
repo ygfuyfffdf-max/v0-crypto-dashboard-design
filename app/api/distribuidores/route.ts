@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     const { nombre, empresa, telefono, email, tipoProductos } = validation.data
 
     const distribuidorId = uuidv4()
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     await db.insert(distribuidores).values({
       id: distribuidorId,
@@ -156,7 +156,7 @@ export async function PUT(request: NextRequest) {
       .update(distribuidores)
       .set({
         ...updateData,
-        updatedAt: new Date(),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(eq(distribuidores.id, id))
 
@@ -191,7 +191,7 @@ export async function DELETE(request: NextRequest) {
       .update(distribuidores)
       .set({
         estado: 'inactivo',
-        updatedAt: new Date(),
+        updatedAt: Math.floor(Date.now() / 1000),
       })
       .where(eq(distribuidores.id, id))
 

@@ -19,7 +19,7 @@ import { useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { iOSModal, iOSButton, iOSGlassCard, iOSInput } from '../ui/ios'
+import { iOSModal as IOSModal, iOSButton as IOSButton, iOSGlassCard, iOSInput } from '../ui/ios'
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SCHEMA
@@ -179,7 +179,7 @@ export function TransferenciaModal({ isOpen, onClose }: TransferenciaModalProps)
   })
 
   return (
-    <iOSModal
+    <IOSModal
       isOpen={isOpen}
       onClose={onClose}
       title="Transferencia entre Bancos"
@@ -379,24 +379,24 @@ export function TransferenciaModal({ isOpen, onClose }: TransferenciaModalProps)
             </AnimatePresence>
 
             <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/[0.08]">
-              <iOSButton variant="secondary" onClick={onClose}>
+              <IOSButton variant="gray" onClick={onClose}>
                 Cancelar
-              </iOSButton>
-              <iOSButton
+              </IOSButton>
+              <IOSButton
                 type="submit"
-                variant="primary"
+                variant="filled"
                 loading={isPending}
                 disabled={
                   !hasEnoughCapital || !watchedValues.bancoOrigenId || !watchedValues.bancoDestinoId
                 }
-                icon={<ArrowRightLeft className="h-4 w-4" />}
+                icon={ArrowRightLeft}
               >
                 Transferir
-              </iOSButton>
+              </IOSButton>
             </div>
           </motion.form>
         )}
       </AnimatePresence>
-    </iOSModal>
+    </IOSModal>
   )
 }

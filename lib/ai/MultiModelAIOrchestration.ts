@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { getLLMConfig } from '@/lib/ai/get-llm-config';
 
 /**

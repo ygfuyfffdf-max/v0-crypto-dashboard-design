@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ═══════════════════════════════════════════════════════════════
 // CHRONOS INFINITY 2026 — SEED BANCOS
 // Datos iniciales de los 7 bancos del sistema

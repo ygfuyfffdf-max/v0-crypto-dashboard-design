@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * API Route: PROFIT Casa de Cambio - Operaciones
  * GET: Listar operaciones con filtros

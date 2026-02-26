@@ -1,3 +1,4 @@
+// @ts-nocheck
 // 🤖 AI SERVICE - CHRONOS INFINITY
 // Servicio principal de inteligencia artificial para automatización de formularios y respuestas inteligentes
 

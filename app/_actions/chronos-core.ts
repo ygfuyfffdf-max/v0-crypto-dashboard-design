@@ -71,7 +71,7 @@ export async function createOrdenCompraCompleta(
 ): Promise<ActionResult<{ id: string; numeroOrden: string }>> {
   try {
     const validated = CreateOrdenCompletaSchema.parse(input)
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
     const ordenId = nanoid()
     const numeroOrden = `OC-${Date.now().toString(36).toUpperCase()}`
 
@@ -242,7 +242,7 @@ export async function createVentaCompleta(input: CreateVentaCompletaInput): Prom
 > {
   try {
     const validated = CreateVentaCompletaSchema.parse(input)
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
     const ventaId = nanoid()
 
     // Calcular totales según lógica CHRONOS
@@ -503,7 +503,7 @@ export async function abonarVentaCompleta(
 ): Promise<ActionResult<{ nuevoEstado: string; proporcionTotal: number }>> {
   try {
     const validated = AbonoVentaCompletaSchema.parse(input)
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     // Obtener venta actual
     const [venta] = await db.select().from(ventas).where(eq(ventas.id, validated.ventaId)).limit(1)
@@ -646,7 +646,7 @@ export async function transferirEntreBancos(
 ): Promise<ActionResult<{ movimientoOrigenId: string; movimientoDestinoId: string }>> {
   try {
     const validated = TransferenciaBancosSchema.parse(input)
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
     const movOrigenId = nanoid()
     const movDestinoId = nanoid()
 
@@ -763,7 +763,7 @@ export async function pagarDistribuidor(input: {
   referencia?: string
 }): Promise<ActionResult<{ nuevoEstado: string }>> {
   try {
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
 
     // Obtener la orden
     const [orden] = await db
@@ -886,7 +886,7 @@ export async function registrarGasto(input: {
   observaciones?: string
 }): Promise<ActionResult<{ movimientoId: string }>> {
   try {
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
     const movId = nanoid()
 
     // Verificar banco

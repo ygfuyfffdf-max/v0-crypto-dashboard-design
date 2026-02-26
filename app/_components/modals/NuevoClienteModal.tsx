@@ -17,6 +17,8 @@ import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { iOSModal, iOSButton, iOSGlassCard, iOSInput, iOSNumberInput } from '../ui/ios'
+import { Modal, ModalFooter } from '../ui/Modal'
+import { QuantumGlassCard, QuantumInput, QuantumButton } from '../ui/QuantumElevatedUI'
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PROPS

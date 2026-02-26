@@ -17,10 +17,10 @@
  */
 
 import {
-  PANEL_SHADER_PRESETS,
-  SUPREME_SHADERS,
-  type PanelShaderPreset,
-  type SupremeShaderType,
+    PANEL_SHADER_PRESETS,
+    SUPREME_SHADERS,
+    type PanelShaderPreset,
+    type SupremeShaderType,
 } from '@/app/lib/shaders/supreme-particle-system'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -67,7 +67,7 @@ const SimpleCanvasBackground = memo(function SimpleCanvasBackground({
     }>
   >([])
 
-  const colors = PANEL_COLORS[panelPreset] || PANEL_COLORS.dashboard
+  const colors = PANEL_COLORS[panelPreset] ?? PANEL_COLORS['dashboard'] ?? { primary: '#8B5CF6', secondary: '#EC4899', accent: '#FFD700' }
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -93,7 +93,7 @@ const SimpleCanvasBackground = memo(function SimpleCanvasBackground({
       vx: (Math.random() - 0.5) * 0.5,
       vy: (Math.random() - 0.5) * 0.5,
       size: Math.random() * 4 + 2,
-      color: [colors.primary, colors.secondary, colors.accent][Math.floor(Math.random() * 3)],
+      color: ([colors.primary, colors.secondary, colors.accent][Math.floor(Math.random() * 3)] ?? '#ffffff'),
       alpha: Math.random() * 0.5 + 0.2,
       life: Math.random() * 100,
     }))
@@ -975,8 +975,8 @@ export function AIShaderBackground(props: Omit<SupremeShaderCanvasProps, 'panelP
 
 // Re-export types from supreme-particle-system for convenience
 export type {
-  PanelShaderPreset,
-  SupremeShaderType,
+    PanelShaderPreset,
+    SupremeShaderType
 } from '@/app/lib/shaders/supreme-particle-system'
 
 export default SupremeShaderCanvas

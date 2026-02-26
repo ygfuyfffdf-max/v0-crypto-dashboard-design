@@ -18,9 +18,9 @@
 'use client'
 
 import { cn } from '@/app/_lib/utils'
-import { AnimatePresence, motion, useMotionValue, useSpring, PanInfo } from 'motion/react'
-import { LucideIcon, ChevronRight, Home, Plus, X } from 'lucide-react'
-import { createContext, memo, ReactNode, useCallback, useContext, useEffect, useState, useRef } from 'react'
+import { ChevronRight, LucideIcon, Plus } from 'lucide-react'
+import { AnimatePresence, motion, PanInfo, useMotionValue, useSpring } from 'motion/react'
+import { createContext, memo, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react'
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // iOS TAB BAR
@@ -345,6 +345,7 @@ export const iOSBreadcrumbs = memo(function iOSBreadcrumbs({
   return (
     <nav className={cn('flex items-center gap-1.5 overflow-x-auto', className)}>
       {displayItems.map((item, index) => {
+        if (!item) return null
         const isLast = index === displayItems.length - 1
         const Icon = item.icon
 
@@ -486,7 +487,7 @@ export const iOSNavigationStack = memo(function iOSNavigationStack({
   className,
 }: iOSNavigationStackProps) {
   const [stack, setStack] = useState<string[]>([initialPage])
-  const currentPage = stack[stack.length - 1]
+  const currentPage = stack[stack.length - 1] ?? ''
 
   const push = useCallback((id: string) => {
     setStack(prev => [...prev, id])
@@ -734,16 +735,7 @@ export const iOSSwipeBack = memo(function iOSSwipeBack({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export type {
-  TabItem,
-  iOSTabBarProps,
-  FABAction,
-  iOSFABProps,
-  BreadcrumbItem,
-  iOSBreadcrumbsProps,
-  iOSPageIndicatorProps,
-  iOSNavigationStackProps,
-  iOSNavigationPageProps,
-  QuickAction,
-  iOSQuickActionsProps,
-  iOSSwipeBackProps,
+    BreadcrumbItem, FABAction, iOSBreadcrumbsProps, iOSFABProps, iOSNavigationPageProps, iOSNavigationStackProps, iOSPageIndicatorProps, iOSQuickActionsProps,
+    iOSSwipeBackProps, iOSTabBarProps, QuickAction, TabItem
 }
+

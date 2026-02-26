@@ -18,10 +18,10 @@
 import { cn } from '@/app/_lib/utils'
 import { useSoundManager } from '@/app/lib/audio/sound-system'
 import {
-  useDoubleTap,
-  useLongPress,
-  usePinchZoom,
-  useSwipe,
+    useDoubleTap,
+    useLongPress,
+    usePinchZoom,
+    useSwipe,
 } from '@/app/lib/gestures/advanced-gestures'
 import { ArrowDownLeft, ArrowUpRight, Eye, TrendingDown, TrendingUp, Zap } from 'lucide-react'
 import { motion } from 'motion/react'
@@ -70,31 +70,29 @@ export function EnhancedPremiumBancoCard({
 
   const swipeHandlers = useSwipe({
     onSwipeLeft: () => {
-      play('swoosh')
+      play('swipe')
       onSwipeLeft?.()
       toast.info('👈 Banco anterior')
     },
     onSwipeRight: () => {
-      play('swoosh')
+      play('swipe')
       onSwipeRight?.()
       toast.info('👉 Siguiente banco')
     },
-    threshold: 80,
+    swipeThreshold: 80,
   })
 
   const pinchHandlers = usePinchZoom({
-    onPinch: (newScale) => {
-      setScale(newScale)
-      if (newScale > 1.5) {
+    onPinch: (event) => {
+      setScale(event.scale)
+      if (event.scale > 1.5) {
         play('pop')
       }
     },
-    minScale: 0.8,
-    maxScale: 2,
   })
 
-  const longPressHandlers = useLongPress(
-    () => {
+  const longPressHandlers = useLongPress({
+    onLongPress: () => {
       play('success')
       toast.success('⚡ Opciones rápidas', {
         description: 'Abrir menú contextual del banco',
@@ -104,23 +102,17 @@ export function EnhancedPremiumBancoCard({
         },
       })
     },
-    {
-      delay: 600,
-      onStart: () => {
-        navigator.vibrate?.(20)
-        play('softPop')
-      },
-    },
-  )
+    longPressDelay: 600,
+  })
 
   const doubleTapHandlers = useDoubleTap(
     () => {
-      play('cardFlip')
+      play('whoosh')
       navigator.vibrate?.([10, 50, 10])
       toast.info('👁️ Vista rápida activada')
       onClick?.()
     },
-    { delay: 300 },
+    { doubleTapDelay: 300 },
   )
 
   // ═════════════════════════════════════════════════════════════════════════════════════════════════

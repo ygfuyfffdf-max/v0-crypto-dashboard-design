@@ -22,13 +22,14 @@
 import { Environment } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 import {
-  Bloom,
-  ChromaticAberration,
-  DepthOfField,
-  Noise,
-  SMAA,
-  ToneMapping,
-  Vignette,
+    Bloom,
+    ChromaticAberration,
+    DepthOfField,
+    EffectComposer,
+    Noise,
+    SMAA,
+    ToneMapping,
+    Vignette,
 } from '@react-three/postprocessing'
 import { BlendFunction, KernelSize, ToneMappingMode } from 'postprocessing'
 import React, { forwardRef, memo, Suspense, useMemo, useRef, useState } from 'react'

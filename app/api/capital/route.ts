@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server'
+import { logger } from '@/app/lib/utils/logger'
 import { db } from '@/database'
 import { bancos } from '@/database/schema'
 import { eq, sql } from 'drizzle-orm'
-import { logger } from '@/app/lib/utils/logger'
+import { NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,7 +10,7 @@ export async function GET() {
   try {
     // Obtener todos los bancos activos
     const bancosData = await db.query.bancos.findMany({
-      where: eq(bancos.activo, true),
+      where: eq(bancos.activo, 1),
       orderBy: [bancos.orden],
     })
 
@@ -22,7 +22,7 @@ export async function GET() {
         gastosHistoricos: sql<number>`sum(${bancos.historicoGastos})`,
       })
       .from(bancos)
-      .where(eq(bancos.activo, true))
+      .where(eq(bancos.activo, 1))
 
     return NextResponse.json({
       success: true,

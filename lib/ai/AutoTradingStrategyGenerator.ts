@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Auto Trading Strategy Generator - Nivel Dios
  * Sistema que genera automáticamente estrategias de trading optimizadas con IA

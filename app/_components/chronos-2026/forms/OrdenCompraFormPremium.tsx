@@ -156,7 +156,8 @@ export function OrdenCompraFormPremium({
     reset,
     formState: { errors, isValid },
   } = useForm<OrdenCompraFormData>({
-    resolver: zodResolver(OrdenCompraFormSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(OrdenCompraFormSchema) as any,
     defaultValues: {
       distribuidorId: initialData?.distribuidorId || '',
       producto: initialData?.producto || '',

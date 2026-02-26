@@ -116,7 +116,7 @@ export interface MetricaDashboard {
   valorAnterior: number
   unidad: 'moneda' | 'numero' | 'porcentaje'
   tendencia: 'up' | 'down' | 'neutral'
-  icono: React.ElementType
+  icono: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
   color: string
   datos: DatoMetrica[]
 }

@@ -1,5 +1,10 @@
 "use client"
 
+import {
+  LiquidGlassButton,
+  LiquidGlassSearchField,
+  LiquidGlassSegmentedControl,
+} from "@/app/_components/chronos-2026/primitives/LiquidGlassSystem"
 import { ModalShell } from "@/app/_components/modals/ModalShell"
 import { GlassCurrencyInput, GlassInput, GlassSelect } from "@/app/_components/ui/GlassFormSystem"
 import { cn } from "@/app/_lib/utils"
@@ -310,14 +315,13 @@ export function AuroraClientesPanelUnified({
           <p className="mt-1 ml-[52px] text-sm text-white/50">CRM y gestión de clientes</p>
         </div>
         <div className="flex items-center gap-3">
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+          <LiquidGlassButton
+            variant="accent"
+            icon={<UserPlus size={16} />}
             onClick={() => setShowNewClient(true)}
-            className="flex items-center gap-2 rounded-xl border border-violet-500/30 bg-violet-500/20 px-4 py-2.5 text-sm font-medium text-violet-300 transition-colors hover:bg-violet-500/30"
           >
-            <UserPlus size={16} /> Nuevo Cliente
-          </motion.button>
+            Nuevo Cliente
+          </LiquidGlassButton>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -373,47 +377,28 @@ export function AuroraClientesPanelUnified({
       {/* ══════════ 3 · SEARCH + FILTERS — GlassInput ══════════ */}
       <div className={cn(G, "flex flex-col items-start gap-4 p-4 md:flex-row md:items-center")}>
         <div className="w-full flex-1 md:w-auto">
-          <GlassInput
+          <LiquidGlassSearchField
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar cliente…"
           />
         </div>
-        <div className="flex items-center gap-1 rounded-xl bg-white/5 p-1">
-          {FILTERS.map((f) => (
-            <button
-              key={f.id}
-              onClick={() => setFilter(f.id)}
-              className={cn(
-                "rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
-                filter === f.id
-                  ? "border border-violet-500/30 bg-violet-500/25 text-violet-300"
-                  : "border border-transparent text-white/50 hover:text-white/70"
-              )}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
+        <LiquidGlassSegmentedControl
+          value={filter}
+          onChange={(v) => setFilter(v)}
+          options={FILTERS.map((f) => ({ value: f.id, label: f.label }))}
+        />
       </div>
 
-      {/* ══════════ 4 · VIEW TOGGLE ══════════ */}
-      <div className="flex w-fit items-center gap-1 rounded-xl border border-white/8 bg-white/5 p-1">
-        {(["tabla", "perfiles"] as const).map((v) => (
-          <button
-            key={v}
-            onClick={() => setView(v)}
-            className={cn(
-              "rounded-lg px-4 py-2 text-sm font-medium transition-all",
-              view === v
-                ? "border border-white/10 bg-white/10 text-white"
-                : "border border-transparent text-white/50 hover:text-white/70"
-            )}
-          >
-            {v === "tabla" ? "Tabla" : "Perfiles"}
-          </button>
-        ))}
-      </div>
+      {/* ══════════ 4 · VIEW TOGGLE (Liquid Glass) ══════════ */}
+      <LiquidGlassSegmentedControl
+        value={view}
+        onChange={(v) => setView(v)}
+        options={[
+          { value: "tabla", label: "Tabla" },
+          { value: "perfiles", label: "Perfiles" },
+        ]}
+      />
 
       {/* ══════════ 5 · TABLE | 6 · PROFILE GRID — PremiumTableWrapper ══════════ */}
       <AnimatePresence mode="wait">
@@ -504,7 +489,7 @@ export function AuroraClientesPanelUnified({
                             <button
                               onClick={() => handleDelete(c.id)}
                               title="Eliminar"
-                              className="rounded-lg p-1.5 text-white/40 transition-colors hover:bg-red-500/20 hover:text-red-400"
+                              className="rounded-lg p-1.5 text-red-400/90 ring-1 ring-red-500/30 transition-colors hover:bg-red-500/20 hover:text-red-400 focus-visible:ring-2 focus-visible:ring-red-500/50"
                             >
                               <Trash2 size={14} />
                             </button>

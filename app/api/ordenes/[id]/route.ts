@@ -119,7 +119,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Orden no encontrada' }, { status: 404 })
     }
 
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
     const {
       montoPagado: nuevoMontoPagado,
       bancoOrigenId,
@@ -258,7 +258,7 @@ export async function DELETE(
       )
     }
 
-    const now = new Date()
+    const now = Math.floor(Date.now() / 1000)
     const montoPagado = Number(orden.montoPagado || 0)
     const deudaPendiente = Number(orden.montoRestante || 0)
     const cantidadStock = Number(orden.cantidad || 0)
