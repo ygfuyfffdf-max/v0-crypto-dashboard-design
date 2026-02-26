@@ -64,7 +64,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.53",
     "@ai-sdk/google": "^2.0.44",
-    "@ai-sdk/openai": "^2.0.73",
+    "@ai-sdk/openai": "^3.0.23",
     "@ai-sdk/react": "^3.0.41",
     "@ai-sdk/xai": "^2.0.41",
     "@clerk/localizations": "^3.37.0",
