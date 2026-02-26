@@ -62,7 +62,7 @@
     "lighthouse": "npx lighthouse https://localhost:3000 --view"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^2.0.53",
+    "@ai-sdk/anthropic": "^3.0.31",
     "@ai-sdk/google": "^2.0.44",
     "@ai-sdk/openai": "^2.0.73",
     "@ai-sdk/react": "^3.0.41",
