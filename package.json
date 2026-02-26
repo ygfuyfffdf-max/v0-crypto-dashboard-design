@@ -225,7 +225,7 @@
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
     "@types/react-virtualized-auto-sizer": "^1.0.4",
-    "@types/react-window": "^1.8.8",
+    "@types/react-window": "^2.0.0",
     "@types/redis": "^4.0.11",
     "@types/three": "^0.182.0",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
