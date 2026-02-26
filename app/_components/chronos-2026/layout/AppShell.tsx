@@ -14,6 +14,7 @@ import { usePathname } from "next/navigation"
 import { useEffect, useState, type ReactNode } from "react"
 
 import { GlobalAIOrb } from "../ai/GlobalAIOrb"
+import { QuantumCursor } from "../interactive/QuantumCursor"
 import { ChronosHeader2026Client } from "./ChronosHeader2026Client"
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -67,6 +68,9 @@ export function AppShell({ children }: AppShellProps) {
 
       {/* ─── Global AI Orb — persistent on all panels ────────────────────── */}
       <GlobalAIOrb />
+
+      {/* ─── Quantum Cursor — spring physics + magnetic (desktop only) ───── */}
+      <QuantumCursor />
     </div>
   )
 }
