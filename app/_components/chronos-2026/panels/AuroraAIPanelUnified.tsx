@@ -34,7 +34,6 @@ import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 // 🌟 SUPREME SYSTEMS — CHRONOS INFINITY 2026
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
-import '@/app/_components/chronos-2026/animations/CinematicAnimations'
 import {
   ArrowLeft,
   Boxes,
