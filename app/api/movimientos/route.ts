@@ -1,5 +1,5 @@
 import { logger } from '@/app/lib/utils/logger'
-import { db } from '@/database'
+import { db, ensureInit } from '@/database'
 import { clientes, distribuidores, movimientos, ordenesCompra, ventas } from '@/database/schema'
 import { and, desc, eq, sql } from 'drizzle-orm'
 import { NextResponse, type NextRequest } from 'next/server'
@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 export async function GET(request: NextRequest) {
   try {
+    await ensureInit()
     const { searchParams } = new URL(request.url)
     const bancoId = searchParams.get('bancoId')
     const tipo = searchParams.get('tipo')
@@ -111,6 +112,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    await ensureInit()
     const body = await request.json()
 
     const {

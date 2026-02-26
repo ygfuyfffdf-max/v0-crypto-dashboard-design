@@ -2,7 +2,7 @@ import { CACHE_KEYS, CACHE_TTL, getCached, invalidateCache } from '@/app/lib/cac
 import { calcularOrdenCompra } from '@/app/lib/formulas'
 import { applyRateLimit } from '@/app/lib/rate-limit'
 import { logger } from '@/app/lib/utils/logger'
-import { db } from '@/database'
+import { db, ensureInit } from '@/database'
 import {
     almacen,
     bancos,
@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
   if (rateLimitResult) return rateLimitResult
 
   try {
+    await ensureInit()
     const ordenes = await getCached(
       CACHE_KEYS.ORDENES_ALL,
       async () => {
@@ -180,6 +181,7 @@ export async function POST(request: NextRequest) {
   if (rateLimitResult) return rateLimitResult
 
   try {
+    await ensureInit()
     const body = await request.json()
 
     const {
@@ -396,6 +398,7 @@ export async function PUT(request: NextRequest) {
   if (rateLimitResult) return rateLimitResult
 
   try {
+    await ensureInit()
     const body = await request.json()
     const { id, montoPagado: nuevoMontoPagado, bancoOrigenId, cantidad: nuevaCantidad } = body
 
@@ -505,6 +508,7 @@ export async function DELETE(request: NextRequest) {
   if (rateLimitResult) return rateLimitResult
 
   try {
+    await ensureInit()
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 

@@ -2,7 +2,7 @@ import { ERROR_CODES, errorFromException, successWithCache } from '@/app/lib/api
 import { CACHE_KEYS, invalidateCache } from '@/app/lib/cache'
 import { applyRateLimit } from '@/app/lib/rate-limit'
 import { logger } from '@/app/lib/utils/logger'
-import { db } from '@/database'
+import { db, ensureInit } from '@/database'
 import { bancos, movimientos } from '@/database/schema'
 import { eq, sql } from 'drizzle-orm'
 import { NextResponse, type NextRequest } from 'next/server'
@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
   if (rateLimitResult) return rateLimitResult
 
   try {
+    await ensureInit()
     const bancosData = await db.select().from(bancos).orderBy(bancos.orden)
 
     // Sin cache - datos críticos en tiempo real
@@ -41,6 +42,7 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    await ensureInit()
     const body = await request.json()
     const {
       id,

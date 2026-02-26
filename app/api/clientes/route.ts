@@ -2,7 +2,7 @@ import { ERROR_CODES, errorFromException, successWithCache } from '@/app/lib/api
 import { CACHE_KEYS, invalidateCache } from '@/app/lib/cache'
 import { applyRateLimit } from '@/app/lib/rate-limit'
 import { logger } from '@/app/lib/utils/logger'
-import { db } from '@/database'
+import { db, ensureInit } from '@/database'
 import { clientes } from '@/database/schema'
 import { eq } from 'drizzle-orm'
 import { NextResponse, type NextRequest } from 'next/server'
@@ -50,6 +50,7 @@ export async function GET(request: NextRequest) {
   if (rateLimitResult) return rateLimitResult
 
   try {
+    await ensureInit()
     const clientesData = await db.select().from(clientes).orderBy(clientes.nombre)
 
     return successWithCache(
@@ -72,6 +73,7 @@ export async function POST(request: NextRequest) {
   if (rateLimitResult) return rateLimitResult
 
   try {
+    await ensureInit()
     const body = await request.json()
 
     // Validación Zod
@@ -129,6 +131,7 @@ export async function PUT(request: NextRequest) {
   if (rateLimitResult) return rateLimitResult
 
   try {
+    await ensureInit()
     const body = await request.json()
 
     // Validación Zod
@@ -186,6 +189,7 @@ export async function DELETE(request: NextRequest) {
   if (rateLimitResult) return rateLimitResult
 
   try {
+    await ensureInit()
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 

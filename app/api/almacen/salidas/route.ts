@@ -1,5 +1,5 @@
 import { logger } from '@/app/lib/utils/logger'
-import { db } from '@/database'
+import { db, ensureInit } from '@/database'
 import { almacen, clientes, ordenesCompra, salidaAlmacen, ventas } from '@/database/schema'
 import { desc, eq, sql } from 'drizzle-orm'
 import { NextResponse, type NextRequest } from 'next/server'
@@ -10,6 +10,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 export async function GET() {
   try {
+    await ensureInit()
     const result = await db
       .select({
         id: salidaAlmacen.id,
@@ -46,6 +47,7 @@ export async function GET() {
 
         if (!s.productoNombre && s.origenLotes) {
           try {
+    await ensureInit()
             const lotes = JSON.parse(s.origenLotes)
             if (lotes && lotes[0]?.ocId) {
               const [oc] = await db
@@ -94,6 +96,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    await ensureInit()
     const body = await request.json()
 
     const { productoId, ventaId, cantidad, motivo = 'otro', observaciones } = body

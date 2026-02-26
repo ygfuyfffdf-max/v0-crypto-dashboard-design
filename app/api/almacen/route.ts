@@ -1,5 +1,5 @@
 import { logger } from '@/app/lib/utils/logger'
-import { db } from '@/database'
+import { db, ensureInit } from '@/database'
 import { almacen } from '@/database/schema'
 import { eq, sql } from 'drizzle-orm'
 import { NextResponse, type NextRequest } from 'next/server'
@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 export async function GET() {
   try {
+    await ensureInit()
     const result = await db.select().from(almacen).orderBy(almacen.nombre)
     return NextResponse.json(result, {
       headers: {
@@ -30,6 +31,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    await ensureInit()
     const body = await request.json()
 
     const {
@@ -82,6 +84,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    await ensureInit()
     const body = await request.json()
     const {
       id,
@@ -163,6 +166,7 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    await ensureInit()
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 

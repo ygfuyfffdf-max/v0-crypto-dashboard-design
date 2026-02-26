@@ -5,7 +5,7 @@ import { calcularVentaCompleta, FLETE_DEFAULT } from '@/app/lib/formulas'
 import { applyRateLimit } from '@/app/lib/rate-limit'
 import { CrearVentaAPISchema } from '@/app/lib/schemas/ventas.schema'
 import { logger } from '@/app/lib/utils/logger'
-import { db } from '@/database'
+import { db, ensureInit } from '@/database'
 import {
     almacen,
     bancos,
@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
   if (rateLimitResult) return rateLimitResult
 
   try {
+    await ensureInit()
     // Intentar obtener desde cache
     const cacheKey = CACHE_KEYS.VENTAS_ALL
 
@@ -209,6 +210,7 @@ export async function POST(request: NextRequest) {
   if (rateLimitResult) return rateLimitResult
 
   try {
+    await ensureInit()
     const body = await request.json()
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -625,6 +627,7 @@ export async function PUT(request: NextRequest) {
   if (rateLimitResult) return rateLimitResult
 
   try {
+    await ensureInit()
     const body = await request.json()
     const {
       id,
@@ -859,6 +862,7 @@ export async function DELETE(request: NextRequest) {
   if (rateLimitResult) return rateLimitResult
 
   try {
+    await ensureInit()
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 
