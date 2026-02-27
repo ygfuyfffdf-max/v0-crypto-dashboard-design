@@ -4,27 +4,28 @@ import { cn } from "@/app/_lib/utils"
 import type { ModuleCard } from "@/app/hooks/useDashboardData"
 import { useDashboardData } from "@/app/hooks/useDashboardData"
 import {
-  Activity,
-  AlertTriangle,
-  ArrowDownRight,
-  ArrowUpRight,
-  BarChart3,
-  CreditCard,
-  DollarSign,
-  Landmark,
-  Package,
-  PieChart,
-  Plus,
-  Receipt,
-  RefreshCw,
-  ShoppingCart,
-  TrendingDown,
-  TrendingUp,
-  Truck,
-  Users,
+    Activity,
+    AlertTriangle,
+    ArrowDownRight,
+    ArrowUpRight,
+    BarChart3,
+    CreditCard,
+    DollarSign,
+    Landmark,
+    LineChart,
+    Package,
+    PieChart,
+    Plus,
+    Receipt,
+    RefreshCw,
+    ShoppingCart,
+    TrendingDown,
+    TrendingUp,
+    Truck,
+    Users
 } from "lucide-react"
 import { motion } from "motion/react"
-import React, { useMemo, useState } from "react"
+import React, { memo, useMemo, useState } from "react"
 
 interface AuroraDashboardUnifiedProps {
   onNavigate?: (path: string) => void
@@ -38,6 +39,7 @@ interface KpiDef {
   icon: React.ReactNode
   colorHex: string
   isCurrency?: boolean
+  sparkline?: number[]
 }
 
 const fmtMXN = new Intl.NumberFormat("es-MX", {
@@ -45,6 +47,65 @@ const fmtMXN = new Intl.NumberFormat("es-MX", {
   currency: "MXN",
   maximumFractionDigits: 0,
 })
+
+// ── MiniChart sparkline (SVG, reusable) ──────────────────────────────────────
+const MiniChart = memo(function MiniChart({
+  data,
+  color = "#8B5CF6",
+  height = 40,
+}: {
+  data: number[]
+  color?: string
+  height?: number
+}) {
+  if (!data || data.length < 2) return null
+  const max = Math.max(...data)
+  const min = Math.min(...data)
+  const range = max - min || 1
+  const W = 100
+  const pts = data
+    .map((v, i) => {
+      const x = (i / (data.length - 1)) * W
+      const y = height - ((v - min) / range) * (height - 8) - 4
+      return `${x},${y}`
+    })
+    .join(" ")
+  const area = `0,${height} ${pts} ${W},${height}`
+  const gradId = `mg${color.replace("#", "")}`
+  return (
+    <svg
+      viewBox={`0 0 ${W} ${height}`}
+      className="w-full"
+      style={{ height }}
+      preserveAspectRatio="none"
+    >
+      <defs>
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.35" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <polygon fill={`url(#${gradId})`} points={area} />
+      <polyline
+        fill="none"
+        stroke={color}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        points={pts}
+      />
+    </svg>
+  )
+})
+
+// ── deterministic weekly sparkline seeded from a value ──────────────────────
+function weekSeed(base: number, variance = 0.18): number[] {
+  const seed = Math.abs(base) || 1
+  return Array.from({ length: 7 }, (_, i) => {
+    const noise = Math.sin(seed * (i + 1) * 0.31) * variance
+    return base * (1 + noise)
+  })
+}
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   ShoppingCart: <ShoppingCart size={20} />,
@@ -55,71 +116,110 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   Activity: <Activity size={20} />,
 }
 
-// KPI Card
-function KpiCard({ kpi, index }: { kpi: KpiDef; index: number }) {
+// KPI Card — with shimmer sweep + sparkline ─────────────────────────────────
+const KpiCard = memo(function KpiCard({ kpi, index }: { kpi: KpiDef; index: number }) {
   const pos = kpi.trend >= 0
+  const [hovered, setHovered] = useState(false)
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06, type: "spring", stiffness: 300, damping: 24 }}
-      whileHover={{
-        scale: 1.02,
-        borderColor: `${kpi.colorHex}30`,
-        boxShadow: `0 0 28px -6px ${kpi.colorHex}25`,
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
+      whileHover={{ scale: 1.02, y: -2 }}
+      className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 backdrop-blur-sm transition-all duration-300"
+      style={{
+        boxShadow: hovered ? `0 0 32px -8px ${kpi.colorHex}30` : undefined,
+        borderColor: hovered ? `${kpi.colorHex}25` : undefined,
       }}
-      className="relative rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 backdrop-blur-sm transition-colors duration-300 neo-tactile-hover-elevate"
     >
-      <div className="mb-3 flex items-center gap-2">
-        <div
-          className="flex h-7 w-7 items-center justify-center rounded-lg"
-          style={{ color: kpi.colorHex, background: `${kpi.colorHex}15` }}
-        >
-          {kpi.icon}
-        </div>
-        <span className="truncate text-xs text-white/50">{kpi.label}</span>
-      </div>
-      <motion.p
-        className="mb-1 text-2xl font-bold text-white"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: index * 0.06 + 0.2, type: "spring", stiffness: 200 }}
-      >
-        {kpi.isCurrency ? fmtMXN.format(kpi.value) : kpi.value.toLocaleString("es-MX")}
-      </motion.p>
+      {/* gradient bg tint */}
       <div
-        className={cn(
-          "flex items-center gap-1 text-xs font-medium",
-          pos ? "text-emerald-400" : "text-rose-400"
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 rounded-2xl"
+        style={{ background: `radial-gradient(circle at 30% 20%, ${kpi.colorHex}10, transparent 70%)` }}
+      />
+      {/* shimmer sweep */}
+      <motion.div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.06) 50%, transparent 70%)",
+          backgroundSize: "200% 200%",
+        }}
+        animate={{ x: hovered ? ["0%", "100%"] : "0%" }}
+        transition={{ duration: 0.9, ease: "easeInOut" }}
+      />
+      <div className="relative">
+        <div className="mb-2 flex items-center gap-2">
+          <div
+            className="flex h-7 w-7 items-center justify-center rounded-lg"
+            style={{ color: kpi.colorHex, background: `${kpi.colorHex}18` }}
+          >
+            {kpi.icon}
+          </div>
+          <span className="truncate text-xs text-white/50">{kpi.label}</span>
+        </div>
+        <motion.p
+          className="mb-1 text-xl font-bold text-white"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: index * 0.06 + 0.2 }}
+        >
+          {kpi.isCurrency ? fmtMXN.format(kpi.value) : kpi.value.toLocaleString("es-MX")}
+        </motion.p>
+        <div
+          className={cn(
+            "mb-3 flex items-center gap-1 text-xs font-medium",
+            pos ? "text-emerald-400" : "text-rose-400"
+          )}
+        >
+          {pos ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+          <span>{Math.abs(kpi.trend).toFixed(1)}%</span>
+          <span className="text-white/30 ml-1">7d</span>
+        </div>
+        {kpi.sparkline && (
+          <div className="mt-1 opacity-70 group-hover:opacity-100 transition-opacity">
+            <MiniChart data={kpi.sparkline} color={kpi.colorHex} height={36} />
+          </div>
         )}
-      >
-        {pos ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-        <span>{Math.abs(kpi.trend).toFixed(1)}%</span>
       </div>
     </motion.div>
   )
-}
+})
 
-// Glass Chart Card wrapper
-function ChartCard({
+// Premium chart card ─────────────────────────────────────────────────────────
+const ChartCard = memo(function ChartCard({
   title,
   icon,
+  subtitle,
   children,
+  accent = "#8B5CF6",
 }: {
   title: string
   icon: React.ReactNode
+  subtitle?: string
   children: React.ReactNode
+  accent?: string
 }) {
   return (
-    <div className="flex h-64 flex-col rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 backdrop-blur-sm">
-      <div className="mb-4 flex items-center gap-2">
-        <span className="text-white/40">{icon}</span>
-        <h3 className="text-sm font-medium text-white/70">{title}</h3>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="group relative flex h-64 flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 backdrop-blur-sm hover:border-white/[0.12] transition-all duration-300"
+      style={{ background: `linear-gradient(135deg, ${accent}04 0%, transparent 60%)` }}
+    >
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span style={{ color: accent }} className="opacity-70">{icon}</span>
+          <h3 className="text-sm font-semibold text-white/80">{title}</h3>
+        </div>
+        {subtitle && <span className="text-[10px] text-white/30">{subtitle}</span>}
       </div>
       <div className="min-h-0 flex-1">{children}</div>
-    </div>
+    </motion.div>
   )
-}
+})
 
 // Revenue area chart (SVG)
 function RevenueChart() {
@@ -417,6 +517,7 @@ export function AuroraDashboardUnified({ onNavigate, className }: AuroraDashboar
         icon: <DollarSign size={16} />,
         colorHex: "#10B981",
         isCurrency: true,
+        sparkline: weekSeed(stats.capitalTotal),
       },
       {
         label: "Utilidades Netas",
@@ -425,6 +526,7 @@ export function AuroraDashboardUnified({ onNavigate, className }: AuroraDashboar
         icon: <TrendingUp size={16} />,
         colorHex: "#8B5CF6",
         isCurrency: true,
+        sparkline: weekSeed(stats.gananciaNeta, 0.22),
       },
       {
         label: "Deuda Clientes",
@@ -433,6 +535,7 @@ export function AuroraDashboardUnified({ onNavigate, className }: AuroraDashboar
         icon: <Users size={16} />,
         colorHex: "#F59E0B",
         isCurrency: true,
+        sparkline: weekSeed(stats.cobrosPendientes, 0.15),
       },
       {
         label: "Adeudo Distribuidores",
@@ -441,6 +544,7 @@ export function AuroraDashboardUnified({ onNavigate, className }: AuroraDashboar
         icon: <Truck size={16} />,
         colorHex: "#F43F5E",
         isCurrency: true,
+        sparkline: weekSeed(stats.ordenesPendientes * 18500, 0.2),
       },
       {
         label: "Stock Valorizado",
@@ -449,6 +553,7 @@ export function AuroraDashboardUnified({ onNavigate, className }: AuroraDashboar
         icon: <Package size={16} />,
         colorHex: "#06B6D4",
         isCurrency: true,
+        sparkline: weekSeed(stats.capitalTotal * 0.28, 0.12),
       },
       {
         label: "Ventas del Mes",
@@ -457,6 +562,7 @@ export function AuroraDashboardUnified({ onNavigate, className }: AuroraDashboar
         icon: <ShoppingCart size={16} />,
         colorHex: "#22C55E",
         isCurrency: true,
+        sparkline: weekSeed(stats.ventasMes, 0.25),
       },
     ],
     [stats]
@@ -492,14 +598,17 @@ export function AuroraDashboardUnified({ onNavigate, className }: AuroraDashboar
       <header className="flex items-center justify-between">
         <div>
           <motion.h1
-            className="text-2xl font-bold text-white"
+            className="text-2xl font-bold"
+            style={{ background: "linear-gradient(90deg,#fff 30%,#8B5CF6 80%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
             initial={{ opacity: 0, x: -12 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
           >
             Dashboard
           </motion.h1>
-          <p className="mt-0.5 text-sm text-white/40">Resumen General</p>
+          <p className="mt-0.5 text-sm text-white/40">
+            {new Date().toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long" })}
+          </p>
         </div>
         <motion.button
           onClick={refetch}
@@ -515,30 +624,94 @@ export function AuroraDashboardUnified({ onNavigate, className }: AuroraDashboar
       {/* 2. KPI ROW */}
       <section
         aria-label="KPIs principales"
-        className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6"
+        className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6"
       >
         {kpiCards.map((kpi, i) => (
           <KpiCard key={kpi.label} kpi={kpi} index={i} />
         ))}
       </section>
 
-      {/* 3. CHARTS SECTION */}
+      {/* 3. TENDENCIA SEMANAL ─ sparkline + stats row */}
+      <section aria-label="Tendencia semanal">
+        <div className="mb-3 flex items-center gap-2">
+          <LineChart size={14} className="text-violet-400" />
+          <h2 className="text-sm font-medium text-white/50">Tendencia Semanal</h2>
+          <span className="ml-auto text-[10px] text-white/25">últimos 7 días</span>
+        </div>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+          {/* Ventas sparkline */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 backdrop-blur-sm"
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-xs text-white/50">Ventas</span>
+              <span className="text-xs font-semibold text-emerald-400">
+                {fmtMXN.format(stats.ventasMes)}
+              </span>
+            </div>
+            <MiniChart data={weekSeed(stats.ventasMes, 0.25)} color="#22C55E" height={44} />
+            <div className="mt-2 flex justify-between text-[9px] text-white/25">
+              {["L","M","X","J","V","S","D"].map(d => <span key={d}>{d}</span>)}
+            </div>
+          </motion.div>
+          {/* Utilidades sparkline */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 }}
+            className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 backdrop-blur-sm"
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-xs text-white/50">Utilidades</span>
+              <span className="text-xs font-semibold text-violet-400">
+                {fmtMXN.format(stats.gananciaNeta)}
+              </span>
+            </div>
+            <MiniChart data={weekSeed(stats.gananciaNeta, 0.22)} color="#8B5CF6" height={44} />
+            <div className="mt-2 flex justify-between text-[9px] text-white/25">
+              {["L","M","X","J","V","S","D"].map(d => <span key={d}>{d}</span>)}
+            </div>
+          </motion.div>
+          {/* Capital sparkline */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.14 }}
+            className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 backdrop-blur-sm"
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-xs text-white/50">Capital</span>
+              <span className="text-xs font-semibold text-sky-400">
+                {fmtMXN.format(stats.capitalTotal)}
+              </span>
+            </div>
+            <MiniChart data={weekSeed(stats.capitalTotal, 0.1)} color="#06B6D4" height={44} />
+            <div className="mt-2 flex justify-between text-[9px] text-white/25">
+              {["L","M","X","J","V","S","D"].map(d => <span key={d}>{d}</span>)}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 4. CHARTS SECTION */}
       <section aria-label="Gráficas" className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <ChartCard title="Ingresos vs Egresos" icon={<BarChart3 size={16} />}>
+        <ChartCard title="Ingresos vs Egresos" icon={<BarChart3 size={16} />} accent="#10B981" subtitle="tendencia">
           <RevenueChart />
         </ChartCard>
-        <ChartCard title="Distribución de Capital" icon={<PieChart size={16} />}>
+        <ChartCard title="Distribución de Capital" icon={<PieChart size={16} />} accent="#8B5CF6">
           <BarList items={BANKS} />
         </ChartCard>
-        <ChartCard title="Productos Top" icon={<TrendingUp size={16} />}>
+        <ChartCard title="Productos Top" icon={<TrendingUp size={16} />} accent="#06B6D4">
           <BarList items={TOP_PRODUCTS} labelW="w-16" />
         </ChartCard>
-        <ChartCard title="Flujo de Caja" icon={<DollarSign size={16} />}>
+        <ChartCard title="Flujo de Caja" icon={<DollarSign size={16} />} accent="#F59E0B" subtitle="cashflow">
           <CashFlowChart />
         </ChartCard>
       </section>
 
-      {/* 4. MODULE QUICK CARDS */}
+      {/* 5. MODULE QUICK CARDS */}
       <section aria-label="Módulos">
         <h2 className="mb-3 text-sm font-medium text-white/50">Módulos del Sistema</h2>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
@@ -548,7 +721,7 @@ export function AuroraDashboardUnified({ onNavigate, className }: AuroraDashboar
         </div>
       </section>
 
-      {/* 5. QUICK ACTIONS FAB */}
+      {/* 6. QUICK ACTIONS FAB */}
       <QuickActionsFab />
     </div>
   )

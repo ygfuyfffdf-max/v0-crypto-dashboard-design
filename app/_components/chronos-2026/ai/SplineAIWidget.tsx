@@ -1,3 +1,5 @@
+// @deprecated — NOT USED. Active AI: GlobalAIOrb (AppShell float) + AuroraAIPanelUnified (/ia page).
+// Kept for reference. Safe to delete when no longer needed.
 // @ts-nocheck
 /**
  * 🤖✨ SPLINE AI WIDGET — CHRONOS INFINITY 2026 PREMIUM EDITION
@@ -1565,5 +1567,6 @@ export const SplineAIWidget = memo(function SplineAIWidget({
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════
 
 export default SplineAIWidget
+
 
 

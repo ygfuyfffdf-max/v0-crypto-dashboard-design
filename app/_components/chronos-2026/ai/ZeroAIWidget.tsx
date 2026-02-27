@@ -1,3 +1,5 @@
+// @deprecated — NOT USED. Active AI: GlobalAIOrb (AppShell float) + AuroraAIPanelUnified (/ia page).
+// Kept for reference. Safe to delete when no longer needed.
 /**
  * ═══════════════════════════════════════════════════════════════════════════════════════════════════
  * ⭕ ZERO AI WIDGET — ALEXA-STYLE ASSISTANT
@@ -536,3 +538,4 @@ export function ZeroAIWidget({
 }
 
 export default ZeroAIWidget
+

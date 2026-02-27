@@ -1,3 +1,5 @@
+// @deprecated — NOT USED. Active AI: GlobalAIOrb (AppShell float) + AuroraAIPanelUnified (/ia page).
+// Kept for reference. Safe to delete when no longer needed.
 "use client"
 
 import { Button } from "@/app/_components/ui/button"
@@ -400,3 +402,4 @@ export const SupremeAIUnifiedWidget = () => {
     </motion.div>
   )
 }
+

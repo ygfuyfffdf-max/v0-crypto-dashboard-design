@@ -1,3 +1,5 @@
+// @deprecated — NOT USED. Active AI: GlobalAIOrb (AppShell float) + AuroraAIPanelUnified (/ia page).
+// Kept for reference. Safe to delete when no longer needed.
 "use client"
 
 /**
@@ -1251,4 +1253,5 @@ export const AuraSupremeWidget = memo(function AuraSupremeWidget({
 })
 
 export default AuraSupremeWidget
+
 

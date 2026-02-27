@@ -1,3 +1,5 @@
+// @deprecated — NOT USED. Active AI: GlobalAIOrb (AppShell float) + AuroraAIPanelUnified (/ia page).
+// Kept for reference. Safe to delete when no longer needed.
 /**
  * ═══════════════════════════════════════════════════════════════════════════════════════════════════
  * 🌌✨ QUANTUM 3D AI WIDGET — LA EXPERIENCIA IA MÁS PREMIUM DEL MUNDO
@@ -733,3 +735,4 @@ export function Quantum3DAIWidget({
 }
 
 export default Quantum3DAIWidget
+

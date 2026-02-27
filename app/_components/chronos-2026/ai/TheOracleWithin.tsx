@@ -1,3 +1,5 @@
+// @deprecated — NOT USED. Active AI: GlobalAIOrb (AppShell float) + AuroraAIPanelUnified (/ia page).
+// Kept for reference. Safe to delete when no longer needed.
 /**
  * ═══════════════════════════════════════════════════════════════════════════════════════════════════
  * 🔮 THE ORACLE WITHIN — WIDGET DE IA PREMIUM
@@ -830,3 +832,4 @@ export function TheOracleWithin({
 }
 
 export default TheOracleWithin
+
