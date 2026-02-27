@@ -20,7 +20,6 @@
 'use client'
 
 import { AuroraAIPanelUnified } from '@/app/_components/chronos-2026/panels/AuroraAIPanelUnified'
-import { SupremeAIUnifiedWidget } from '@/app/_components/chronos-2026/ai/SupremeAIUnifiedWidget'
 import { logger } from '@/app/lib/utils/logger'
 import { AnimatePresence, motion } from 'motion/react'
 import { useRouter } from 'next/navigation'
@@ -82,10 +81,8 @@ Si preguntan sobre métricas, sugiere acciones concretas.`,
         transition={{ duration: 0.5 }}
         className="fixed inset-0 z-50"
       >
+        {/* Zero Force AI Panel — full-screen chat + metrics + voice */}
         <AuroraAIPanelUnified onBack={handleBack} onMessage={handleMessage} />
-        
-        {/* WIDGET SUPREMO DE IA - FLOTANTE Y EXPANSIVO */}
-        <SupremeAIUnifiedWidget />
       </motion.div>
     </AnimatePresence>
   )
