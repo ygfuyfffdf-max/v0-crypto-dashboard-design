@@ -26,7 +26,7 @@ import {
   useDistribuidoresData,
   useClientesData,
   useAlmacenData,
-} from "@/lib/firebase/firestore-hooks.service"
+} from "@/lib/hooks/useStoreData"
 import { Skeleton } from "@/components/ui/skeleton"
 
 const COLORS = ["#3b82f6", "#8b5cf6", "#ec4899", "#10b981", "#f59e0b", "#ef4444"]

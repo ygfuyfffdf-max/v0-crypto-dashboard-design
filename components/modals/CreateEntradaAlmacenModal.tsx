@@ -4,7 +4,6 @@ import { useState } from "react"
 import { X, PackagePlus, ChevronRight } from "lucide-react"
 import { useAppStore } from "@/lib/store/useAppStore"
 import { useToast } from "@/hooks/use-toast"
-import { firestoreService } from "@/lib/firebase/firestore-service"
 
 interface CreateEntradaAlmacenModalProps {
   onClose: () => void
@@ -40,9 +39,6 @@ export default function CreateEntradaAlmacenModal({ onClose }: CreateEntradaAlma
         ordenCompraRef: formData.ordenCompraRef,
       }
 
-      await firestoreService.addDocument("almacen_entradas", entradaData)
-
-      // Then update local store
       addEntradaAlmacen(entradaData)
 
       toast({

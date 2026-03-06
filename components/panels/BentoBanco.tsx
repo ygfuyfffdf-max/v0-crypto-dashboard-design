@@ -29,7 +29,7 @@ import {
   useGastos,
   useTransferencias,
   useCorteBancario,
-} from "@/lib/firebase/firestore-hooks.service"
+} from "@/lib/hooks/useStoreData"
 import { Skeleton } from "@/components/ui/skeleton"
 
 const tabs = [

@@ -5,24 +5,15 @@ import { ShoppingCart, Plus, TrendingUp, AlertCircle, CheckCircle2, Clock, Packa
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useState, useEffect } from "react"
-import { suscribirOrdenesCompra } from "@/lib/firebase/firestore-service"
+import { useState } from "react"
+import { useAppStore } from "@/lib/store/useAppStore"
 import type { OrdenCompra } from "@/types"
 import { CreateOrdenCompraModal } from "@/components/modals/CreateOrdenCompraModal"
 
 export default function BentoOrdenesCompra() {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [ordenesCompraData, setOrdenesCompraData] = useState<OrdenCompra[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const unsubscribe = suscribirOrdenesCompra((ordenes) => {
-      setOrdenesCompraData(ordenes)
-      setLoading(false)
-    })
-
-    return () => unsubscribe()
-  }, [])
+  const ordenesCompraData = useAppStore((s) => s.ordenesCompra)
+  const loading = false
 
   const totalCompras = ordenesCompraData.reduce((acc, oc) => acc + oc.costoTotal, 0)
   const totalDeuda = ordenesCompraData.reduce((acc, oc) => acc + oc.deuda, 0)

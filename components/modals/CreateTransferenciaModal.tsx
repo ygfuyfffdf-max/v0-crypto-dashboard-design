@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion"
 import { X, ArrowRightLeft } from "lucide-react" // Fixed import to use lucide-react
 import { BANCOS } from "@/lib/constants" // Fixed import path
 import { useState } from "react"
-import { firestoreService } from "@/lib/firebase/firestore-service"
 import { useToast } from "@/hooks/use-toast"
 
 export default function CreateTransferenciaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -44,7 +43,7 @@ export default function CreateTransferenciaModal({ isOpen, onClose }: { isOpen: 
     const monto = Number.parseFloat(formData.monto)
     const bancoOrigen = bancos.find((b) => b.id === formData.bancoOrigen)
 
-    if (bancoOrigen && (bancoOrigen.saldo ?? 0) < monto) {
+    if (bancoOrigen && (bancoOrigen.capitalActual ?? 0) < monto) {
       toast({
         title: "Saldo Insuficiente",
         description: "No hay suficiente saldo en el banco de origen",
@@ -66,7 +65,6 @@ export default function CreateTransferenciaModal({ isOpen, onClose }: { isOpen: 
         createdAt: new Date(),
       }
 
-      await firestoreService.addTransferencia(transferencia)
       crearTransferencia(formData.bancoOrigen, formData.bancoDestino, monto)
 
       toast({

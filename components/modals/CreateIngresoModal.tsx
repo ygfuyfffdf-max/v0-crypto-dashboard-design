@@ -6,7 +6,6 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, TrendingUp, DollarSign, Building2, FileText } from "lucide-react"
 import { useAppStore } from "@/lib/store/useAppStore"
-import { firestoreService } from "@/lib/firebase/firestore-service"
 import { useToast } from "@/hooks/use-toast"
 
 interface CreateIngresoModalProps {
@@ -61,7 +60,6 @@ export default function CreateIngresoModal({ isOpen, onClose }: CreateIngresoMod
     }
 
     try {
-      await firestoreService.addIngreso(ingreso)
       addIngreso(ingreso)
 
       toast({

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { X, Package, DollarSign, Truck, Check, ChevronRight, Building } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
-import { firestoreService } from "@/lib/firebase/firestore-service"
+import { useAppStore } from "@/lib/store/useAppStore"
 
 interface CreateOrdenCompraModalProps {
   open: boolean
@@ -14,6 +14,8 @@ interface CreateOrdenCompraModalProps {
 
 export function CreateOrdenCompraModal({ open, onClose }: CreateOrdenCompraModalProps) {
   const { toast } = useToast()
+  const crearOrdenCompra = useAppStore((state) => state.crearOrdenCompra)
+  const bancos = useAppStore((state) => state.bancos)
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
 
@@ -25,7 +27,7 @@ export function CreateOrdenCompraModal({ open, onClose }: CreateOrdenCompraModal
     costoDistribuidor: 0,
     costoTransporte: 0,
     pagoInicial: 0,
-    bancoOrigen: "bovedaMonte",
+    bancoOrigen: "boveda-monte",
   })
 
   const steps = [
@@ -60,12 +62,12 @@ export function CreateOrdenCompraModal({ open, onClose }: CreateOrdenCompraModal
         bancoOrigen: formData.bancoOrigen,
       }
 
-      await firestoreService.crearOrdenCompra(ordenCompra)
+      crearOrdenCompra(ordenCompra)
 
       toast({
         title: "Orden Creada",
         description:
-          "La orden se registró en Firestore. Se creó el perfil del distribuidor, se generó la entrada en almacén y se actualizó el banco.",
+          "La orden se registró correctamente. Se creó el perfil del distribuidor, se generó la entrada en almacén y se actualizó el banco.",
       })
 
       onClose()
@@ -77,7 +79,7 @@ export function CreateOrdenCompraModal({ open, onClose }: CreateOrdenCompraModal
         costoDistribuidor: 0,
         costoTransporte: 0,
         pagoInicial: 0,
-        bancoOrigen: "bovedaMonte",
+        bancoOrigen: "boveda-monte",
       })
       setStep(1)
     } catch (error) {
@@ -242,9 +244,11 @@ export function CreateOrdenCompraModal({ open, onClose }: CreateOrdenCompraModal
                         onChange={(e) => setFormData({ ...formData, bancoOrigen: e.target.value })}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-blue-500 focus:outline-none"
                       >
-                        <option value="bovedaMonte">Bóveda Monte</option>
-                        <option value="fletes">Fletes</option>
-                        <option value="utilidades">Utilidades</option>
+                        {bancos.map((banco) => (
+                          <option key={banco.id} value={banco.id}>
+                            {banco.nombre}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>

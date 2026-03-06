@@ -15,7 +15,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts"
-import { useVentasData, useBancoData } from "@/lib/firebase/firestore-hooks.service"
+import { useVentasData, useBancoData } from "@/lib/hooks/useStoreData"
 import { Skeleton } from "@/components/ui/skeleton"
 
 const monthlyProfitData = [

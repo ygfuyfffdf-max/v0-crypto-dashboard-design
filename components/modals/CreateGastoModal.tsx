@@ -5,7 +5,6 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, Receipt, DollarSign, Building2 } from "lucide-react"
 import { useAppStore } from "@/lib/store/useAppStore"
-import { firestoreService } from "@/lib/firebase/firestore-service"
 import { useToast } from "@/hooks/use-toast"
 
 interface CreateGastoModalProps {
@@ -63,7 +62,6 @@ export default function CreateGastoModal({ isOpen, onClose }: CreateGastoModalPr
     }
 
     try {
-      await firestoreService.addGasto(gasto)
       addGasto(gasto)
       toast({
         title: "Gasto Registrado",

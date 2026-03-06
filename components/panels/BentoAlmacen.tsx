@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { Package, TrendingUp, TrendingDown, Archive, Edit, Plus, Box, Activity } from "lucide-react"
 import { useState } from "react"
-import { useProductos, useEntradasAlmacen, useSalidasAlmacen } from "@/lib/firebase/firestore-hooks.service"
+import { useProductos, useEntradasAlmacen, useSalidasAlmacen } from "@/lib/hooks/useStoreData"
 import { Skeleton } from "@/components/ui/skeleton"
 import CreateEntradaAlmacenModal from "@/components/modals/CreateEntradaAlmacenModal"
 import CreateSalidaAlmacenModal from "@/components/modals/CreateSalidaAlmacenModal"

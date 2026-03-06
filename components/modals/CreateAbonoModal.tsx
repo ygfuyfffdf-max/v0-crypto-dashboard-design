@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion"
 import { X, Users, User } from "lucide-react" // Fixed import to use lucide-react
 import { useState } from "react"
 import { BANCOS } from "@/lib/constants" // Fixed import path
-import { firestoreService } from "@/lib/firebase/firestore-service"
 import { useToast } from "@/hooks/use-toast" // Import toast hook
 
 export default function CreateAbonoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -52,8 +51,6 @@ export default function CreateAbonoModal({ isOpen, onClose }: { isOpen: boolean;
         fecha: new Date(),
         createdAt: new Date(),
       }
-
-      await firestoreService.addAbono(abono)
 
       if (formData.tipo === "distribuidor") {
         abonarDistribuidor(formData.entidadId, monto, formData.bancoDestino)

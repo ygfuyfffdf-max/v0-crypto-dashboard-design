@@ -4,7 +4,6 @@ import type React from "react"
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, User, Phone, Mail, MapPin, Building2 } from "lucide-react"
-import { firestoreService } from "@/lib/firebase/firestore-service"
 import { useToast } from "@/hooks/use-toast"
 
 interface CreateClienteModalProps {
@@ -40,13 +39,11 @@ export default function CreateClienteModal({ isOpen, onClose, onSubmit }: Create
         updatedAt: new Date(),
       }
 
-      await firestoreService.crearCliente(clienteData)
-
       onSubmit(clienteData)
 
       toast({
         title: "Cliente Creado",
-        description: "El cliente ha sido registrado exitosamente en Firestore.",
+        description: "El cliente ha sido registrado exitosamente.",
       })
 
       setStep(1)

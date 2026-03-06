@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import { Users, AlertTriangle, CheckCircle2, Clock, DollarSign, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { useClientes } from "@/lib/firebase/firestore-hooks.service"
+import { useClientes } from "@/lib/hooks/useStoreData"
 import CreateClienteModal from "@/components/modals/CreateClienteModal"
 import CreateAbonoModal from "@/components/modals/CreateAbonoModal" // Import CreateAbonoModal
 import { useState } from "react"
@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function BentoClientes() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showAbonoModal, setShowAbonoModal] = useState(false) // State for Abono Modal
-  const { clientes, loading } = useClientes()
+  const { data: clientes, loading } = useClientes()
 
   const topClientes = clientes?.sort((a, b) => b.totalVentas - a.totalVentas).slice(0, 5) || []
   const totalDeuda = clientes?.reduce((acc, c) => acc + c.deudaTotal, 0) || 0

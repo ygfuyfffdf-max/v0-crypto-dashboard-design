@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { X, ShoppingCart, ChevronRight } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
-import { firestoreService } from "@/lib/firebase/firestore-service"
-import { useAlmacenData } from "@/lib/firebase/firestore-hooks.service"
+import { useAlmacenData } from "@/lib/hooks/useStoreData"
+import { useAppStore } from "@/lib/store/useAppStore"
 
 interface CreateVentaModalProps {
   open: boolean
@@ -15,6 +15,7 @@ interface CreateVentaModalProps {
 
 export function CreateVentaModal({ open, onClose }: CreateVentaModalProps) {
   const { toast } = useToast()
+  const crearVenta = useAppStore((state) => state.crearVenta)
   const { data: almacen = [] } = useAlmacenData()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -84,7 +85,7 @@ export function CreateVentaModal({ open, onClose }: CreateVentaModalProps) {
         distribucionBancos,
       }
 
-      await firestoreService.crearVenta(venta)
+      crearVenta(venta)
 
       toast({
         title: "Venta Exitosa",

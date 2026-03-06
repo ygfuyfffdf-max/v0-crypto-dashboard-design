@@ -5,7 +5,6 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, Package, DollarSign, Tag } from "lucide-react"
 import { useAppStore } from "@/lib/store/useAppStore"
-import { firestoreService } from "@/lib/firebase/firestore-service"
 import { useToast } from "@/hooks/use-toast"
 
 interface CreateProductoModalProps {
@@ -63,7 +62,6 @@ export default function CreateProductoModal({ isOpen, onClose }: CreateProductoM
     }
 
     try {
-      await firestoreService.addProducto(newProducto)
       addProducto(newProducto)
       toast({
         title: "Producto Creado",

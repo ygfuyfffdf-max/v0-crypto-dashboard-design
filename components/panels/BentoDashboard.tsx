@@ -4,7 +4,6 @@ import { motion, useScroll, useTransform } from "framer-motion"
 import { useAppStore } from "@/lib/store/useAppStore"
 import { TrendingUp, DollarSign, Package, ShoppingCart, ArrowUpRight, Sparkles } from "lucide-react"
 import { useRef, useState, useEffect } from "react"
-import { useDashboardData } from "@/lib/firebase/firestore-hooks.service"
 import CreateOrdenCompraModal from "@/components/modals/CreateOrdenCompraModal"
 import CreateVentaModal from "@/components/modals/CreateVentaModal"
 import CreateTransferenciaModal from "@/components/modals/CreateTransferenciaModal"
@@ -23,8 +22,7 @@ import {
 } from "recharts"
 
 export default function BentoDashboard() {
-  const { bancos } = useAppStore()
-  const { data: dashboardData, loading } = useDashboardData()
+  const { bancos, ventas, productos, ordenesCompra } = useAppStore()
 
   const containerRef = useRef(null)
   const { scrollYProgress } = useScroll({ target: containerRef })
@@ -41,12 +39,21 @@ export default function BentoDashboard() {
     return () => clearTimeout(timer)
   }, [])
 
-  const capitalTotal = bancos.reduce((acc, b) => acc + (b.saldo || 0), 0)
-  const ventasMes = dashboardData?.ventas?.reduce((acc, v) => acc + (v.montoTotal || 0), 0) || 0
-  const stockActual = dashboardData?.productos?.reduce((acc, p) => acc + (p.stock || 0), 0) || 0
-  const ordenesActivas = dashboardData?.ordenes?.filter((oc) => oc.estado === "pendiente").length || 0
+  const capitalTotal = bancos.reduce((acc, b) => acc + (b.capitalActual || 0), 0)
+  const ventasMes = ventas.reduce((acc, v) => acc + (v.precioTotalVenta || 0), 0)
+  const stockActual = productos.reduce((acc, p) => acc + (p.stockActual || 0), 0)
+  const ordenesActivas = ordenesCompra.filter((oc) => oc.estado === "pendiente").length
 
-  const chartData = dashboardData?.chartData || []
+  const loading = false
+
+  const chartData = [
+    { mes: "Ene", ingresos: 4200000, gastos: 1800000 },
+    { mes: "Feb", ingresos: 5100000, gastos: 2100000 },
+    { mes: "Mar", ingresos: 6800000, gastos: 2400000 },
+    { mes: "Abr", ingresos: 7500000, gastos: 2700000 },
+    { mes: "May", ingresos: 8900000, gastos: 3000000 },
+    { mes: "Jun", ingresos: 9500000, gastos: 3200000 },
+  ]
   const pieData = [
     { name: "Bóveda Monte", value: 45, color: "#3b82f6" },
     { name: "Fletes", value: 30, color: "#10b981" },

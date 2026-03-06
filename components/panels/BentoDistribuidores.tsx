@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 import { Building2, AlertCircle, CheckCircle2, Clock, DollarSign, Package, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { useDistribuidores, useOrdenesCompra } from "@/lib/firebase/firestore-hooks.service"
+import { useDistribuidores, useOrdenesCompra } from "@/lib/hooks/useStoreData"
 import CreateDistribuidorModal from "@/components/modals/CreateDistribuidorModal"
 import CreateAbonoModal from "@/components/modals/CreateAbonoModal"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -14,8 +14,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 export default function BentoDistribuidores() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showAbonoModal, setShowAbonoModal] = useState(false)
-  const { distribuidores, loading: loadingDist, error: errorDist } = useDistribuidores()
-  const { ordenesCompra = [], loading: loadingOC, error: errorOC } = useOrdenesCompra()
+  const { data: distribuidores, loading: loadingDist, error: errorDist } = useDistribuidores()
+  const { data: ordenesCompra = [], loading: loadingOC, error: errorOC } = useOrdenesCompra()
 
   const [internalLoading, setInternalLoading] = useState(true)
 

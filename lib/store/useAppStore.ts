@@ -1,74 +1,24 @@
 import { create } from "zustand"
 import { devtools, persist } from "zustand/middleware"
-
-interface Distribuidor {
-  id: string
-  nombre: string
-  empresa: string
-  telefono: string
-  email: string
-  deudaTotal: number
-  ordenesCompra: string[]
-  historialPagos: Array<{
-    fecha: string
-    monto: number
-    bancoDestino: string
-  }>
-}
-
-interface Cliente {
-  id: string
-  nombre: string
-  telefono: string
-  email: string
-  deudaTotal: number
-  ventas: string[]
-  historialPagos: Array<{
-    fecha: string
-    monto: number
-  }>
-}
-
-interface OrdenCompra {
-  id: string
-  fecha: string
-  distribuidorId: string
-  distribuidor: string
-  origen: string
-  producto: string
-  cantidad: number
-  costoDistribuidor: number
-  costoTransporte: number
-  costoPorUnidad: number
-  costoTotal: number
-  pagoInicial: number
-  deuda: number
-  estado: "pendiente" | "parcial" | "pagada"
-}
-
-interface Venta {
-  id: string
-  fecha: string
-  clienteId: string
-  cliente: string
-  producto: string
-  cantidad: number
-  precioVentaUnidad: number
-  precioCompraUnidad: number
-  precioFlete: number
-  precioTotalUnidad: number
-  precioTotalVenta: number
-  montoPagado: number
-  montoRestante: number
-  estadoPago: "completo" | "parcial" | "pendiente"
-}
-
-interface Producto {
-  id: string
-  nombre: string
-  stockActual: number
-  valorUnitario: number
-}
+import type {
+  Banco,
+  Distribuidor,
+  Cliente,
+  OrdenCompra,
+  Venta,
+  Producto,
+  IngresosBanco,
+  GastosBanco,
+  Transferencia,
+} from "@/types"
+import { BANCOS } from "@/lib/constants"
+import {
+  distribuidoresData,
+  clientesData,
+  ordenesCompraData,
+  ventasData,
+  productosData,
+} from "@/lib/data/initial-data"
 
 interface AppState {
   // UI State
@@ -87,19 +37,17 @@ interface AppState {
 
   // Financial Data
   totalCapital: number
-  bancos: Array<{
-    id: string
-    nombre: string
-    saldo: number
-    color: string
-  }>
+  bancos: Banco[]
 
-  // New Data Structures for complete system
+  // Data
   distribuidores: Distribuidor[]
   clientes: Cliente[]
   ordenesCompra: OrdenCompra[]
   ventas: Venta[]
   productos: Producto[]
+  gastos: GastosBanco[]
+  ingresos: IngresosBanco[]
+  transferencias: Transferencia[]
 
   // Actions
   setCurrentPanel: (panel: string) => void
@@ -110,13 +58,16 @@ interface AppState {
   setAudioFrequencies: (frequencies: number[]) => void
   setModelRotation: (rotation: number) => void
   setActiveScene: (scene: string | null) => void
-  updateBancoSaldo: (id: string, saldo: number) => void
-  crearOrdenCompra: (data: Omit<OrdenCompra, "id">) => void
-  crearVenta: (data: Omit<Venta, "id" | "clienteId">) => void
+  updateBancoSaldo: (id: string, amount: number) => void
+  crearOrdenCompra: (data: any) => void
+  crearVenta: (data: any) => void
   abonarDistribuidor: (distribuidorId: string, monto: number, bancoDestino: string) => void
   abonarCliente: (clienteId: string, monto: number) => void
   crearTransferencia: (origen: string, destino: string, monto: number) => void
   registrarGasto: (banco: string, monto: number, concepto: string) => void
+  addGasto: (data: any) => void
+  addIngreso: (data: any) => void
+  addProducto: (data: any) => void
   addEntradaAlmacen: (data: any) => void
   addSalidaAlmacen: (data: any) => void
 }
@@ -134,21 +85,16 @@ export const useAppStore = create<AppState>()(
         audioFrequencies: Array(32).fill(0),
         modelRotation: 0,
         activeScene: null,
-        totalCapital: 0,
-        bancos: [
-          { id: "boveda-monte", nombre: "Bóveda Monte", saldo: 0, color: "from-blue-500 to-cyan-500" },
-          { id: "boveda-usa", nombre: "Bóveda USA", saldo: 0, color: "from-red-500 to-blue-500" },
-          { id: "utilidades", nombre: "Utilidades", saldo: 0, color: "from-green-500 to-emerald-500" },
-          { id: "fletes", nombre: "Fletes", saldo: 0, color: "from-orange-500 to-amber-500" },
-          { id: "azteca", nombre: "Azteca", saldo: 0, color: "from-purple-500 to-pink-500" },
-          { id: "leftie", nombre: "Leftie", saldo: 0, color: "from-yellow-500 to-orange-500" },
-          { id: "profit", nombre: "Profit", saldo: 0, color: "from-indigo-500 to-purple-500" },
-        ],
-        distribuidores: [],
-        clientes: [],
-        ordenesCompra: [],
-        ventas: [],
-        productos: [],
+        totalCapital: BANCOS.reduce((sum, b) => sum + b.capitalActual, 0),
+        bancos: BANCOS,
+        distribuidores: distribuidoresData,
+        clientes: clientesData,
+        ordenesCompra: ordenesCompraData,
+        ventas: ventasData,
+        productos: productosData,
+        gastos: [],
+        ingresos: [],
+        transferencias: [],
 
         // Actions
         setCurrentPanel: (panel) => set({ currentPanel: panel }),
@@ -159,10 +105,10 @@ export const useAppStore = create<AppState>()(
         setAudioFrequencies: (frequencies) => set({ audioFrequencies: frequencies }),
         setModelRotation: (rotation) => set({ modelRotation: rotation }),
         setActiveScene: (scene) => set({ activeScene: scene }),
-        updateBancoSaldo: (id, saldo) =>
+        updateBancoSaldo: (id, amount) =>
           set((state) => ({
-            bancos: state.bancos.map((banco) => (banco.id === id ? { ...banco, saldo } : banco)),
-            totalCapital: state.bancos.reduce((acc, banco) => (banco.id === id ? acc + saldo : acc + banco.saldo), 0),
+            bancos: state.bancos.map((banco) => (banco.id === id ? { ...banco, capitalActual: amount } : banco)),
+            totalCapital: state.bancos.reduce((acc, banco) => (banco.id === id ? acc + amount : acc + banco.capitalActual), 0),
           })),
         crearOrdenCompra: (data) => {
           const id = `oc-${Date.now()}`
@@ -174,24 +120,29 @@ export const useAppStore = create<AppState>()(
           )
 
           if (!distribuidor) {
-            // Crear nuevo distribuidor automáticamente
             distribuidor = {
               id: `dist-${Date.now()}`,
               nombre: data.distribuidor,
-              empresa: data.distribuidor,
-              telefono: "",
-              email: "",
               deudaTotal: data.deuda,
+              totalOrdenesCompra: data.costoTotal,
+              totalPagado: data.pagoDistribuidor ?? data.pagoInicial ?? 0,
               ordenesCompra: [id],
               historialPagos: [],
+              createdAt: new Date(),
+              updatedAt: new Date(),
             }
             set({ distribuidores: [...state.distribuidores, distribuidor] })
           } else {
-            // Actualizar distribuidor existente
             set({
               distribuidores: state.distribuidores.map((d) =>
                 d.id === distribuidor!.id
-                  ? { ...d, deudaTotal: d.deudaTotal + data.deuda, ordenesCompra: [...d.ordenesCompra, id] }
+                  ? {
+                      ...d,
+                      deudaTotal: d.deudaTotal + data.deuda,
+                      totalOrdenesCompra: d.totalOrdenesCompra + data.costoTotal,
+                      ordenesCompra: [...d.ordenesCompra, id],
+                      updatedAt: new Date(),
+                    }
                   : d,
               ),
             })
@@ -206,7 +157,14 @@ export const useAppStore = create<AppState>()(
           if (productoExistente) {
             set({
               productos: state.productos.map((p) =>
-                p.id === productoExistente.id ? { ...p, stockActual: p.stockActual + data.cantidad } : p,
+                p.id === productoExistente.id
+                  ? {
+                      ...p,
+                      stockActual: p.stockActual + data.cantidad,
+                      totalEntradas: (p.totalEntradas ?? 0) + data.cantidad,
+                      updatedAt: new Date(),
+                    }
+                  : p,
               ),
             })
           } else {
@@ -216,18 +174,27 @@ export const useAppStore = create<AppState>()(
                 {
                   id: `prod-${Date.now()}`,
                   nombre: data.producto,
+                  origen: data.origen ?? "",
                   stockActual: data.cantidad,
                   valorUnitario: data.costoPorUnidad,
+                  totalEntradas: data.cantidad,
+                  totalSalidas: 0,
+                  entradas: [],
+                  salidas: [],
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
                 },
               ],
             })
           }
 
-          // Si hubo pago inicial, registrar en banco
-          if (data.pagoInicial > 0) {
-            const bancoBovedaMonte = state.bancos.find((b) => b.id === "boveda-monte")
-            if (bancoBovedaMonte) {
-              get().updateBancoSaldo("boveda-monte", bancoBovedaMonte.saldo - data.pagoInicial)
+          // Si hubo pago al distribuidor, registrar en banco
+          const pagoDistribuidor = data.pagoDistribuidor ?? data.pagoInicial ?? 0
+          if (pagoDistribuidor > 0) {
+            const bancoId = data.bancoOrigen ?? "boveda-monte"
+            const bancoObj = state.bancos.find((b) => b.id === bancoId)
+            if (bancoObj) {
+              get().updateBancoSaldo(bancoId, bancoObj.capitalActual - pagoDistribuidor)
             }
           }
         },
@@ -242,38 +209,66 @@ export const useAppStore = create<AppState>()(
             cliente = {
               id: `cli-${Date.now()}`,
               nombre: data.cliente,
-              telefono: "",
-              email: "",
               deudaTotal: data.montoRestante,
+              totalVentas: data.precioTotalVenta,
+              totalPagado: data.montoPagado,
               ventas: [id],
               historialPagos: [],
+              createdAt: new Date(),
+              updatedAt: new Date(),
             }
             set({ clientes: [...state.clientes, cliente] })
           } else {
             set({
               clientes: state.clientes.map((c) =>
                 c.id === cliente!.id
-                  ? { ...c, deudaTotal: c.deudaTotal + data.montoRestante, ventas: [...c.ventas, id] }
+                  ? {
+                      ...c,
+                      deudaTotal: c.deudaTotal + data.montoRestante,
+                      totalVentas: c.totalVentas + data.precioTotalVenta,
+                      totalPagado: c.totalPagado + data.montoPagado,
+                      ventas: [...c.ventas, id],
+                      updatedAt: new Date(),
+                    }
                   : c,
               ),
             })
           }
 
-          // Crear la venta
-          set({ ventas: [...state.ventas, { ...data, id, clienteId: cliente.id }] })
+          // Calcular distribución bancaria
+          const montoBovedaMonte = data.precioCompraUnidad * data.cantidad
+          const montoFletes = data.precioFlete * data.cantidad
+          const montoUtilidades = (data.precioVentaUnidad - data.precioCompraUnidad - data.precioFlete) * data.cantidad
+
+          // Crear la venta con distribucionBancos
+          set({
+            ventas: [
+              ...state.ventas,
+              {
+                ...data,
+                id,
+                distribucionBancos: {
+                  bovedaMonte: montoBovedaMonte,
+                  fletes: montoFletes,
+                  utilidades: montoUtilidades,
+                },
+              },
+            ],
+          })
 
           // Descontar del almacén
           set({
             productos: state.productos.map((p) =>
               p.nombre.toLowerCase() === data.producto.toLowerCase()
-                ? { ...p, stockActual: p.stockActual - data.cantidad }
+                ? {
+                    ...p,
+                    stockActual: p.stockActual - data.cantidad,
+                    totalSalidas: (p.totalSalidas ?? 0) + data.cantidad,
+                    updatedAt: new Date(),
+                  }
                 : p,
             ),
           })
-
-          const montoBovedaMonte = data.precioCompraUnidad * data.cantidad
-          const montoFletes = data.precioFlete * data.cantidad
-          const montoUtilidades = (data.precioVentaUnidad - data.precioCompraUnidad - data.precioFlete) * data.cantidad
 
           // Si hay pago (completo o parcial), distribuir proporcionalmente
           if (data.montoPagado > 0) {
@@ -281,20 +276,19 @@ export const useAppStore = create<AppState>()(
 
             const bancoBovedaMonte = state.bancos.find((b) => b.id === "boveda-monte")
             if (bancoBovedaMonte) {
-              get().updateBancoSaldo("boveda-monte", bancoBovedaMonte.saldo + montoBovedaMonte * proporcionPagada)
+              get().updateBancoSaldo("boveda-monte", bancoBovedaMonte.capitalActual + montoBovedaMonte * proporcionPagada)
             }
 
             const bancoFletes = state.bancos.find((b) => b.id === "fletes")
             if (bancoFletes) {
-              get().updateBancoSaldo("fletes", bancoFletes.saldo + montoFletes * proporcionPagada)
+              get().updateBancoSaldo("fletes", bancoFletes.capitalActual + montoFletes * proporcionPagada)
             }
 
             const bancoUtilidades = state.bancos.find((b) => b.id === "utilidades")
             if (bancoUtilidades) {
-              get().updateBancoSaldo("utilidades", bancoUtilidades.saldo + montoUtilidades * proporcionPagada)
+              get().updateBancoSaldo("utilidades", bancoUtilidades.capitalActual + montoUtilidades * proporcionPagada)
             }
           }
-          // Si es pago pendiente (montoPagado = 0), los históricos se registran pero capital actual = 0
         },
         abonarDistribuidor: (distribuidorId, monto, bancoDestino) => {
           const state = get()
@@ -314,7 +308,7 @@ export const useAppStore = create<AppState>()(
           // Restar del banco de origen
           const banco = state.bancos.find((b) => b.id === bancoDestino)
           if (banco) {
-            get().updateBancoSaldo(bancoDestino, banco.saldo - monto)
+            get().updateBancoSaldo(bancoDestino, banco.capitalActual - monto)
           }
         },
         abonarCliente: (clienteId, monto) => {
@@ -336,7 +330,9 @@ export const useAppStore = create<AppState>()(
             ),
           })
 
-          const ventasCliente = state.ventas.filter((v) => v.clienteId === clienteId && v.montoRestante > 0)
+          const ventasCliente = state.ventas.filter(
+            (v) => v.cliente.toLowerCase() === cliente.nombre.toLowerCase() && v.montoRestante > 0,
+          )
 
           if (ventasCliente.length > 0) {
             // Tomar la venta más antigua con saldo pendiente
@@ -357,10 +353,10 @@ export const useAppStore = create<AppState>()(
             const bancoUtilidades = state.bancos.find((b) => b.id === "utilidades")
 
             if (bancoBovedaMonte)
-              get().updateBancoSaldo("boveda-monte", bancoBovedaMonte.saldo + montoBovedaMonte * proporcionAbono)
-            if (bancoFletes) get().updateBancoSaldo("fletes", bancoFletes.saldo + montoFletes * proporcionAbono)
+              get().updateBancoSaldo("boveda-monte", bancoBovedaMonte.capitalActual + montoBovedaMonte * proporcionAbono)
+            if (bancoFletes) get().updateBancoSaldo("fletes", bancoFletes.capitalActual + montoFletes * proporcionAbono)
             if (bancoUtilidades)
-              get().updateBancoSaldo("utilidades", bancoUtilidades.saldo + montoUtilidades * proporcionAbono)
+              get().updateBancoSaldo("utilidades", bancoUtilidades.capitalActual + montoUtilidades * proporcionAbono)
 
             // Actualizar el monto restante de la venta
             set({
@@ -382,28 +378,121 @@ export const useAppStore = create<AppState>()(
           const bancoOrigen = state.bancos.find((b) => b.id === origen)
           const bancoDestino = state.bancos.find((b) => b.id === destino)
 
-          if (bancoOrigen && bancoDestino && bancoOrigen.saldo >= monto) {
-            get().updateBancoSaldo(origen, bancoOrigen.saldo - monto)
-            get().updateBancoSaldo(destino, bancoDestino.saldo + monto)
+          if (bancoOrigen && bancoDestino) {
+            get().updateBancoSaldo(origen, bancoOrigen.capitalActual - monto)
+            get().updateBancoSaldo(destino, bancoDestino.capitalActual + monto)
+            set({
+              transferencias: [
+                ...state.transferencias,
+                {
+                  id: `trans-${Date.now()}`,
+                  fecha: new Date().toISOString(),
+                  tipo: "salida" as const,
+                  monto,
+                  bancoOrigen: origen,
+                  bancoDestino: destino,
+                  concepto: `Transferencia de ${bancoOrigen.nombre} a ${bancoDestino.nombre}`,
+                  estado: "completado",
+                  createdAt: new Date(),
+                },
+              ],
+            })
           }
         },
-        registrarGasto: (banco, monto, concepto) => {
+        registrarGasto: (banco, monto, _concepto) => {
           const state = get()
           const bancoObj = state.bancos.find((b) => b.id === banco)
 
-          if (bancoObj && bancoObj.saldo >= monto) {
-            get().updateBancoSaldo(banco, bancoObj.saldo - monto)
+          if (bancoObj) {
+            get().updateBancoSaldo(banco, bancoObj.capitalActual - monto)
           }
+        },
+        addGasto: (data) => {
+          const state = get()
+          if (data.bancoId) {
+            const bancoObj = state.bancos.find((b) => b.id === data.bancoId)
+            if (bancoObj) {
+              get().updateBancoSaldo(data.bancoId, bancoObj.capitalActual - (data.monto ?? 0))
+            }
+          }
+          set({
+            gastos: [
+              ...state.gastos,
+              {
+                id: `gasto-${Date.now()}`,
+                tipo: "gasto",
+                fecha: data.fecha ?? new Date().toISOString(),
+                monto: data.monto ?? 0,
+                destino: data.concepto ?? "",
+                concepto: data.concepto ?? "",
+                bancoId: data.bancoId ?? "",
+                referencia: data.referencia,
+                createdAt: new Date(),
+              },
+            ],
+          })
+        },
+        addIngreso: (data) => {
+          const state = get()
+          if (data.bancoId) {
+            const bancoObj = state.bancos.find((b) => b.id === data.bancoId)
+            if (bancoObj) {
+              get().updateBancoSaldo(data.bancoId, bancoObj.capitalActual + (data.monto ?? 0))
+            }
+          }
+          set({
+            ingresos: [
+              ...state.ingresos,
+              {
+                id: `ingreso-${Date.now()}`,
+                tipo: "ingreso",
+                fecha: data.fecha ?? new Date().toISOString(),
+                monto: data.monto ?? 0,
+                origen: data.origen ?? "",
+                concepto: data.concepto ?? "",
+                bancoId: data.bancoId ?? "",
+                referencia: data.referencia,
+                createdAt: new Date(),
+              },
+            ],
+          })
+        },
+        addProducto: (data) => {
+          const state = get()
+          set({
+            productos: [
+              ...state.productos,
+              {
+                id: `prod-${Date.now()}`,
+                nombre: data.nombre ?? "Nuevo Producto",
+                origen: data.origen ?? "",
+                stockActual: data.stockActual ?? 0,
+                valorUnitario: data.valorUnitario ?? 0,
+                totalEntradas: 0,
+                totalSalidas: 0,
+                entradas: [],
+                salidas: [],
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                ...data,
+              },
+            ],
+          })
         },
         addEntradaAlmacen: (data) => {
           const state = get()
-          const producto = state.productos.find((p) => p.nombre.toLowerCase() === data.productoNombre.toLowerCase())
+          const producto = state.productos.find((p) => p.nombre.toLowerCase() === (data.productoNombre ?? data.producto ?? "").toLowerCase())
 
           if (producto) {
             set({
               productos: state.productos.map((p) =>
-                p.nombre.toLowerCase() === data.productoNombre.toLowerCase()
-                  ? { ...p, stockActual: p.stockActual + data.cantidad }
+                p.id === producto.id
+                  ? {
+                      ...p,
+                      stockActual: p.stockActual + data.cantidad,
+                      totalEntradas: (p.totalEntradas ?? 0) + data.cantidad,
+                      updatedAt: new Date(),
+                    }
                   : p,
               ),
             })
@@ -413,9 +502,16 @@ export const useAppStore = create<AppState>()(
                 ...state.productos,
                 {
                   id: `prod-${Date.now()}`,
-                  nombre: data.productoNombre,
+                  nombre: data.productoNombre ?? data.producto ?? "Nuevo",
+                  origen: data.origen ?? "",
                   stockActual: data.cantidad,
-                  valorUnitario: data.costoUnitario,
+                  valorUnitario: data.costoUnitario ?? 0,
+                  totalEntradas: data.cantidad,
+                  totalSalidas: 0,
+                  entradas: [],
+                  salidas: [],
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
                 },
               ],
             })
@@ -426,7 +522,14 @@ export const useAppStore = create<AppState>()(
           const state = get()
           set({
             productos: state.productos.map((p) =>
-              p.id === data.productoId ? { ...p, stockActual: p.stockActual - data.cantidad } : p,
+              p.id === data.productoId
+                ? {
+                    ...p,
+                    stockActual: p.stockActual - data.cantidad,
+                    totalSalidas: (p.totalSalidas ?? 0) + data.cantidad,
+                    updatedAt: new Date(),
+                  }
+                : p,
             ),
           })
         },
@@ -442,6 +545,9 @@ export const useAppStore = create<AppState>()(
           ventas: state.ventas,
           productos: state.productos,
           bancos: state.bancos,
+          gastos: state.gastos,
+          ingresos: state.ingresos,
+          transferencias: state.transferencias,
         }),
       },
     ),

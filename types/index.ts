@@ -132,6 +132,7 @@ export interface IngresosBanco {
   monto: number
   origen: string
   concepto: string
+  bancoId: string
   referencia?: string
   createdAt: any
 }
@@ -143,6 +144,7 @@ export interface GastosBanco {
   monto: number
   destino: string
   concepto: string
+  bancoId: string
   referencia?: string
   createdAt: any
 }
@@ -156,7 +158,7 @@ export interface Transferencia {
   bancoDestino: string
   concepto: string
   referencia?: string
-  estado: "completada" | "pendiente"
+  estado: string
   createdAt: any
 }
 
