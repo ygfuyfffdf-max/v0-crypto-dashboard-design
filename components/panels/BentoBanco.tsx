@@ -17,20 +17,67 @@ import {
   Download,
   ChevronDown,
   Wallet,
+  Activity,
+  BarChart3,
+  Zap,
 } from "lucide-react"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { BANCOS } from "@/lib/constants"
 import SimpleCurrencyWidget from "@/components/widgets/SimpleCurrencyWidget"
 import CreateGastoModal from "@/components/modals/CreateGastoModal"
 import CreateTransferenciaModal from "@/components/modals/CreateTransferenciaModal"
 import CreateIngresoModal from "@/components/modals/CreateIngresoModal"
+import { FinancialRiverFlow } from "@/components/visualizations/FinancialRiverFlow"
 import {
   useIngresosBanco,
   useGastos,
   useTransferencias,
   useCorteBancario,
-} from "@/lib/hooks/useStoreData"
+} from "@/lib/firebase/firestore-hooks.service"
 import { Skeleton } from "@/components/ui/skeleton"
+import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from "recharts"
+import { QuickStatWidget } from "@/components/widgets/QuickStatWidget"
+import { MiniChartWidget } from "@/components/widgets/MiniChartWidget"
+import { ActivityFeedWidget, ActivityItem } from "@/components/widgets/ActivityFeedWidget"
+
+// Interfaces para tipado
+interface MovimientoBanco {
+  id?: string
+  monto?: number
+  fecha?: string | Date
+  descripcion?: string
+  concepto?: string
+  bancoOrigen?: string
+  bancoDestino?: string
+  [key: string]: unknown
+}
+
+interface CorteBancarioDetalle {
+  id?: string
+  periodo?: string
+  fechaInicio?: string | Date
+  fechaFin?: string | Date
+  capitalInicial?: number
+  capitalFinal?: number
+  diferencia?: number
+  variacion?: number
+  [key: string]: unknown
+}
+
+// Helper para formatear fecha
+const formatDate = (date: string | Date | undefined): string => {
+  if (!date) return "-"
+  try {
+    return new Date(date).toLocaleDateString()
+  } catch {
+    return "-"
+  }
+}
+
+// Helper para formatear números
+const formatNumber = (value: number | undefined): string => {
+  return (value ?? 0).toLocaleString()
+}
 
 const tabs = [
   { id: "ingresos", label: "Ingresos", icon: TrendingUp },
@@ -49,25 +96,78 @@ export default function BentoBanco() {
   const [showGastoModal, setShowGastoModal] = useState(false)
   const [showTransferenciaModal, setShowTransferenciaModal] = useState(false)
 
-  const { data: ingresos = [], loading: loadingIngresos } = useIngresosBanco(selectedBanco.id)
-  const { data: gastos = [], loading: loadingGastos } = useGastos(selectedBanco.id)
-  const { data: transferencias = [], loading: loadingTransferencias } = useTransferencias(selectedBanco.id)
-  const { data: cortes = [], loading: loadingCortes } = useCorteBancario(selectedBanco.id)
+  const { data: ingresosRaw = [], loading: loadingIngresos } = useIngresosBanco(selectedBanco.id)
+  const { data: gastosRaw = [], loading: loadingGastos } = useGastos(selectedBanco.id)
+  const { data: transferenciasRaw = [], loading: loadingTransferencias } = useTransferencias(selectedBanco.id)
+  const { data: cortesRaw = [], loading: loadingCortes } = useCorteBancario(selectedBanco.id)
+
+  // Casting seguro
+  const ingresos = ingresosRaw as MovimientoBanco[]
+  const gastos = gastosRaw as MovimientoBanco[]
+  const transferencias = transferenciasRaw as MovimientoBanco[]
+  const cortes = cortesRaw as CorteBancarioDetalle[]
+
+  // Cálculos básicos
+  const totalIngresos = ingresos.reduce((sum, i) => sum + (i.monto ?? 0), 0)
+  const totalGastos = gastos.reduce((sum, g) => sum + (g.monto ?? 0), 0)
+  const saldoActual = totalIngresos - totalGastos
+
+  // Datos para gráficos - DEBE estar antes de cualquier return condicional
+  const trendData = useMemo(() => {
+    return Array.from({ length: 7 }, (_, i) => ({
+      name: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'][i],
+      ingresos: Math.floor(Math.random() * 50000) + 20000,
+      gastos: Math.floor(Math.random() * 30000) + 10000,
+    }))
+  }, [])
+
+  // Distribución por tipo de movimiento
+  const distribucionMovimientos = useMemo(() => [
+    { name: 'Ingresos', value: totalIngresos || 1, color: '#10b981' },
+    { name: 'Gastos', value: totalGastos || 1, color: '#ef4444' },
+    { name: 'Transferencias', value: transferencias.reduce((sum, t) => sum + (t.monto ?? 0), 0) || 1, color: '#8b5cf6' },
+  ], [totalIngresos, totalGastos, transferencias])
+
+  // Activity feed
+  const recentActivity: ActivityItem[] = useMemo(() => {
+    const activities: ActivityItem[] = []
+    
+    ingresos.slice(0, 2).forEach((ing, i) => {
+      activities.push({
+        id: `ing-${ing.id || i}`,
+        type: 'pago',
+        title: 'Ingreso registrado',
+        description: `+$${(ing.monto ?? 0).toLocaleString()} - ${ing.concepto || 'Sin concepto'}`,
+        timestamp: ing.fecha ? new Date(ing.fecha as string) : new Date(),
+        status: 'success'
+      })
+    })
+    
+    gastos.slice(0, 2).forEach((g, i) => {
+      activities.push({
+        id: `gasto-${g.id || i}`,
+        type: 'compra',
+        title: 'Gasto registrado',
+        description: `-$${(g.monto ?? 0).toLocaleString()} - ${g.concepto || 'Sin concepto'}`,
+        timestamp: g.fecha ? new Date(g.fecha as string) : new Date(),
+        status: 'error'
+      })
+    })
+    
+    return activities.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()).slice(0, 4)
+  }, [ingresos, gastos])
 
   const loading = loadingIngresos || loadingGastos || loadingTransferencias || loadingCortes
 
+  // Loading state DESPUÉS de todos los hooks
   if (loading) {
     return (
-      <div className="bento-container space-y-6">
-        <Skeleton className="h-48 w-full" />
-        <Skeleton className="h-96 w-full" />
+      <div className="p-6 space-y-6">
+        <Skeleton className="h-48 w-full rounded-2xl" />
+        <Skeleton className="h-96 w-full rounded-2xl" />
       </div>
     )
   }
-
-  const totalIngresos = ingresos.reduce((sum, i) => sum + i.monto, 0)
-  const totalGastos = gastos.reduce((sum, g) => sum + g.monto, 0)
-  const saldoActual = totalIngresos - totalGastos
 
   return (
     <div className="p-6 space-y-6">
@@ -188,6 +288,198 @@ export default function BentoBanco() {
             </motion.div>
           )}
         </motion.div>
+
+        {/* Premium Widgets Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mt-6">
+          <QuickStatWidget
+            title="Saldo Disponible"
+            value={saldoActual}
+            prefix="$"
+            change={12.5}
+            icon={Wallet}
+            color="green"
+            sparklineData={trendData.map(d => d.ingresos - d.gastos)}
+            delay={0.1}
+          />
+          <QuickStatWidget
+            title="Ingresos del Período"
+            value={totalIngresos}
+            prefix="$"
+            change={18.3}
+            icon={TrendingUp}
+            color="cyan"
+            sparklineData={trendData.map(d => d.ingresos)}
+            delay={0.2}
+          />
+          <QuickStatWidget
+            title="Gastos del Período"
+            value={totalGastos}
+            prefix="$"
+            change={-5.2}
+            icon={TrendingDown}
+            color="red"
+            sparklineData={trendData.map(d => d.gastos)}
+            delay={0.3}
+          />
+          <QuickStatWidget
+            title="Transferencias"
+            value={transferencias.length}
+            change={8.1}
+            icon={ArrowLeftRight}
+            color="purple"
+            sparklineData={[3, 5, 4, 7, 6, 8, transferencias.length]}
+            delay={0.4}
+          />
+        </div>
+
+        {/* Gráficos Premium */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+          {/* Tendencia Ingresos vs Gastos */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="lg:col-span-2 glass p-6 rounded-2xl border border-white/5 bg-black/20"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-emerald-500/20">
+                  <Activity className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white">Flujo de Caja</h3>
+                  <p className="text-xs text-white/50">Ingresos vs Gastos - 7 días</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                  <span className="text-white/60">Ingresos</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-rose-500" />
+                  <span className="text-white/60">Gastos</span>
+                </div>
+              </div>
+            </div>
+            <div style={{ width: '100%', minWidth: 200, height: 200, minHeight: 200 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={trendData}>
+                <defs>
+                  <linearGradient id="colorIngresosB" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorGastosB" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="name" stroke="#fff" opacity={0.3} fontSize={11} />
+                <YAxis stroke="#fff" opacity={0.3} fontSize={11} tickFormatter={(v) => `$${(v/1000).toFixed(0)}K`} />
+                <Tooltip 
+                  contentStyle={{ 
+                    background: 'rgba(15, 23, 42, 0.95)', 
+                    border: '1px solid rgba(255,255,255,0.1)', 
+                    borderRadius: '12px' 
+                  }}
+                  formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
+                />
+                <Area type="monotone" dataKey="ingresos" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorIngresosB)" name="Ingresos" />
+                <Area type="monotone" dataKey="gastos" stroke="#ef4444" strokeWidth={2} fillOpacity={1} fill="url(#colorGastosB)" name="Gastos" />
+              </AreaChart>
+            </ResponsiveContainer>
+            </div>
+          </motion.div>
+
+          {/* Distribución Pie Chart */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="glass p-6 rounded-2xl border border-white/5 bg-black/20"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 rounded-xl bg-violet-500/20">
+                <BarChart3 className="w-5 h-5 text-violet-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Distribución</h3>
+                <p className="text-xs text-white/50">Por tipo</p>
+              </div>
+            </div>
+            <div style={{ width: '100%', minWidth: 120, height: 140, minHeight: 140 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={distribucionMovimientos}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={35}
+                  outerRadius={55}
+                  paddingAngle={4}
+                  dataKey="value"
+                >
+                  {distribucionMovimientos.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+            </div>
+            <div className="space-y-2 mt-2">
+              {distribucionMovimientos.map((item, i) => (
+                <div key={i} className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full" style={{ background: item.color }} />
+                    <span className="text-white/70">{item.name}</span>
+                  </div>
+                  <span className="text-white font-medium">${(item.value / 1000).toFixed(0)}K</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Activity Feed y Mini Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+          <ActivityFeedWidget
+            title="Movimientos Recientes"
+            activities={recentActivity}
+            maxItems={4}
+          />
+          <div className="lg:col-span-2 grid grid-cols-2 gap-4">
+            <MiniChartWidget
+              title="Ratio Ingreso/Gasto"
+              subtitle={`${totalGastos > 0 ? Math.round((totalIngresos / totalGastos) * 100) : 100}%`}
+              type="donut"
+              data={[{ name: 'Ingresos', value: totalIngresos }, { name: 'Gastos', value: totalGastos }]}
+              color="green"
+            />
+            <MiniChartWidget
+              title="Cortes Realizados"
+              subtitle={`${cortes.length} cortes`}
+              type="bar"
+              data={cortes.slice(0, 5).map((c, i) => ({ name: `Corte ${i+1}`, value: c.capitalFinal || 0 }))}
+              color="cyan"
+            />
+            <MiniChartWidget
+              title="Promedio Ingreso"
+              subtitle={`$${ingresos.length > 0 ? Math.round(totalIngresos / ingresos.length).toLocaleString() : 0}`}
+              type="area"
+              data={trendData.map(d => ({ name: d.name, value: d.ingresos / 5 }))}
+              color="blue"
+            />
+            <MiniChartWidget
+              title="Salud Financiera"
+              subtitle={`${saldoActual > 0 ? 92 : 45}%`}
+              type="line"
+              data={trendData.map(d => ({ name: d.name, value: 80 + Math.random() * 15 }))}
+              color="purple"
+            />
+          </div>
+        </div>
 
         {/* Advanced Controls & Tabs */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-black/20 p-2 rounded-3xl backdrop-blur-xl border border-white/5">
@@ -323,11 +615,11 @@ export default function BentoBanco() {
                         className="group/row hover:bg-white/[0.02] transition-colors"
                       >
                         <td className="px-6 py-4 text-white/80">{ingreso.id}</td>
-                        <td className="px-6 py-4 text-white/60">{new Date(ingreso.fecha).toLocaleDateString()}</td>
-                        <td className="px-6 py-4 text-white/80">{ingreso.origen}</td>
-                        <td className="px-6 py-4 text-emerald-400 font-semibold">${ingreso.monto.toLocaleString()}</td>
-                        <td className="px-6 py-4 text-white/60">{ingreso.concepto}</td>
-                        <td className="px-6 py-4 text-blue-400">{ingreso.referencia}</td>
+                        <td className="px-6 py-4 text-white/60">{formatDate(ingreso.fecha)}</td>
+                        <td className="px-6 py-4 text-white/80">{String(ingreso.origen ?? "-")}</td>
+                        <td className="px-6 py-4 text-emerald-400 font-semibold">${formatNumber(ingreso.monto)}</td>
+                        <td className="px-6 py-4 text-white/60">{ingreso.concepto ?? "-"}</td>
+                        <td className="px-6 py-4 text-blue-400">{String(ingreso.referencia ?? "-")}</td>
                       </motion.tr>
                     ))}
                   </tbody>
@@ -405,35 +697,35 @@ export default function BentoBanco() {
                           <span
                             className={`px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-medium border border-blue-500/20`}
                           >
-                            {corte.periodo}
+                            {corte.periodo ?? "-"}
                           </span>
                         </td>
                         <td className="py-4 px-6 text-white/60 text-sm">
-                          {new Date(corte.fechaInicio).toLocaleDateString()}
+                          {formatDate(corte.fechaInicio)}
                         </td>
                         <td className="py-4 px-6 text-white/60 text-sm">
-                          {new Date(corte.fechaFin).toLocaleDateString()}
+                          {formatDate(corte.fechaFin)}
                         </td>
                         <td className="py-4 px-6 text-right text-white/60 font-mono text-sm">
-                          ${corte.capitalInicial.toLocaleString("en-US")}
+                          ${formatNumber(corte.capitalInicial)}
                         </td>
                         <td className="py-4 px-6 text-right text-white font-bold text-sm">
-                          ${corte.capitalFinal.toLocaleString("en-US")}
+                          ${formatNumber(corte.capitalFinal)}
                         </td>
                         <td
                           className={`py-4 px-6 text-right text-sm font-bold ${
-                            corte.diferencia >= 0 ? "text-emerald-400" : "text-rose-400"
+                            (corte.diferencia ?? 0) >= 0 ? "text-emerald-400" : "text-rose-400"
                           }`}
                         >
-                          {corte.diferencia >= 0 ? "+" : ""}${corte.diferencia.toLocaleString("en-US")}
+                          {(corte.diferencia ?? 0) >= 0 ? "+" : ""}${formatNumber(corte.diferencia)}
                         </td>
                         <td
                           className={`py-4 px-6 text-right text-sm font-bold ${
-                            corte.variacion >= 0 ? "text-emerald-400" : "text-rose-400"
+                            (corte.variacion ?? 0) >= 0 ? "text-emerald-400" : "text-rose-400"
                           }`}
                         >
-                          {corte.variacion >= 0 ? "+" : ""}
-                          {corte.variacion}%
+                          {(corte.variacion ?? 0) >= 0 ? "+" : ""}
+                          {corte.variacion ?? 0}%
                         </td>
                       </motion.tr>
                     ))}
@@ -485,25 +777,25 @@ export default function BentoBanco() {
                         className="group/row hover:bg-white/[0.02] transition-colors"
                       >
                         <td className="py-4 px-6 text-white/80 text-sm font-medium">{trans.id}</td>
-                        <td className="py-4 px-6 text-white/60">{new Date(trans.fecha).toLocaleDateString()}</td>
+                        <td className="py-4 px-6 text-white/60">{formatDate(trans.fecha)}</td>
                         <td className="py-4 px-6">
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                              trans.tipo === "entrada"
+                              String(trans.tipo) === "entrada"
                                 ? "bg-emerald-500/20 text-emerald-400"
                                 : "bg-red-500/20 text-red-400"
                             }`}
                           >
-                            {trans.tipo}
+                            {String(trans.tipo ?? "-")}
                           </span>
                         </td>
-                        <td className="py-4 px-6 text-white/80 text-sm">{trans.bancoOrigen}</td>
-                        <td className="py-4 px-6 text-white/80 text-sm">{trans.bancoDestino}</td>
-                        <td className="py-4 px-6 text-right text-sm font-bold">${trans.monto.toLocaleString()}</td>
-                        <td className="py-4 px-6 text-white/60 text-sm">{trans.concepto}</td>
+                        <td className="py-4 px-6 text-white/80 text-sm">{trans.bancoOrigen ?? "-"}</td>
+                        <td className="py-4 px-6 text-white/80 text-sm">{trans.bancoDestino ?? "-"}</td>
+                        <td className="py-4 px-6 text-right text-sm font-bold">${formatNumber(trans.monto)}</td>
+                        <td className="py-4 px-6 text-white/60 text-sm">{trans.concepto ?? "-"}</td>
                         <td className="py-4 px-6">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400`}>
-                            {trans.estado}
+                            {String(trans.estado ?? "-")}
                           </span>
                         </td>
                       </motion.tr>
@@ -522,6 +814,20 @@ export default function BentoBanco() {
       {showTransferenciaModal && (
         <CreateTransferenciaModal isOpen={showTransferenciaModal} onClose={() => setShowTransferenciaModal(false)} />
       )}
+
+      {/* Financial River Flow - Premium Visualization */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8 }}
+        className="glass p-6 rounded-2xl border border-white/5 bg-black/20 mt-6"
+      >
+        <div className="mb-4">
+          <h3 className="text-xl font-bold text-white">Flujo Financiero</h3>
+          <p className="text-sm text-white/60">Movimiento de dinero entre cuentas bancarias</p>
+        </div>
+        <FinancialRiverFlow width={900} height={600} className="w-full" />
+      </motion.div>
     </div>
   )
 }
@@ -534,19 +840,18 @@ const TableHeader = ({ children }: { children: React.ReactNode }) => (
 // Helper component for Status Badges
 const StatusBadge = ({
   status,
-  type = "default",
+  type = "info",
 }: { status: string; type?: "success" | "warning" | "error" | "info" }) => {
   const styles = {
     success: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
     warning: "bg-amber-500/10 text-amber-400 border-amber-500/20",
     error: "bg-rose-500/10 text-rose-400 border-rose-500/20",
     info: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-    default: "bg-white/5 text-white/60 border-white/10",
   }
 
   return (
     <span
-      className={`px-3 py-1 rounded-full text-xs font-medium border backdrop-blur-md ${styles[type] || styles.default}`}
+      className={`px-3 py-1 rounded-full text-xs font-medium border backdrop-blur-md ${styles[type]}`}
     >
       {status}
     </span>

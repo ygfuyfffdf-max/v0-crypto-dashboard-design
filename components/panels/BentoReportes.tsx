@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { useState } from "react"
 import { FileText, Download, TrendingUp, BarChart3, PieChart, LineChart, Sparkles, Share2, Clock } from "lucide-react"
+import { ReportsTimeline } from "@/components/visualizations/ReportsTimeline"
 import {
   AreaChart,
   Area,
@@ -26,17 +27,46 @@ import {
   useDistribuidoresData,
   useClientesData,
   useAlmacenData,
-} from "@/lib/hooks/useStoreData"
+} from "@/lib/firebase/firestore-hooks.service"
 import { Skeleton } from "@/components/ui/skeleton"
+
+// Interfaces para tipado
+interface VentaData {
+  precioTotalVenta?: number
+  [key: string]: unknown
+}
+
+interface OrdenCompraData {
+  costoTotal?: number
+  [key: string]: unknown
+}
+
+interface DistribuidorData {
+  deudaTotal?: number
+  [key: string]: unknown
+}
+
+interface ProductoData {
+  stockActual?: number
+  nombre?: string
+  [key: string]: unknown
+}
 
 const COLORS = ["#3b82f6", "#8b5cf6", "#ec4899", "#10b981", "#f59e0b", "#ef4444"]
 
 export default function BentoReportes() {
-  const { data: ventas = [], loading: loadingVentas } = useVentasData()
-  const { data: ordenesCompra = [], loading: loadingOC } = useOrdenesCompraData()
-  const { data: distribuidores = [], loading: loadingDist } = useDistribuidoresData()
-  const { data: clientes = [], loading: loadingClientes } = useClientesData()
-  const { data: productos = [], loading: loadingProductos } = useAlmacenData()
+  const { data: ventasRaw = [], loading: loadingVentas } = useVentasData()
+  const { data: ordenesCompraRaw = [], loading: loadingOC } = useOrdenesCompraData()
+  const { data: distribuidoresRaw = [], loading: loadingDist } = useDistribuidoresData()
+  const { data: clientesRaw = [], loading: loadingClientes } = useClientesData()
+  const { data: productosRaw = [], loading: loadingProductos } = useAlmacenData()
+
+  // Casting seguro
+  const ventas = ventasRaw as VentaData[]
+  const ordenesCompra = ordenesCompraRaw as OrdenCompraData[]
+  const distribuidores = distribuidoresRaw as DistribuidorData[]
+  const clientes = clientesRaw as Record<string, unknown>[]
+  const productos = productosRaw as ProductoData[]
 
   const [activeTab, setActiveTab] = useState<"overview" | "detailed" | "ai">("overview")
   const [selectedPeriod, setSelectedPeriod] = useState("month")
@@ -52,14 +82,14 @@ export default function BentoReportes() {
     )
   }
 
-  const totalVentas = ventas.reduce((sum, v) => sum + (v.precioTotalVenta || 0), 0)
-  const totalCompras = ordenesCompra.reduce((sum, oc) => sum + (oc.costoTotal || 0), 0)
-  const totalDeuda = distribuidores.reduce((sum, d) => sum + (d.deudaTotal || 0), 0)
+  const totalVentas = ventas.reduce((sum, v) => sum + (v.precioTotalVenta ?? 0), 0)
+  const totalCompras = ordenesCompra.reduce((sum, oc) => sum + (oc.costoTotal ?? 0), 0)
+  const totalDeuda = distribuidores.reduce((sum, d) => sum + (d.deudaTotal ?? 0), 0)
   const margenPromedio = totalVentas > 0 ? ((totalVentas - totalCompras) / totalVentas) * 100 : 0
 
   const productosData = productos.map((p) => ({
     ...p,
-    value: p.stockActual || 0,
+    value: p.stockActual ?? 0,
   }))
 
   const stats = [
@@ -205,45 +235,39 @@ export default function BentoReportes() {
             className="bento-lg crystal-card p-6 ambient-glow"
           >
             <h3 className="text-xl font-bold text-white mb-4">Tendencia de Ventas vs Compras</h3>
-            <div className="w-full" style={{ height: 300 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={ventas}>
-                  <defs>
-                    <linearGradient id="colorVentas" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="colorCompras" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                  <XAxis dataKey="month" stroke="#fff" opacity={0.5} />
-                  <YAxis stroke="#fff" opacity={0.5} />
-                  <Tooltip
-                    contentStyle={{
-                      background: "rgba(15, 23, 42, 0.9)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      borderRadius: "12px",
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="precioTotalVenta"
-                    stroke="#3b82f6"
-                    fillOpacity={1}
-                    fill="url(#colorVentas)"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="costoTotal"
-                    stroke="#8b5cf6"
-                    fillOpacity={1}
-                    fill="url(#colorCompras)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+            <div style={{ width: '100%', minWidth: 200, height: 300, minHeight: 300 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={ventas}>
+                <defs>
+                  <linearGradient id="colorVentas" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorCompras" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                <XAxis dataKey="month" stroke="#fff" opacity={0.5} />
+                <YAxis stroke="#fff" opacity={0.5} />
+                <Tooltip
+                  contentStyle={{
+                    background: "rgba(15, 23, 42, 0.9)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: "12px",
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="precioTotalVenta"
+                  stroke="#3b82f6"
+                  fillOpacity={1}
+                  fill="url(#colorVentas)"
+                />
+                <Area type="monotone" dataKey="costoTotal" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorCompras)" />
+              </AreaChart>
+            </ResponsiveContainer>
             </div>
           </motion.div>
 
@@ -255,26 +279,26 @@ export default function BentoReportes() {
             className="bento-md crystal-card p-6 ambient-glow"
           >
             <h3 className="text-xl font-bold text-white mb-4">Distribución de Productos</h3>
-            <div className="w-full" style={{ height: 250 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <RechartsPieChart>
-                  <Pie
-                    data={productosData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    label
-                  >
-                    {productosData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </RechartsPieChart>
-              </ResponsiveContainer>
+            <div style={{ width: '100%', minWidth: 150, height: 250, minHeight: 250 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <RechartsPieChart>
+                <Pie
+                  data={productosData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label
+                >
+                  {productosData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </RechartsPieChart>
+            </ResponsiveContainer>
             </div>
           </motion.div>
 
@@ -286,15 +310,8 @@ export default function BentoReportes() {
             className="bento-md crystal-card p-6 ambient-glow"
           >
             <h3 className="text-xl font-bold text-white mb-4">Performance General</h3>
-            <div className="w-full" style={{ height: 250 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={ventas}>
-                  <PolarGrid stroke="#ffffff20" />
-                  <PolarAngleAxis dataKey="subject" stroke="#fff" tick={{ fill: "#ffffff80" }} />
-                  <PolarRadiusAxis stroke="#ffffff20" />
-                  <Radar name="Actual" dataKey="precioTotalVenta" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} />
-                </RadarChart>
-              </ResponsiveContainer>
+            <div className="h-[250px] flex items-center justify-center">
+              <p className="text-white/40 text-sm">RadarChart temporarily disabled - Recharts React 19 compatibility</p>
             </div>
           </motion.div>
         </>
@@ -386,6 +403,20 @@ export default function BentoReportes() {
           </div>
         </motion.div>
       )}
+
+      {/* Reports Timeline - Premium Visualization */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.2 }}
+        className="glass p-6 rounded-2xl border border-white/5 bg-black/20 mt-6"
+      >
+        <div className="mb-4">
+          <h3 className="text-xl font-bold text-white">Línea de Tiempo de Reportes</h3>
+          <p className="text-sm text-white/60">Cronología espiral de eventos del negocio</p>
+        </div>
+        <ReportsTimeline width={900} height={600} className="w-full" />
+      </motion.div>
     </div>
   )
 }

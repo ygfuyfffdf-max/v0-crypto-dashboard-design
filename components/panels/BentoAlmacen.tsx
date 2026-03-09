@@ -1,12 +1,55 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { Package, TrendingUp, TrendingDown, Archive, Edit, Plus, Box, Activity } from "lucide-react"
-import { useState } from "react"
-import { useProductos, useEntradasAlmacen, useSalidasAlmacen } from "@/lib/hooks/useStoreData"
+import { motion, AnimatePresence } from "framer-motion"
+import { Package, TrendingUp, TrendingDown, Archive, Edit, Plus, Box, Activity, BarChart3, Zap, RefreshCw } from "lucide-react"
+import { useState, useEffect, useMemo } from "react"
+import { useProductos, useEntradasAlmacen, useSalidasAlmacen } from "@/lib/firebase/firestore-hooks.service"
 import { Skeleton } from "@/components/ui/skeleton"
 import CreateEntradaAlmacenModal from "@/components/modals/CreateEntradaAlmacenModal"
 import CreateSalidaAlmacenModal from "@/components/modals/CreateSalidaAlmacenModal"
+import { InventoryHeatGrid } from "@/components/visualizations/InventoryHeatGrid"
+import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from "recharts"
+import { QuickStatWidget, QuickStatsGrid } from "@/components/widgets/QuickStatWidget"
+import { MiniChartWidget } from "@/components/widgets/MiniChartWidget"
+import { ActivityFeedWidget, ActivityItem } from "@/components/widgets/ActivityFeedWidget"
+
+// Interfaces para tipado
+interface MovimientoAlmacen {
+  id?: string
+  cantidad?: number
+  fecha?: string | Date
+  origen?: string
+  destino?: string
+  valorUnitario?: number
+  valorTotal?: number
+  referencia?: string
+  [key: string]: unknown
+}
+
+// Helper para formatear fechas de forma segura
+const formatDate = (date: string | Date | undefined): string => {
+  if (!date) return "-"
+  try {
+    return new Date(date).toLocaleDateString()
+  } catch {
+    return "-"
+  }
+}
+
+// Helper para formatear números de forma segura
+const formatNumber = (value: number | undefined): string => {
+  return (value ?? 0).toLocaleString()
+}
+
+interface ProductoAlmacen {
+  id?: string
+  nombre?: string
+  stock?: number
+  stockActual?: number
+  valorUnitario?: number
+  precio?: number
+  [key: string]: unknown
+}
 
 const tabs = [
   { id: "entradas", label: "Entradas", icon: TrendingUp },
@@ -15,15 +58,33 @@ const tabs = [
   { id: "modificaciones", label: "Modificaciones", icon: Edit },
 ]
 
+// Colores para gráficos
+const CHART_COLORS = ['#06b6d4', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444', '#3b82f6']
+
+// Datos de ejemplo para gráficos de tendencia
+const generateTrendData = (baseValue: number, variance: number = 20) => {
+  return Array.from({ length: 7 }, (_, i) => ({
+    name: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'][i],
+    value: Math.max(0, baseValue + Math.floor(Math.random() * variance * 2) - variance),
+    entrada: Math.floor(Math.random() * 50) + 10,
+    salida: Math.floor(Math.random() * 40) + 5,
+  }))
+}
+
 export default function BentoAlmacen() {
   const [activeTab, setActiveTab] = useState("entradas")
   const [searchQuery, setSearchQuery] = useState("")
   const [showEntradaModal, setShowEntradaModal] = useState(false)
   const [showSalidaModal, setShowSalidaModal] = useState(false)
 
-  const { data: productos = [], loading: loadingProductos } = useProductos()
-  const { data: entradas = [], loading: loadingEntradas } = useEntradasAlmacen()
-  const { data: salidas = [], loading: loadingSalidas } = useSalidasAlmacen()
+  const { data: productosRaw = [], loading: loadingProductos } = useProductos()
+  const { data: entradasRaw = [], loading: loadingEntradas } = useEntradasAlmacen()
+  const { data: salidasRaw = [], loading: loadingSalidas } = useSalidasAlmacen()
+
+  // Casting seguro
+  const productos = productosRaw as ProductoAlmacen[]
+  const entradas = entradasRaw as MovimientoAlmacen[]
+  const salidas = salidasRaw as MovimientoAlmacen[]
 
   const totalEntradas = Array.isArray(entradas) ? entradas.reduce((sum, e) => sum + (e.cantidad || 0), 0) : 0
   const totalSalidas = Array.isArray(salidas) ? salidas.reduce((sum, s) => sum + (s.cantidad || 0), 0) : 0
@@ -34,6 +95,48 @@ export default function BentoAlmacen() {
     ? productos.reduce((sum, p) => sum + (p.stock || p.stockActual || 0) * (p.valorUnitario || p.precio || 0), 0)
     : 0
   const potencialVentas = stockActual * 10000
+
+  // Datos para gráficos
+  const trendData = useMemo(() => generateTrendData(stockActual / 7), [stockActual])
+  
+  // Datos para el pie chart de distribución de stock
+  const stockDistribution = useMemo(() => {
+    if (!Array.isArray(productos) || productos.length === 0) return []
+    return productos.slice(0, 5).map((p, i) => ({
+      name: p.nombre || `Producto ${i + 1}`,
+      value: p.stock || p.stockActual || 0,
+      color: CHART_COLORS[i % CHART_COLORS.length]
+    }))
+  }, [productos])
+
+  // Datos para el activity feed
+  const recentActivity: ActivityItem[] = useMemo(() => {
+    const activities: ActivityItem[] = []
+    
+    entradas.slice(0, 3).forEach((e, i) => {
+      activities.push({
+        id: `entrada-${e.id || i}`,
+        type: 'stock',
+        title: 'Nueva entrada registrada',
+        description: `+${e.cantidad || 0} unidades desde ${e.origen || 'origen'}`,
+        timestamp: e.fecha ? new Date(e.fecha as string) : new Date(),
+        status: 'success'
+      })
+    })
+    
+    salidas.slice(0, 3).forEach((s, i) => {
+      activities.push({
+        id: `salida-${s.id || i}`,
+        type: 'stock',
+        title: 'Salida procesada',
+        description: `-${s.cantidad || 0} unidades hacia ${s.destino || 'destino'}`,
+        timestamp: s.fecha ? new Date(s.fecha as string) : new Date(),
+        status: 'pending'
+      })
+    })
+    
+    return activities.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()).slice(0, 5)
+  }, [entradas, salidas])
 
   const loading = loadingProductos || loadingEntradas || loadingSalidas
 
@@ -83,41 +186,218 @@ export default function BentoAlmacen() {
         </div>
       </motion.div>
 
-      {/* Gamified KPI Grid */}
-      <div className="bento-full grid grid-cols-1 md:grid-cols-4 gap-4">
-        <KPI_Card
+      {/* Gamified KPI Grid with Premium Widgets */}
+      <div className="bento-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <QuickStatWidget
           title="Entradas Totales"
           value={totalEntradas}
-          subValue={`+${totalEntradas} unid.`}
+          suffix=" unid."
+          change={12.5}
           icon={TrendingUp}
           color="green"
+          sparklineData={trendData.map(d => d.entrada)}
           delay={0.1}
         />
-        <KPI_Card
+        <QuickStatWidget
           title="Salidas Totales"
           value={totalSalidas}
-          subValue={`-${totalSalidas} unid.`}
+          suffix=" unid."
+          change={-8.3}
           icon={TrendingDown}
           color="red"
+          sparklineData={trendData.map(d => d.salida)}
           delay={0.2}
         />
-        <KPI_Card
+        <QuickStatWidget
           title="Stock Disponible"
           value={stockActual}
-          subValue={`$${valorStock.toLocaleString("en-US")} USD`}
+          suffix=" unid."
+          change={5.2}
           icon={Box}
-          color="blue"
+          color="cyan"
+          sparklineData={trendData.map(d => d.value)}
           delay={0.3}
-          highlight
         />
-        <KPI_Card
-          title="Potencial Ventas"
-          value={`$${(potencialVentas / 1000).toFixed(0)}K`}
-          subValue="Si se vende todo"
+        <QuickStatWidget
+          title="Valor Total"
+          value={valorStock}
+          prefix="$"
+          change={15.7}
           icon={Archive}
           color="purple"
+          sparklineData={trendData.map(d => d.value * 100)}
           delay={0.4}
         />
+      </div>
+
+      {/* Premium Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Gráfico de Tendencias */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="lg:col-span-2 glass p-6 rounded-2xl border border-white/5 bg-black/20"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-lg font-bold text-white">Movimiento de Inventario</h3>
+              <p className="text-sm text-white/50">Entradas vs Salidas últimos 7 días</p>
+            </div>
+            <motion.button
+              whileHover={{ rotate: 180 }}
+              transition={{ duration: 0.3 }}
+              className="p-2 rounded-lg bg-white/5 text-white/50 hover:text-white"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </motion.button>
+          </div>
+          <div style={{ width: '100%', minWidth: 200, height: 250, minHeight: 250 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={trendData}>
+              <defs>
+                <linearGradient id="colorEntrada" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="colorSalida" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.4}/>
+                  <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="name" stroke="#fff" opacity={0.3} fontSize={12} />
+              <YAxis stroke="#fff" opacity={0.3} fontSize={12} />
+              <Tooltip 
+                contentStyle={{ 
+                  background: 'rgba(15, 23, 42, 0.95)', 
+                  border: '1px solid rgba(255,255,255,0.1)', 
+                  borderRadius: '12px',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
+                }} 
+              />
+              <Area 
+                type="monotone" 
+                dataKey="entrada" 
+                stroke="#10b981" 
+                strokeWidth={2}
+                fillOpacity={1} 
+                fill="url(#colorEntrada)" 
+                name="Entradas"
+              />
+              <Area 
+                type="monotone" 
+                dataKey="salida" 
+                stroke="#f43f5e" 
+                strokeWidth={2}
+                fillOpacity={1} 
+                fill="url(#colorSalida)" 
+              name="Salidas"
+            />
+          </AreaChart>
+          </ResponsiveContainer>
+          </div>
+        </motion.div>        {/* Distribución de Stock - Pie Chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="glass p-6 rounded-2xl border border-white/5 bg-black/20"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-xl bg-violet-500/20">
+              <BarChart3 className="w-5 h-5 text-violet-400" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white">Distribución</h3>
+              <p className="text-xs text-white/50">Por producto</p>
+            </div>
+          </div>
+          <div style={{ width: '100%', minWidth: 150, height: 180, minHeight: 180 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={stockDistribution}
+                cx="50%"
+                cy="50%"
+                innerRadius={45}
+                outerRadius={70}
+                paddingAngle={4}
+                dataKey="value"
+              >
+                {stockDistribution.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip 
+                contentStyle={{ 
+                  background: 'rgba(15, 23, 42, 0.95)', 
+                  border: '1px solid rgba(255,255,255,0.1)', 
+                  borderRadius: '8px' 
+                }} 
+              />
+            </PieChart>
+          </ResponsiveContainer>
+          </div>
+          <div className="space-y-2 mt-4">
+            {stockDistribution.slice(0, 3).map((item, i) => (
+              <div key={i} className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full" style={{ background: item.color }} />
+                  <span className="text-white/70 truncate max-w-[100px]">{item.name}</span>
+                </div>
+                <span className="text-white font-medium">{item.value}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Activity Feed Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="lg:col-span-1"
+        >
+          <ActivityFeedWidget
+            title="Actividad Reciente"
+            activities={recentActivity}
+            maxItems={5}
+          />
+        </motion.div>
+
+        {/* Mini Charts Grid */}
+        <div className="lg:col-span-2 grid grid-cols-2 gap-4">
+          <MiniChartWidget
+            title="Rotación de Stock"
+            subtitle={`${Math.round((totalSalidas / Math.max(stockActual, 1)) * 100)}%`}
+            type="donut"
+            data={[{ name: 'Salidas', value: totalSalidas }, { name: 'Disponible', value: stockActual - totalSalidas > 0 ? stockActual - totalSalidas : 0 }]}
+            color="cyan"
+          />
+          <MiniChartWidget
+            title="Eficiencia"
+            subtitle="87%"
+            type="area"
+            data={trendData.map((d, i) => ({ name: d.name, value: Math.random() * 30 + 70 }))}
+            color="green"
+          />
+          <MiniChartWidget
+            title="Productos Bajo Stock"
+            subtitle={`${productos.filter(p => (p.stock || p.stockActual || 0) < 20).length} productos`}
+            type="bar"
+            data={trendData.map((d, i) => ({ name: d.name, value: Math.floor(Math.random() * 10) }))}
+            color="orange"
+          />
+          <MiniChartWidget
+            title="Valor Promedio"
+            subtitle={`$${productos.length > 0 ? Math.round(valorStock / productos.length).toLocaleString() : 0}`}
+            type="line"
+            data={trendData.map((d, i) => ({ name: d.name, value: d.value * 100 }))}
+            color="purple"
+          />
+        </div>
       </div>
 
       {/* Controls & Tabs - Similar structure to Banco but customized */}
@@ -210,12 +490,12 @@ export default function BentoAlmacen() {
                       className="group/row hover:bg-white/[0.02] transition-colors"
                     >
                       <td className="px-6 py-4 text-white/80">{entrada.id}</td>
-                      <td className="px-6 py-4 text-white/60">{new Date(entrada.fecha).toLocaleDateString()}</td>
-                      <td className="px-6 py-4 text-white/80">{entrada.origen}</td>
-                      <td className="px-6 py-4 text-white/80">{entrada.cantidad}</td>
-                      <td className="px-6 py-4 text-white/80">${entrada.valorUnitario.toLocaleString()}</td>
-                      <td className="px-6 py-4 text-white/80">${entrada.valorTotal.toLocaleString()}</td>
-                      <td className="px-6 py-4 text-blue-400">{entrada.referencia}</td>
+                      <td className="px-6 py-4 text-white/60">{formatDate(entrada.fecha)}</td>
+                      <td className="px-6 py-4 text-white/80">{entrada.origen ?? "-"}</td>
+                      <td className="px-6 py-4 text-white/80">{entrada.cantidad ?? 0}</td>
+                      <td className="px-6 py-4 text-white/80">${formatNumber(entrada.valorUnitario)}</td>
+                      <td className="px-6 py-4 text-white/80">${formatNumber(entrada.valorTotal)}</td>
+                      <td className="px-6 py-4 text-blue-400">{entrada.referencia ?? "-"}</td>
                     </motion.tr>
                   ))}
                 </tbody>
@@ -277,12 +557,12 @@ export default function BentoAlmacen() {
                       className="group/row hover:bg-white/[0.02] transition-colors"
                     >
                       <td className="px-6 py-4 text-white/80">{salida.id}</td>
-                      <td className="px-6 py-4 text-white/60">{new Date(salida.fecha).toLocaleDateString()}</td>
-                      <td className="px-6 py-4 text-white/80">{salida.destino}</td>
-                      <td className="px-6 py-4 text-white/80">{salida.cantidad}</td>
-                      <td className="px-6 py-4 text-white/80">${salida.valorUnitario.toLocaleString()}</td>
-                      <td className="px-6 py-4 text-white/80">${salida.valorTotal.toLocaleString()}</td>
-                      <td className="px-6 py-4 text-blue-400">{salida.referencia}</td>
+                      <td className="px-6 py-4 text-white/60">{formatDate(salida.fecha)}</td>
+                      <td className="px-6 py-4 text-white/80">{salida.destino ?? "-"}</td>
+                      <td className="px-6 py-4 text-white/80">{salida.cantidad ?? 0}</td>
+                      <td className="px-6 py-4 text-white/80">${formatNumber(salida.valorUnitario)}</td>
+                      <td className="px-6 py-4 text-white/80">${formatNumber(salida.valorTotal)}</td>
+                      <td className="px-6 py-4 text-blue-400">{salida.referencia ?? "-"}</td>
                     </motion.tr>
                   ))}
                 </tbody>
@@ -335,26 +615,26 @@ export default function BentoAlmacen() {
                       className="group/row hover:bg-white/[0.02] transition-colors"
                     >
                       <td className="px-6 py-4 text-white/80">{item.id}</td>
-                      <td className="px-6 py-4 text-white/80">{item.nombre}</td>
+                      <td className="px-6 py-4 text-white/80">{item.nombre ?? "-"}</td>
                       <td className="px-6 py-4 text-white/60">Múltiples</td>
-                      <td className="px-6 py-4 text-white/80">{item.stock || item.stockActual}</td>
-                      <td className="px-6 py-4 text-white/80">${item.valorUnitario || item.precio.toLocaleString()}</td>
+                      <td className="px-6 py-4 text-white/80">{item.stock ?? item.stockActual ?? 0}</td>
+                      <td className="px-6 py-4 text-white/80">${formatNumber(item.valorUnitario ?? item.precio)}</td>
                       <td className="px-6 py-4 text-white/80">
-                        ${(item.stock || item.stockActual) * (item.valorUnitario || item.precio).toLocaleString()}
+                        ${formatNumber((item.stock ?? item.stockActual ?? 0) * (item.valorUnitario ?? item.precio ?? 0))}
                       </td>
                       <td className="px-6 py-4">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            (item.stock || item.stockActual) < 20
+                            (item.stock ?? item.stockActual ?? 0) < 20
                               ? "bg-red-500/20 text-red-400"
-                              : (item.stock || item.stockActual) < 50
+                              : (item.stock ?? item.stockActual ?? 0) < 50
                                 ? "bg-yellow-500/20 text-yellow-400"
                                 : "bg-green-500/20 text-green-400"
                           }`}
                         >
-                          {(item.stock || item.stockActual) < 20
+                          {(item.stock ?? item.stockActual ?? 0) < 20
                             ? "Bajo"
-                            : (item.stock || item.stockActual) < 50
+                            : (item.stock ?? item.stockActual ?? 0) < 50
                               ? "Medio"
                               : "Alto"}
                         </span>
@@ -376,55 +656,21 @@ export default function BentoAlmacen() {
       {showSalidaModal && (
         <CreateSalidaAlmacenModal isOpen={showSalidaModal} onClose={() => setShowSalidaModal(false)} />
       )}
+
+      {/* Inventory Heat Grid - Premium Visualization */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.9 }}
+        className="glass p-6 rounded-2xl border border-white/5 bg-black/20 mt-6"
+      >
+        <div className="mb-4">
+          <h3 className="text-xl font-bold text-white">Mapa de Calor de Inventario</h3>
+          <p className="text-sm text-white/60">Visualización isométrica de niveles de stock</p>
+        </div>
+        <InventoryHeatGrid className="w-full" />
+      </motion.div>
     </div>
-  )
-}
-
-function KPI_Card({ title, value, subValue, icon: Icon, color, delay, highlight = false }: any) {
-  const colors = {
-    green: "from-emerald-500 to-teal-600 text-emerald-400 bg-emerald-500/10",
-    red: "from-rose-500 to-pink-600 text-rose-400 bg-rose-500/10",
-    blue: "from-blue-500 to-cyan-600 text-cyan-400 bg-cyan-500/10",
-    purple: "from-violet-500 to-purple-600 text-purple-400 bg-purple-500/10",
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay }}
-      whileHover={{ y: -5, transition: { duration: 0.2 } }}
-      className={`relative p-6 rounded-3xl border border-white/5 overflow-hidden group ${highlight ? "bg-white/[0.03]" : "glass"}`}
-    >
-      {highlight && (
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-transparent opacity-50" />
-      )}
-
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-white/50 text-sm font-medium uppercase tracking-wider">{title}</span>
-          <div className={`p-2.5 rounded-xl ${colors[color].split(" ").slice(2).join(" ")}`}>
-            <Icon className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="flex items-baseline gap-2">
-          <p className="text-3xl font-bold text-white tracking-tight">{value}</p>
-        </div>
-
-        <div className="mt-2 flex items-center gap-2">
-          <div className={`h-1 flex-1 rounded-full bg-white/10 overflow-hidden`}>
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: "60%" }}
-              transition={{ delay: delay + 0.5, duration: 1 }}
-              className={`h-full bg-gradient-to-r ${colors[color].split(" ").slice(0, 2).join(" ")}`}
-            />
-          </div>
-          <p className={`text-xs font-medium ${colors[color].split(" ")[2]}`}>{subValue}</p>
-        </div>
-      </div>
-    </motion.div>
   )
 }
 

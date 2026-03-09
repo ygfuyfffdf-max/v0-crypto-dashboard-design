@@ -1,21 +1,38 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { Building2, AlertCircle, CheckCircle2, Clock, DollarSign, Package, Plus } from "lucide-react"
+import { useState, useEffect, useMemo } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Building2, AlertCircle, CheckCircle2, Clock, DollarSign, Package, Plus, TrendingUp, BarChart3, Activity, Truck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { useDistribuidores, useOrdenesCompra } from "@/lib/hooks/useStoreData"
+import { useDistribuidores, useOrdenesCompra } from "@/lib/firebase/firestore-hooks.service"
 import CreateDistribuidorModal from "@/components/modals/CreateDistribuidorModal"
 import CreateAbonoModal from "@/components/modals/CreateAbonoModal"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from "recharts"
+import { QuickStatWidget } from "@/components/widgets/QuickStatWidget"
+import { MiniChartWidget } from "@/components/widgets/MiniChartWidget"
+import { ActivityFeedWidget, ActivityItem } from "@/components/widgets/ActivityFeedWidget"
+
+// Interface para distribuidor
+interface DistribuidorData {
+  id?: string
+  nombre?: string
+  totalOrdenesCompra?: number
+  deudaTotal?: number
+  totalPagado?: number
+  [key: string]: unknown
+}
 
 export default function BentoDistribuidores() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showAbonoModal, setShowAbonoModal] = useState(false)
-  const { data: distribuidores, loading: loadingDist, error: errorDist } = useDistribuidores()
+  const { data: distribuidoresRaw, loading: loadingDist, error: errorDist } = useDistribuidores()
   const { data: ordenesCompra = [], loading: loadingOC, error: errorOC } = useOrdenesCompra()
+
+  // Casting seguro
+  const distribuidores = distribuidoresRaw as DistribuidorData[] | undefined
 
   const [internalLoading, setInternalLoading] = useState(true)
 
@@ -38,13 +55,47 @@ export default function BentoDistribuidores() {
   const isLoading = internalLoading || (loadingDist && loadingOC) // Show loading if both are strictly loading, otherwise show what we have
 
   const topDistribuidores = distribuidores
-    ? [...distribuidores].sort((a, b) => b.totalOrdenesCompra - a.totalOrdenesCompra).slice(0, 5)
+    ? [...distribuidores].sort((a, b) => (b.totalOrdenesCompra ?? 0) - (a.totalOrdenesCompra ?? 0)).slice(0, 5)
     : []
 
-  const totalDeuda = distribuidores?.reduce((acc, d) => acc + d.deudaTotal, 0) || 0
-  const totalOrdenesCompra = distribuidores?.reduce((acc, d) => acc + d.totalOrdenesCompra, 0) || 0
-  const totalPagado = distribuidores?.reduce((acc, d) => acc + d.totalPagado, 0) || 0
-  const distribuidoresPendientes = distribuidores?.filter((d) => d.deudaTotal > 0).length || 0
+  const totalDeuda = distribuidores?.reduce((acc, d) => acc + (d.deudaTotal ?? 0), 0) ?? 0
+  const totalOrdenesCompra = distribuidores?.reduce((acc, d) => acc + (d.totalOrdenesCompra ?? 0), 0) ?? 0
+  const totalPagado = distribuidores?.reduce((acc, d) => acc + (d.totalPagado ?? 0), 0) ?? 0
+  const distribuidoresPendientes = distribuidores?.filter((d) => (d.deudaTotal ?? 0) > 0).length ?? 0
+
+  // Colores para gráficos
+  const CHART_COLORS = ['#a855f7', '#ec4899', '#f59e0b', '#10b981', '#06b6d4']
+
+  // Datos para gráficos
+  const trendData = useMemo(() => {
+    return Array.from({ length: 7 }, (_, i) => ({
+      name: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'][i],
+      compras: Math.floor(Math.random() * 80000) + 40000,
+      pagos: Math.floor(Math.random() * 60000) + 20000,
+    }))
+  }, [])
+
+  // Distribución de proveedores por estado
+  const distribuidoresPorEstado = useMemo(() => {
+    const saldados = distribuidores?.filter(d => (d.deudaTotal ?? 0) === 0).length ?? 0
+    const pendientes = distribuidoresPendientes
+    return [
+      { name: 'Saldados', value: saldados, color: '#10b981' },
+      { name: 'Pendientes', value: pendientes, color: '#f59e0b' },
+    ]
+  }, [distribuidores, distribuidoresPendientes])
+
+  // Activity feed
+  const recentActivity: ActivityItem[] = useMemo(() => {
+    return topDistribuidores.slice(0, 4).map((d, i) => ({
+      id: d.id || `dist-${i}`,
+      type: 'compra' as const,
+      title: d.nombre || 'Distribuidor',
+      description: `Compras: $${((d.totalOrdenesCompra ?? 0) / 1000).toFixed(0)}K | Deuda: $${((d.deudaTotal ?? 0) / 1000).toFixed(0)}K`,
+      timestamp: new Date(Date.now() - i * 3600000),
+      status: ((d.deudaTotal ?? 0) > 0 ? 'pending' : 'success') as 'pending' | 'success'
+    }))
+  }, [topDistribuidores])
 
   if (isLoading) {
     return (
@@ -115,83 +166,188 @@ export default function BentoDistribuidores() {
         </div>
       </motion.div>
 
-      {/* KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
-          className="relative group"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all" />
-          <div className="relative bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/50 rounded-2xl p-6 hover:border-purple-500/50 transition-colors">
-            <div className="flex items-center justify-between mb-4">
-              <DollarSign className="w-8 h-8 text-purple-400" />
-              <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/20">
-                Total Compras
-              </Badge>
-            </div>
-            <div className="text-3xl font-bold text-white mb-2">${(totalOrdenesCompra / 1000000).toFixed(2)}M</div>
-            <p className="text-sm text-zinc-400">Valor total de órdenes</p>
-          </div>
-        </motion.div>
+      {/* KPIs Premium */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <QuickStatWidget
+          title="Total Compras"
+          value={totalOrdenesCompra}
+          prefix="$"
+          change={15.3}
+          icon={DollarSign}
+          color="purple"
+          sparklineData={trendData.map(d => d.compras)}
+          delay={0.1}
+        />
+        <QuickStatWidget
+          title="Adeudo Total"
+          value={totalDeuda}
+          prefix="$"
+          change={-8.7}
+          icon={AlertCircle}
+          color="orange"
+          sparklineData={trendData.map(d => d.compras - d.pagos)}
+          delay={0.2}
+        />
+        <QuickStatWidget
+          title="Total Pagado"
+          value={totalPagado}
+          prefix="$"
+          change={22.1}
+          icon={CheckCircle2}
+          color="green"
+          sparklineData={trendData.map(d => d.pagos)}
+          delay={0.3}
+        />
+        <QuickStatWidget
+          title="Órdenes Activas"
+          value={ordenesCompra.length}
+          change={12.5}
+          icon={Package}
+          color="cyan"
+          sparklineData={[8, 12, 10, 15, 13, 18, ordenesCompra.length]}
+          delay={0.4}
+        />
+      </div>
 
+      {/* Gráficos Premium */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Gráfico de Tendencia */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2 }}
-          className="relative group"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="lg:col-span-2 relative group"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all" />
-          <div className="relative bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/50 rounded-2xl p-6 hover:border-red-500/50 transition-colors">
-            <div className="flex items-center justify-between mb-4">
-              <AlertCircle className="w-8 h-8 text-red-400" />
-              <Badge variant="outline" className="bg-red-500/10 text-red-400 border-red-500/20">
-                Adeudo
-              </Badge>
-            </div>
-            <div className="text-3xl font-bold text-white mb-2">${(totalDeuda / 1000000).toFixed(2)}M</div>
-            <p className="text-sm text-zinc-400">{distribuidoresPendientes} distribuidores pendientes</p>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="relative group"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all" />
-          <div className="relative bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/50 rounded-2xl p-6 hover:border-green-500/50 transition-colors">
-            <div className="flex items-center justify-between mb-4">
-              <CheckCircle2 className="w-8 h-8 text-green-400" />
-              <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/20">
-                Pagado
-              </Badge>
-            </div>
-            <div className="text-3xl font-bold text-white mb-2">${(totalPagado / 1000).toFixed(0)}K</div>
-            <p className="text-sm text-zinc-400">Pagos realizados</p>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4 }}
-          className="relative group"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all" />
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 rounded-2xl blur-xl group-hover:blur-2xl transition-all" />
           <div className="relative bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/50 rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <Package className="w-8 h-8 text-cyan-400" />
-              <Badge variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20">
-                Órdenes
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-purple-500/20">
+                  <TrendingUp className="w-5 h-5 text-purple-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white">Compras vs Pagos</h3>
+                  <p className="text-xs text-zinc-400">Últimos 7 días</p>
+                </div>
+              </div>
+              <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/20">
+                <Activity className="w-3 h-3 mr-1" /> Actualizado
               </Badge>
             </div>
-            <div className="text-3xl font-bold text-white mb-2">{ordenesCompra.length}</div>
-            <p className="text-sm text-zinc-400">Órdenes de compra totales</p>
+            <ResponsiveContainer width="100%" height={220}>
+              <AreaChart data={trendData}>
+                <defs>
+                  <linearGradient id="colorComprasD" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#a855f7" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorPagosD" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="name" stroke="#fff" opacity={0.3} fontSize={11} />
+                <YAxis stroke="#fff" opacity={0.3} fontSize={11} tickFormatter={(v) => `$${(v/1000).toFixed(0)}K`} />
+                <Tooltip 
+                  contentStyle={{ 
+                    background: 'rgba(15, 23, 42, 0.95)', 
+                    border: '1px solid rgba(255,255,255,0.1)', 
+                    borderRadius: '12px' 
+                  }}
+                  formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
+                />
+                <Area type="monotone" dataKey="compras" stroke="#a855f7" strokeWidth={2} fillOpacity={1} fill="url(#colorComprasD)" name="Compras" />
+                <Area type="monotone" dataKey="pagos" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorPagosD)" name="Pagos" />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </motion.div>
+
+        {/* Estado de Distribuidores - Pie */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="relative group"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-500/5 to-rose-500/5 rounded-2xl blur-xl" />
+          <div className="relative bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/50 rounded-2xl p-6 h-full">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 rounded-xl bg-pink-500/20">
+                <BarChart3 className="w-5 h-5 text-pink-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Cartera</h3>
+                <p className="text-xs text-zinc-400">Estado proveedores</p>
+              </div>
+            </div>
+            <ResponsiveContainer width="100%" height={150}>
+              <PieChart>
+                <Pie
+                  data={distribuidoresPorEstado}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={40}
+                  outerRadius={60}
+                  paddingAngle={4}
+                  dataKey="value"
+                >
+                  {distribuidoresPorEstado.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="flex justify-center gap-6 mt-2">
+              {distribuidoresPorEstado.map((item, i) => (
+                <div key={i} className="flex items-center gap-2 text-sm">
+                  <div className="w-3 h-3 rounded-full" style={{ background: item.color }} />
+                  <span className="text-white/70">{item.name}: {item.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Activity Feed y Mini Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <ActivityFeedWidget
+          title="Actividad Proveedores"
+          activities={recentActivity}
+          maxItems={4}
+        />
+        <div className="lg:col-span-2 grid grid-cols-2 gap-4">
+          <MiniChartWidget
+            title="Tasa de Pago"
+            subtitle={`${Math.round((totalPagado / Math.max(totalOrdenesCompra, 1)) * 100)}%`}
+            type="donut"
+            data={[{ name: 'Pagado', value: totalPagado }, { name: 'Pendiente', value: totalDeuda }]}
+            color="green"
+          />
+          <MiniChartWidget
+            title="Promedio Orden"
+            subtitle={`$${ordenesCompra.length ? Math.round(totalOrdenesCompra / ordenesCompra.length).toLocaleString() : 0}`}
+            type="area"
+            data={trendData.map((d, i) => ({ name: `S${i + 1}`, value: d.compras / 10 }))}
+            color="purple"
+          />
+          <MiniChartWidget
+            title="Con Adeudo"
+            subtitle={`${distribuidoresPendientes} proveedores`}
+            type="bar"
+            data={[{ name: 'Con adeudo', value: distribuidoresPendientes }, { name: 'Al día', value: (distribuidores?.length || 0) - distribuidoresPendientes }]}
+            color="orange"
+          />
+          <MiniChartWidget
+            title="Total Proveedores"
+            subtitle={`${distribuidores?.length || 0} activos`}
+            type="line"
+            data={[5, 7, 8, 9, 10, 11, distribuidores?.length || 12].map((v, i) => ({ name: `M${i + 1}`, value: v }))}
+            color="pink"
+          />
+        </div>
       </div>
 
       {/* Tabla Distribuidores */}
@@ -232,28 +388,28 @@ export default function BentoDistribuidores() {
                         </div>
                         <div>
                           <div className="font-medium text-white group-hover/row:text-purple-400 transition-colors">
-                            {dist.nombre}
+                            {dist.nombre ?? "-"}
                           </div>
                           <div className="text-xs text-zinc-500">{dist.id}</div>
                         </div>
                       </div>
                     </td>
                     <td className="py-4 px-4 text-right">
-                      <div className="font-mono text-white">${(dist.totalOrdenesCompra / 1000).toFixed(0)}K</div>
+                      <div className="font-mono text-white">${((dist.totalOrdenesCompra ?? 0) / 1000).toFixed(0)}K</div>
                     </td>
                     <td className="py-4 px-4 text-right">
-                      <div className="font-mono text-red-400">${(dist.deudaTotal / 1000).toFixed(0)}K</div>
+                      <div className="font-mono text-red-400">${((dist.deudaTotal ?? 0) / 1000).toFixed(0)}K</div>
                     </td>
                     <td className="py-4 px-4 text-right">
-                      <div className="font-mono text-green-400">${(dist.totalPagado / 1000).toFixed(0)}K</div>
+                      <div className="font-mono text-green-400">${((dist.totalPagado ?? 0) / 1000).toFixed(0)}K</div>
                     </td>
                     <td className="py-4 px-4 text-center">
                       <Badge variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20">
-                        {dist.ordenesCompra.length}
+                        {Array.isArray(dist.ordenesCompra) ? dist.ordenesCompra.length : 0}
                       </Badge>
                     </td>
                     <td className="py-4 px-4 text-center">
-                      {dist.deudaTotal === 0 ? (
+                      {(dist.deudaTotal ?? 0) === 0 ? (
                         <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/20">
                           <CheckCircle2 className="w-3 h-3 mr-1" />
                           Saldado
@@ -274,7 +430,10 @@ export default function BentoDistribuidores() {
       </motion.div>
 
       {/* Create Distribuidor Modal */}
-      <CreateDistribuidorModal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} />
+      <CreateDistribuidorModal 
+        isOpen={showCreateModal} 
+        onClose={() => setShowCreateModal(false)} 
+      />
       <CreateAbonoModal isOpen={showAbonoModal} onClose={() => setShowAbonoModal(false)} />
     </div>
   )

@@ -12,7 +12,7 @@ interface CreateOrdenCompraModalProps {
   onClose: () => void
 }
 
-export function CreateOrdenCompraModal({ open, onClose }: CreateOrdenCompraModalProps) {
+export default function CreateOrdenCompraModal({ open, onClose }: CreateOrdenCompraModalProps) {
   const { toast } = useToast()
   const crearOrdenCompra = useAppStore((state) => state.crearOrdenCompra)
   const bancos = useAppStore((state) => state.bancos)
@@ -336,5 +336,3 @@ export function CreateOrdenCompraModal({ open, onClose }: CreateOrdenCompraModal
     </Dialog>
   )
 }
-
-export default CreateOrdenCompraModal

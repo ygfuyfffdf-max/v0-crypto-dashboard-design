@@ -33,7 +33,6 @@ export default function CreateAbonoModal({ isOpen, onClose }: { isOpen: boolean;
         variant: "destructive",
       })
       return
-      // </CHANGE>
     }
 
     const monto = Number.parseFloat(formData.monto)
@@ -62,7 +61,6 @@ export default function CreateAbonoModal({ isOpen, onClose }: { isOpen: boolean;
         title: "Abono Registrado",
         description: `Se ha registrado el abono de $${monto.toLocaleString()} correctamente.`,
       })
-      // </CHANGE>
 
       onClose()
       setStep(1)
@@ -82,7 +80,6 @@ export default function CreateAbonoModal({ isOpen, onClose }: { isOpen: boolean;
         description: "Error al registrar el abono. Por favor intenta de nuevo.",
         variant: "destructive",
       })
-      // </CHANGE>
     }
   }
 

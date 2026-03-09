@@ -20,9 +20,11 @@ import {
   ArrowRightLeft,
   FileText,
 } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, lazy, Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import CreateOrdenCompraModal from "@/components/modals/CreateOrdenCompraModal"
+
+const KocmocParticleLogo = lazy(() => import("@/components/3d/KocmocParticleLogo"))
 import CreateVentaModal from "@/components/modals/CreateVentaModal"
 import CreateTransferenciaModal from "@/components/modals/CreateTransferenciaModal"
 
@@ -105,32 +107,33 @@ export default function BentoNav() {
         `}
       >
         <div className="h-full max-w-[1800px] mx-auto px-6 flex items-center justify-between gap-6">
-          {/* Logo */}
+          {/* KOCMOC Particle Logo */}
           <motion.div
             style={{ scale: logoScale }}
-            className="flex items-center gap-3 cursor-pointer group shrink-0"
+            className="flex items-center gap-2 cursor-pointer group shrink-0"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
+            onClick={() => setCurrentPanel("dashboard")}
           >
-            <motion.div
-              className="relative w-10 h-10 rounded-2xl overflow-hidden"
-              whileHover={{ rotate: 360 }}
-              transition={{ duration: 0.6, ease: "easeInOut" }}
+            <Suspense
+              fallback={
+                <span className="font-bold text-lg tracking-widest bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                  KOCMOC
+                </span>
+              }
             >
-              <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 opacity-100 group-hover:opacity-80 transition-opacity" />
-              <div className="absolute inset-[2px] bg-black rounded-[14px] flex items-center justify-center">
-                <span className="font-bold text-white text-xl">C</span>
-              </div>
-            </motion.div>
-            <div className="flex flex-col">
-              <span className="font-bold text-lg tracking-tight text-white">Chronos</span>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] text-white/40 tracking-widest uppercase">System</span>
-                <div className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-[9px] text-green-400/60">ONLINE</span>
-                </div>
-              </div>
+              <KocmocParticleLogo
+                className="w-[140px] h-[40px]"
+                text="KOCMOC"
+                fontSize={24}
+                particleSize={1.1}
+                color="#818cf8"
+                interactive
+              />
+            </Suspense>
+            <div className="flex items-center gap-1 ml-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-[9px] text-green-400/60 tracking-wider">ONLINE</span>
             </div>
           </motion.div>
 

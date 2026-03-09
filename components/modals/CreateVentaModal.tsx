@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, ShoppingCart, ChevronRight } from "lucide-react"
+import { X, ShoppingCart, ChevronRight, UserCheck, Package, DollarSign, Check } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { useAlmacenData } from "@/lib/hooks/useStoreData"
@@ -13,7 +13,7 @@ interface CreateVentaModalProps {
   onClose: () => void
 }
 
-export function CreateVentaModal({ open, onClose }: CreateVentaModalProps) {
+export default function CreateVentaModal({ open, onClose }: CreateVentaModalProps) {
   const { toast } = useToast()
   const crearVenta = useAppStore((state) => state.crearVenta)
   const { data: almacen = [] } = useAlmacenData()
@@ -32,6 +32,13 @@ export function CreateVentaModal({ open, onClose }: CreateVentaModalProps) {
   })
 
   const [productoSeleccionado, setProductoSeleccionado] = useState<any>(null)
+
+  const steps = [
+    { id: 1, title: "Cliente", icon: UserCheck },
+    { id: 2, title: "Producto", icon: Package },
+    { id: 3, title: "Pago", icon: DollarSign },
+    { id: 4, title: "Confirmar", icon: Check },
+  ]
 
   useEffect(() => {
     if (formData.productoId) {
@@ -138,22 +145,22 @@ export function CreateVentaModal({ open, onClose }: CreateVentaModalProps) {
           {/* Sidebar Steps */}
           <div className="w-64 border-r border-white/10 p-6 bg-white/5 hidden md:block">
             <div className="space-y-6">
-              {almacen.map((p) => (
-                <div key={p.id} className="relative">
-                  {p.stockActual > 0 && (
+              {steps.map((s, i) => (
+                <div key={s.id} className="relative">
+                  {i < steps.length - 1 && (
                     <div
-                      className={`absolute left-4 top-8 w-0.5 h-8 ${step > p.id ? "bg-green-500" : "bg-white/10"}`}
+                      className={`absolute left-4 top-8 w-0.5 h-8 ${step > s.id ? "bg-green-500" : "bg-white/10"}`}
                     />
                   )}
                   <div
-                    className={`flex items-center gap-4 ${step === p.id ? "text-white" : step > p.id ? "text-green-500" : "text-white/40"}`}
+                    className={`flex items-center gap-4 ${step === s.id ? "text-white" : step > s.id ? "text-green-500" : "text-white/40"}`}
                   >
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center border ${step === p.id ? "border-white bg-white/10" : step > p.id ? "border-green-500 bg-green-500/10" : "border-white/10"}`}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center border ${step === s.id ? "border-white bg-white/10" : step > s.id ? "border-green-500 bg-green-500/10" : "border-white/10"}`}
                     >
-                      <p.icon className="w-4 h-4" />
+                      <s.icon className="w-4 h-4" />
                     </div>
-                    <span className="font-medium">{p.title}</span>
+                    <span className="font-medium">{s.title}</span>
                   </div>
                 </div>
               ))}
@@ -374,5 +381,3 @@ export function CreateVentaModal({ open, onClose }: CreateVentaModalProps) {
     </Dialog>
   )
 }
-
-export default CreateVentaModal

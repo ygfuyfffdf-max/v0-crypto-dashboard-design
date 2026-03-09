@@ -6,10 +6,12 @@ import { useAppStore } from "@/lib/store/useAppStore"
 import { useToast } from "@/hooks/use-toast"
 
 interface CreateEntradaAlmacenModalProps {
+  isOpen: boolean
   onClose: () => void
 }
 
-export default function CreateEntradaAlmacenModal({ onClose }: CreateEntradaAlmacenModalProps) {
+export default function CreateEntradaAlmacenModal({ isOpen, onClose }: CreateEntradaAlmacenModalProps) {
+  if (!isOpen) return null
   const { toast } = useToast()
   const addEntradaAlmacen = useAppStore((state) => state.addEntradaAlmacen)
 

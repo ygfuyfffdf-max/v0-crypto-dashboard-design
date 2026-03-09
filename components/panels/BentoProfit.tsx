@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, lazy, Suspense } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { TrendingUp, PieChart, BarChart3, Download, ArrowUpRight, Target, Zap } from "lucide-react"
+import { TrendingUp, PieChart, BarChart3, Download, ArrowUpRight, Target, Zap, DollarSign, Activity, Gauge } from "lucide-react"
+import { ProfitWaterfallChart } from "@/components/visualizations/ProfitWaterfallChart"
 import {
   AreaChart,
   Area,
@@ -15,8 +16,14 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts"
-import { useVentasData, useBancoData } from "@/lib/hooks/useStoreData"
+import { useVentasData, useBancoData } from "@/lib/firebase/firestore-hooks.service"
 import { Skeleton } from "@/components/ui/skeleton"
+import CasaCambioWidget from "@/components/widgets/CasaCambioWidget"
+
+// Importar el nuevo sistema de arbitraje Panel Profit
+const ProfitCommandCenter = lazy(() => 
+  import("@/components/profit/ProfitCommandCenter").then(mod => ({ default: mod.ProfitCommandCenter }))
+)
 
 const monthlyProfitData = [
   { mes: "Ene", utilidadBruta: 450000, utilidadNeta: 320000, gastos: 130000 },
@@ -45,15 +52,23 @@ export default function BentoProfit() {
   const [activeTab, setActiveTab] = useState("overview")
   const [timeRange, setTimeRange] = useState("6m")
 
-  const { data: ventas, loading: loadingVentas, error: errorVentas } = useVentasData()
+  const { data: ventasRaw, loading: loadingVentas, error: errorVentas } = useVentasData()
   const { data: bancoProfitData, loading: loadingBanco, stats } = useBancoData("profit")
 
+  interface VentaProfit {
+    precioVentaUnidad?: number
+    precioCompraUnidad?: number
+    precioFlete?: number
+    cantidad?: number
+  }
+
+  const ventas = ventasRaw as VentaProfit[]
   const loading = loadingVentas || loadingBanco
 
   const utilidadNeta =
     ventas.length > 0
       ? ventas.reduce(
-          (acc: number, v: any) => acc + (v.precioVentaUnidad - v.precioCompraUnidad - v.precioFlete) * v.cantidad,
+          (acc, v) => acc + ((v.precioVentaUnidad || 0) - (v.precioCompraUnidad || 0) - (v.precioFlete || 0)) * (v.cantidad || 0),
           0,
         )
       : 760000 // Fallback value
@@ -61,8 +76,6 @@ export default function BentoProfit() {
   const totalIngresos = stats?.totalIngresos || 2500000
   const totalGastos = stats?.totalGastos || 850000
   const margenPromedio = totalIngresos > 0 ? (utilidadNeta / totalIngresos) * 100 : 42.5
-
-  console.log("[v0] BentoProfit loaded successfully", { ventas: ventas.length, loading })
 
   if (loading) {
     return (
@@ -80,7 +93,9 @@ export default function BentoProfit() {
 
   const tabs = [
     { id: "overview", label: "Resumen", icon: PieChart },
+    { id: "arbitrage", label: "Panel Profit", icon: Activity },
     { id: "analysis", label: "Análisis Detallado", icon: BarChart3 },
+    { id: "casa-cambio", label: "Casa de Cambio", icon: DollarSign },
     { id: "roi", label: "ROI por Producto", icon: Target },
     { id: "projections", label: "Proyecciones", icon: TrendingUp },
   ]
@@ -285,7 +300,7 @@ export default function BentoProfit() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                       outerRadius={100}
                       fill="#8884d8"
                       dataKey="value"
@@ -305,6 +320,26 @@ export default function BentoProfit() {
                 </ResponsiveContainer>
               </div>
             </div>
+          )}
+
+          {activeTab === "arbitrage" && (
+            <Suspense fallback={
+              <div className="space-y-6">
+                <Skeleton className="h-12 w-64" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Skeleton className="h-32" />
+                  <Skeleton className="h-32" />
+                  <Skeleton className="h-32" />
+                </div>
+                <Skeleton className="h-64" />
+              </div>
+            }>
+              <ProfitCommandCenter />
+            </Suspense>
+          )}
+
+          {activeTab === "casa-cambio" && (
+            <CasaCambioWidget />
           )}
 
           {activeTab === "roi" && (
@@ -346,6 +381,20 @@ export default function BentoProfit() {
           )}
         </motion.div>
       </AnimatePresence>
+
+      {/* Profit Waterfall Chart - Premium Visualization */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.0 }}
+        className="glass p-6 rounded-2xl border border-white/5 bg-black/20 mt-6"
+      >
+        <div className="mb-4">
+          <h3 className="text-xl font-bold text-white">Cascada de Ganancias</h3>
+          <p className="text-sm text-white/60">Desglose visual de ingresos y gastos</p>
+        </div>
+        <ProfitWaterfallChart width={900} height={500} className="w-full" />
+      </motion.div>
     </div>
   )
 }

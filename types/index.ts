@@ -177,3 +177,9 @@ export interface CorteBanco {
   estado: "positivo" | "negativo" | "neutro"
   createdAt: any
 }
+
+export interface FirestoreTimestamp {
+  seconds: number
+  nanoseconds: number
+  toDate: () => Date
+}
